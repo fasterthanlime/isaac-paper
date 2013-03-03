@@ -73,6 +73,18 @@ Game: class {
         keyLabel pos set!(labelLeft, labelBottom)
         keyLabel color set!(Color white())
         uiGroup add(keyLabel)
+
+        iconLeft := 330
+        iconBottom := 534
+        iconPadding := labelPadding - 4
+
+        coinIcon := GlSprite new("assets/png/mini-coin.png")
+        coinIcon pos set!(iconLeft, iconBottom + iconPadding * 2)
+        uiGroup add(coinIcon)
+
+        bombIcon := GlSprite new("assets/png/mini-bomb.png")
+        bombIcon pos set!(iconLeft, iconBottom + iconPadding)
+        uiGroup add(bombIcon)
     }
 
     initGfx: func {
