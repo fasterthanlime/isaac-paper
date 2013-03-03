@@ -6,7 +6,7 @@ import dye/[core, loop, input, primitives, math, sprite, text]
 use deadlogger
 import deadlogger/[Log, Logger]
 
-import isaac/logging
+import isaac/[logging, level]
 
 /*
  * The game, duh.
@@ -16,7 +16,11 @@ Game: class {
     dye: DyeContext
     scene: Scene
 
+    loop: FixedLoop
+
     uiGroup: GlGroup
+
+    level: Level
 
     FONT := "assets/ttf/8-bit-wonder.ttf"
 
@@ -30,9 +34,10 @@ Game: class {
 
         initEvents()
         initGfx()
+        initLevel()
         initUI()
 
-        loop := FixedLoop new(dye, 30.0)
+        loop = FixedLoop new(dye, 30.0)
         loop run(||
             update()
         )
@@ -75,8 +80,8 @@ Game: class {
         uiGroup add(keyLabel)
 
         iconLeft := 330
-        iconBottom := 534
-        iconPadding := labelPadding - 4
+        iconBottom := 528
+        iconPadding := labelPadding
 
         coinIcon := GlSprite new("assets/png/mini-coin.png")
         coinIcon pos set!(iconLeft, iconBottom + iconPadding * 2)
@@ -85,6 +90,15 @@ Game: class {
         bombIcon := GlSprite new("assets/png/mini-bomb.png")
         bombIcon pos set!(iconLeft, iconBottom + iconPadding)
         uiGroup add(bombIcon)
+
+        keyIcon := GlSprite new("assets/png/mini-key.png")
+        keyIcon pos set!(iconLeft, iconBottom)
+        uiGroup add(keyIcon)
+    }
+
+    initLevel: func {
+        level = Level new(this)
+        scene add(level group)
     }
 
     initGfx: func {
