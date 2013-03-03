@@ -27,7 +27,9 @@ Level: class {
 
     space: CpSpace
     physicSteps := 10
+
     entities := ArrayList<Entity> new()
+    hero: Hero
 
     group: GlGroup
 
@@ -39,7 +41,8 @@ Level: class {
 
         initPhysx()
 
-        add(Hero new(this, vec2(300, 300)))
+        hero = Hero new(this, vec2(300, 300))
+        add(hero)
     }
 
     initPhysx: func {
@@ -50,8 +53,28 @@ Level: class {
         entities add(e)
     }
 
+    updateEvents: func {
+        dir := vec2(0, 0)
+
+        if (input isPressed(KeyCode W)) {
+            dir y = 1
+        }
+        if (input isPressed(KeyCode A)) {
+            dir x = -1
+        }
+        if (input isPressed(KeyCode S)) {
+            dir y = -1
+        }
+        if (input isPressed(KeyCode D)) {
+            dir x = 1
+        }
+
+        hero move(dir)
+    }
+
     update: func {
         updatePhysics()
+        updateEvents()
 
         iter := entities iterator()
         while (iter hasNext?()) {
@@ -93,5 +116,12 @@ CollisionTypes: enum from Int {
     HEROES
     ENEMIES
     WALLS
+}
+
+Direction: enum {
+    LEFT
+    RIGHT
+    UP
+    DOWN
 }
 

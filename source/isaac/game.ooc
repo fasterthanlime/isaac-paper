@@ -37,7 +37,7 @@ Game: class {
         initLevel()
         initUI()
 
-        loop = FixedLoop new(dye, 30.0)
+        loop = FixedLoop new(dye, 60.0)
         loop run(||
             update()
         )
@@ -135,6 +135,7 @@ Game: class {
     }
 
     update: func {
+        level update()
     }
 
     quit: func {
