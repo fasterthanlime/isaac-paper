@@ -1,0 +1,6 @@
+Name: isaac
+Version: 0.1
+Requires: dye, bleep, gnaar
+SourcePath: source
+Main: isaac
+
