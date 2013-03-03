@@ -1,10 +1,13 @@
 ## isaac-paper
 
+A clone of Binding of Isaac for #1GAM March, roguelike month!
+
 ### Authors
 
-  * Your Name Here
+  * Amos Wenger
+  * Myriam Bechikh
   
 ### Links
 
-  *
+  * [The original on Steam](http://steamcommunity.com/app/113200)
 
