@@ -5,3 +5,6 @@ isaac
 isaac.exe
 
 log.txt
+
+# OSX crap
+.DS_store
