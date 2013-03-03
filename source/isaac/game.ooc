@@ -1,7 +1,7 @@
 
 // third-party stuff
 use dye
-import dye/[core, loop, input, primitives, math, sprite]
+import dye/[core, loop, input, primitives, math, sprite, text]
 
 use deadlogger
 import deadlogger/[Log, Logger]
@@ -17,6 +17,8 @@ Game: class {
     scene: Scene
 
     uiGroup: GlGroup
+
+    FONT := "assets/ttf/8-bit-wonder.ttf"
 
     init: func {
         Logging setup()
@@ -53,6 +55,24 @@ Game: class {
         uiGroup add(uiBg)
 
         labelLeft := 350
+        labelBottom := 500
+        labelFontSize := 18
+        labelPadding := 28
+
+        coinLabel := GlText new(FONT, "*00", labelFontSize)
+        coinLabel pos set!(labelLeft, labelBottom + labelPadding * 2)
+        coinLabel color set!(Color white())
+        uiGroup add(coinLabel)
+
+        bombLabel := GlText new(FONT, "*01", labelFontSize)
+        bombLabel pos set!(labelLeft, labelBottom + labelPadding)
+        bombLabel color set!(Color white())
+        uiGroup add(bombLabel)
+
+        keyLabel := GlText new(FONT, "*03", labelFontSize)
+        keyLabel pos set!(labelLeft, labelBottom)
+        keyLabel color set!(Color white())
+        uiGroup add(keyLabel)
     }
 
     initGfx: func {
