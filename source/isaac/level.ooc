@@ -17,7 +17,7 @@ import structs/[List, ArrayList, HashMap]
 import math/Random
 
 // our stuff
-import isaac/[game, hero]
+import isaac/[game, hero, walls]
 
 Level: class {
 
@@ -30,11 +30,20 @@ Level: class {
 
     entities := ArrayList<Entity> new()
     hero: Hero
+    walls: Walls
+
+    // layers
+    floorGroup: GlGroup
+    holeGroup: GlGroup
+    blockGroup: GlGroup
+    charGroup: GlGroup
 
     group: GlGroup
 
     dye: DyeContext { get { game dye } }
     input: Input { get { game dye input } }
+
+    doorState := DoorState new()
 
     init: func (=game) {
         group = GlGroup new()
@@ -42,7 +51,7 @@ Level: class {
         initPhysx()
 
         hero = Hero new(this, vec2(300, 300))
-        add(hero)
+        walls = Walls new(this)
     }
 
     initPhysx: func {
@@ -86,6 +95,8 @@ Level: class {
     update: func {
         updatePhysics()
         updateEvents()
+
+        hero update()
 
         iter := entities iterator()
         while (iter hasNext?()) {
@@ -134,5 +145,35 @@ Direction: enum {
     RIGHT
     UP
     DOWN
+
+    toString: func -> String {
+        match this {
+            case This UP => "up"
+            case This DOWN => "down"
+            case This LEFT => "left"
+            case This RIGHT => "right"
+            case => "<unknown direction>"
+        }
+    }
+}
+
+DoorState: class {
+    up: Bool
+    left: Bool
+    right: Bool
+    down: Bool
+
+    init: func
+
+    operator == (other: This) -> Bool {
+        up == other up && \
+        down == other down && \
+        left == other left && \
+        right == other right
+    }
+
+    operator != (other: This) -> Bool {
+        !(this == other)
+    }
 }
 

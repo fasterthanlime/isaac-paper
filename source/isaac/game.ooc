@@ -116,22 +116,6 @@ Game: class {
         arenaBg pos set!(75, 75)
         arenaBg color set!(Color new(230, 230, 230))
         bgGroup add(arenaBg)
-
-        doorUp := GlSprite new("assets/png/door-up.png")
-        doorUp pos set!(400, 600 - 100 - 75 + 30)
-        bgGroup add(doorUp)
-
-        doorDown := GlSprite new("assets/png/door-down.png")
-        doorDown pos set!(400, 75 - 30)
-        bgGroup add(doorDown)
-
-        doorLeft := GlSprite new("assets/png/door-left.png")
-        doorLeft pos set!(40, 75 + 170)
-        bgGroup add(doorLeft)
-
-        doorRight := GlSprite new("assets/png/door-right.png")
-        doorRight pos set!(800 - 40, 75 + 170)
-        bgGroup add(doorRight)
     }
 
     update: func {

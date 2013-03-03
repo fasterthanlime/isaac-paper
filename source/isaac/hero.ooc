@@ -28,6 +28,7 @@ Hero: class extends Entity {
 
     shape: CpShape
     body: CpBody
+    rotateConstraint: CpConstraint
 
     shotSpeed := 400.0
 
@@ -50,6 +51,8 @@ Hero: class extends Entity {
 
     update: func -> Bool {
         sprite sync(body)
+        sprite pos y += 20
+
         pos set!(body getPos())
 
         if (shootCount > 0) {
@@ -60,13 +63,16 @@ Hero: class extends Entity {
     }
 
     initPhysx: func {
-        (width, height) := (50, 70)
+        (width, height) := (40, 40)
         mass := 10.0
         moment := cpMomentForBox(mass, width, height)
 
         body = CpBody new(mass, moment)
         body setPos(cpv(pos))
         level space addBody(body)
+
+        rotateConstraint = CpRotaryLimitJoint new(body, level space getStaticBody(), 0, 0)
+        level space addConstraint(rotateConstraint)
 
         shape = CpBoxShape new(body, width, height)
         shape setUserData(this)
@@ -89,15 +95,22 @@ Hero: class extends Entity {
         if (shootCount > 0) {
             return
         }
+        bodyVel := body getVel()
+
+        skew := 0.8
 
         shootCount = shootRateInv
         vel := match (dir) {
-            case Direction RIGHT => vec2( 1, 0)
-            case Direction LEFT  => vec2(-1, 0)
-            case Direction DOWN  => vec2( 0,-1)
-            case Direction UP    => vec2( 0, 1)
+            case Direction RIGHT =>
+                vec2( 1, bodyVel y > 20 ? skew : (bodyVel y < -20 ? -skew : 0))
+            case Direction LEFT  =>
+                vec2(-1, bodyVel y > 20 ? skew : (bodyVel y < -20 ? -skew : 0))
+            case Direction DOWN  =>
+                vec2(bodyVel x > 20 ? skew : (bodyVel x < -20 ? -skew : 0),-1)
+            case Direction UP    =>
+                vec2(bodyVel x > 20 ? skew : (bodyVel x < -20 ? -skew : 0), 1)
         }
-        vel = vel mul(shotSpeed)
+        vel = vel normalized() mul(shotSpeed)
 
         level add(Tear new(level, pos, vel))
     }
