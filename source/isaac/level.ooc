@@ -36,6 +36,7 @@ Level: class {
     floorGroup: GlGroup
     holeGroup: GlGroup
     blockGroup: GlGroup
+    doorGroup: GlGroup
     charGroup: GlGroup
 
     group: GlGroup
@@ -48,10 +49,28 @@ Level: class {
     init: func (=game) {
         group = GlGroup new()
 
+        initGroups()
         initPhysx()
 
         hero = Hero new(this, vec2(300, 300))
         walls = Walls new(this)
+    }
+
+    initGroups: func {
+        floorGroup = GlGroup new()
+        group add(floorGroup)
+
+        holeGroup = GlGroup new()
+        group add(holeGroup)
+
+        blockGroup = GlGroup new()
+        group add(blockGroup)
+
+        doorGroup = GlGroup new()
+        group add(doorGroup)
+
+        charGroup = GlGroup new()
+        group add(charGroup)
     }
 
     initPhysx: func {

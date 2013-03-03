@@ -41,7 +41,7 @@ Hero: class extends Entity {
         super(level)
 
         sprite = GlSprite new("assets/png/isaac-down.png")
-        level group add(sprite)
+        level charGroup add(sprite)
 
         this pos = vec2(pos)
         sprite pos set!(pos)
@@ -83,7 +83,7 @@ Hero: class extends Entity {
     destroy: func {
         level space removeShape(shape)
         level space removeBody(body)
-        level group remove(sprite)
+        level charGroup remove(sprite)
     }
 
     move: func (dir: Vec2) {

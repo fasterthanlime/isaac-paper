@@ -112,13 +112,14 @@ Door: class extends Entity {
             case Direction DOWN =>
                 pos = vec2(400, 75 - 30)
             case Direction LEFT =>
-                pos = vec2(40, 75 - 30)
+                pos = vec2(40, 75 + 170)
             case Direction RIGHT =>
                 pos = vec2(800 - 40, 75 + 170)
         }
 
         sprite = GlSprite new("assets/png/door-%s.png" format(dir toString()))
         sprite pos set!(pos)
+        level doorGroup add(sprite)
     }
 
 }
