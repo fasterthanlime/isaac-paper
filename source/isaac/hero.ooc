@@ -14,7 +14,7 @@ use gnaar
 import gnaar/[utils]
 
 // our stuff
-import isaac/[level]
+import isaac/[level, tear]
 
 /*
  * Dat Isaac...
@@ -28,6 +28,13 @@ Hero: class extends Entity {
 
     shape: CpShape
     body: CpBody
+
+    shotSpeed := 400.0
+
+    shootCount := 0
+
+    shootRate := 1
+    shootRateInv: Int { get { shootRate * 30 } }
 
     init: func (.level, .pos) {
         super(level)
@@ -43,6 +50,11 @@ Hero: class extends Entity {
 
     update: func -> Bool {
         sprite sync(body)
+        pos set!(body getPos())
+
+        if (shootCount > 0) {
+            shootCount -= 1
+        }
 
         true
     }
@@ -65,11 +77,29 @@ Hero: class extends Entity {
     destroy: func {
         level space removeShape(shape)
         level space removeBody(body)
+        level group remove(sprite)
     }
 
     move: func (dir: Vec2) {
         vel := dir mul(speed)
         body setVel(cpv(vel))
+    }
+
+    shoot: func (dir: Direction) {
+        if (shootCount > 0) {
+            return
+        }
+
+        shootCount = shootRateInv
+        vel := match (dir) {
+            case Direction RIGHT => vec2( 1, 0)
+            case Direction LEFT  => vec2(-1, 0)
+            case Direction DOWN  => vec2( 0,-1)
+            case Direction UP    => vec2( 0, 1)
+        }
+        vel = vel mul(shotSpeed)
+
+        level add(Tear new(level, pos, vel))
     }
 
 }

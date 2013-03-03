@@ -54,8 +54,9 @@ Level: class {
     }
 
     updateEvents: func {
-        dir := vec2(0, 0)
 
+        // Hero movement
+        dir := vec2(0, 0)
         if (input isPressed(KeyCode W)) {
             dir y = 1
         }
@@ -68,8 +69,18 @@ Level: class {
         if (input isPressed(KeyCode D)) {
             dir x = 1
         }
-
         hero move(dir)
+
+        // Hero shots
+        if (input isPressed(KeyCode RIGHT)) {
+            hero shoot(Direction RIGHT)
+        } else if (input isPressed(KeyCode DOWN)) {
+            hero shoot(Direction DOWN)
+        } else if (input isPressed(KeyCode UP)) {
+            hero shoot(Direction UP)
+        } else if (input isPressed(KeyCode LEFT)) {
+            hero shoot(Direction LEFT)
+        }
     }
 
     update: func {
