@@ -9,5 +9,5 @@ A clone of Binding of Isaac for #1GAM March, roguelike month!
   
 ### Links
 
-  * [The original on Steam](http://steamcommunity.com/app/113200)
+  * [The original on Steam](http://store.steampowered.com/app/113200)
 
