@@ -17,6 +17,7 @@ Game: class {
         scene = dye currentScene
 
         initEvents()
+        initGfx()
         initUI()
 
         loop := FixedLoop new(dye, 30.0)
@@ -42,6 +43,23 @@ Game: class {
         uiGroup add(uiBg)
 
         labelLeft := 350
+    }
+
+    initGfx: func {
+        bgGroup := GlGroup new()
+        scene add(bgGroup)
+       
+        fullBg := GlRectangle new(vec2(800, 500)) 
+        fullBg center = false
+        fullBg pos set!(0, 0)
+        fullBg color set!(Color new(200, 200, 200))
+        bgGroup add(fullBg)
+       
+        arenaBg := GlRectangle new(vec2(650, 350)) 
+        arenaBg center = false
+        arenaBg pos set!(75, 75)
+        arenaBg color set!(Color new(230, 230, 230))
+        bgGroup add(arenaBg)
     }
 
     update: func {
