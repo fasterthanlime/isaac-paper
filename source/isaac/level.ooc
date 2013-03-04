@@ -60,7 +60,7 @@ Level: class {
 
         for (col in 0..blockGrid width) {
             for (row in 0..blockGrid height) {
-                if (Random randInt(0, 10) < 4) {
+                if (Random randInt(0, 10) < 6) {
                     continue
                 }
                 blockGrid put(col, row, Block new(this))
@@ -127,6 +127,8 @@ Level: class {
         updatePhysics()
         updateEvents()
 
+        updateLayers()
+
         hero update()
 
         iter := entities iterator()
@@ -137,6 +139,11 @@ Level: class {
                 e destroy()
             }
         }
+    }
+
+    updateLayers: func {
+        holeGrid each(|h| h update())
+        blockGrid each(|h| h update())
     }
 
     updatePhysics: func {
@@ -238,20 +245,56 @@ Grid: class {
     get: func (col, row: Int) -> Tile {
         list[_index(col, row)]
     }
+
+    each: func (f: Func(Tile)) {
+        for (i in 0..list length) {
+            obj := list[i]
+            if (obj) {
+                f(obj)
+            }
+        }
+    }
 }
 
 Tile: abstract class extends Entity {
 
     sprite: GlSprite
+    body: CpBody
+    shape: CpShape
+    side := 50
 
     init: func (.level) {
         super(level)
         sprite = GlSprite new(getSprite())
         getLayer() add(sprite)
+
+        initPhysx()
+    }
+
+    initPhysx: func {
+        body = CpBody new(INFINITY, INFINITY)
+        level space addBody(body)
+
+        shape = CpBoxShape new(body, side, side)
+        shape setUserData(this)
+        level space addShape(shape)
+    }
+
+    update: func -> Bool {
+        sprite sync(body)
+
+        true
+    }
+
+    destroy: func {
+        getLayer() remove(sprite)
+        level space removeShape(shape)
     }
 
     setPos: func (pos: Vec2) {
         sprite pos set!(pos)
+        Game logger info("Moved shape to %s", pos _)
+        body setPos(cpv(pos))
     }
 
     getSprite: abstract func -> String

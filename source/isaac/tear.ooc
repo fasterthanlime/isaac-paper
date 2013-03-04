@@ -37,7 +37,7 @@ Tear: class extends Entity {
 
         sprite = GlSprite new("assets/png/tears-1.png")
 
-        scale := 0.4
+        scale := 0.3
         sprite scale set!(scale, scale)
         radius = scale * (sprite width as Float) * 0.5
 

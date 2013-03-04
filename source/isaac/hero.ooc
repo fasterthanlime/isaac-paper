@@ -41,6 +41,9 @@ Hero: class extends Entity {
         super(level)
 
         sprite = GlSprite new("assets/png/isaac-down.png")
+        scale := 0.8
+        sprite scale set!(scale, scale)
+
         level charGroup add(sprite)
 
         this pos = vec2(pos)
@@ -50,8 +53,8 @@ Hero: class extends Entity {
     }
 
     update: func -> Bool {
-        sprite sync(body)
-        sprite pos y += 20
+        bodyPos := body getPos()
+        sprite pos set!(bodyPos x, bodyPos y + 20)
 
         pos set!(body getPos())
 
@@ -112,7 +115,7 @@ Hero: class extends Entity {
         }
         vel = vel normalized() mul(shotSpeed)
 
-        level add(Tear new(level, pos add(0, 25), vel))
+        level add(Tear new(level, pos add(0, 15), vel))
     }
 
 }

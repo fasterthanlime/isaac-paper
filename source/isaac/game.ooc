@@ -22,6 +22,8 @@ Game: class {
 
     level: Level
 
+    logger := static Log getLogger(This name)
+
     FONT := "assets/ttf/8-bit-wonder.ttf"
 
     init: func {
