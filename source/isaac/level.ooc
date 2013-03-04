@@ -57,6 +57,15 @@ Level: class {
 
         hero = Hero new(this, vec2(300, 300))
         walls = Walls new(this)
+
+        for (col in 0..blockGrid width) {
+            for (row in 0..blockGrid height) {
+                if (Random randInt(0, 10) < 4) {
+                    continue
+                }
+                blockGrid put(col, row, Block new(this))
+            }
+        }
     }
 
     initGroups: func {
@@ -205,6 +214,9 @@ Grid: class {
     width := 13
     height := 7
 
+    origin := vec2(100, 100)
+    blockSide := 50.0
+
     init: func {
         list = Tile[width * height] new()
     }
@@ -220,6 +232,7 @@ Grid: class {
 
     put: func (col, row: Int, obj: Tile) {
         list[_index(col, row)] = obj
+        obj setPos(origin add(vec2(col, row) mul(blockSide)))
     }
 
     get: func (col, row: Int) -> Tile {
@@ -231,27 +244,51 @@ Tile: abstract class extends Entity {
 
     sprite: GlSprite
 
-    init: func {
+    init: func (.level) {
+        super(level)
         sprite = GlSprite new(getSprite())
+        getLayer() add(sprite)
+    }
 
+    setPos: func (pos: Vec2) {
+        sprite pos set!(pos)
     }
 
     getSprite: abstract func -> String
+
+    getLayer: abstract func -> GlGroup
 
 }
 
 Hole: class extends Tile {
 
+    init: func (.level) {
+        super(level)
+    }
+
     getSprite: func -> String {
         "assets/png/hole.png"
+    }
+
+    getLayer: func -> GlGroup {
+        level holeGroup
     }
 
 }
 
 Block: class extends Tile {
 
+    init: func (.level) {
+        super(level)
+    }
+
     getSprite: func -> String {
-        "assets/png/block.png"
+        num := Random randInt(1, 3)
+        "assets/png/block-%d.png" format(num)
+    }
+
+    getLayer: func -> GlGroup {
+        level blockGroup
     }
 
 }
