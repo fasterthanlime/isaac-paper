@@ -14,7 +14,7 @@ use gnaar
 import gnaar/[utils]
 
 // our stuff
-import isaac/[level]
+import isaac/[level, hero]
 
 
 Tear: class extends Entity {
@@ -29,7 +29,9 @@ Tear: class extends Entity {
 
     sprite: GlSprite
 
-    init: func (.level, .pos, .vel) {
+    type: TearType
+
+    init: func (.level, .pos, .vel, =type) {
         super(level)
 
         this pos = vec2(pos)
@@ -48,6 +50,27 @@ Tear: class extends Entity {
 
     update: func -> Bool {
         sprite sync(body)
+
+        hit := false
+        shape1, shape2: CpShape
+
+        body eachArbiter(|body, arbiter|
+            hit = true
+
+            arbiter getShapes(shape1&, shape2&)
+            if (shape1 userDataIs?(Hero) || shape2 userDataIs?(Hero)) {
+                if (type == TearType HERO) {
+                    hit = false
+                }
+            }
+        )
+
+        if (hit) {
+            // TODO: splash
+            return false
+        }
+
+        true
     }
 
     initPhysx: func {
@@ -72,3 +95,9 @@ Tear: class extends Entity {
     }
 
 }
+
+TearType: enum {
+    HERO
+    OTHER
+}
+
