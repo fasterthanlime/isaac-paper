@@ -97,7 +97,7 @@ Hero: class extends Entity {
         }
         bodyVel := body getVel()
 
-        skew := 0.8
+        skew := 0.5
 
         shootCount = shootRateInv
         vel := match (dir) {
@@ -112,7 +112,7 @@ Hero: class extends Entity {
         }
         vel = vel normalized() mul(shotSpeed)
 
-        level add(Tear new(level, pos, vel))
+        level add(Tear new(level, pos add(0, 25), vel))
     }
 
 }

@@ -20,6 +20,7 @@ import isaac/[level]
 Tear: class extends Entity {
 
     range := 100.0
+    radius := 1.0
 
     pos, vel: Vec2
 
@@ -35,7 +36,11 @@ Tear: class extends Entity {
         this vel = vec2(vel)
 
         sprite = GlSprite new("assets/png/tears-1.png")
-        sprite scale set!(0.5, 0.5)
+
+        scale := 0.4
+        sprite scale set!(scale, scale)
+        radius = scale * (sprite width as Float) * 0.5
+
         level group add(sprite)
 
         initPhysx()
@@ -46,7 +51,6 @@ Tear: class extends Entity {
     }
 
     initPhysx: func {
-        radius := 16.0
         mass := 2.0
 
         moment := cpMomentForCircle(mass, 0, radius, cpv(radius, radius))
@@ -58,6 +62,7 @@ Tear: class extends Entity {
 
         shape = CpCircleShape new(body, radius, cpv(0, 0))
         shape setUserData(this)
+        level space addShape(shape)
     }
 
     destroy: func {
