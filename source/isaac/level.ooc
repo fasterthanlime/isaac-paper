@@ -60,10 +60,15 @@ Level: class {
 
         for (col in 0..blockGrid width) {
             for (row in 0..blockGrid height) {
-                if (Random randInt(0, 10) < 6) {
+                if (Random randInt(0, 10) < 7) {
                     continue
                 }
-                blockGrid put(col, row, Block new(this))
+
+                if (Random randInt(0, 10) < 8) {
+                    blockGrid put(col, row, Block new(this))
+                } else {
+                    blockGrid put(col, row, Poop new(this))
+                }
             }
         }
     }
@@ -340,4 +345,20 @@ Block: class extends Tile {
 
 }
 
+Poop: class extends Tile {
+
+    init: func (.level) {
+        super(level)
+        shape setCollisionType(CollisionTypes BLOCK)
+    }
+
+    getSprite: func -> String {
+        "assets/png/poop.png"
+    }
+
+    getLayer: func -> GlGroup {
+        level blockGroup
+    }
+
+}
 
