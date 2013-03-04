@@ -54,7 +54,7 @@ Hero: class extends Entity {
 
     update: func -> Bool {
         bodyPos := body getPos()
-        sprite pos set!(bodyPos x, bodyPos y + 20)
+        sprite pos set!(bodyPos x, bodyPos y + 12)
 
         pos set!(body getPos())
 
@@ -79,7 +79,7 @@ Hero: class extends Entity {
 
         shape = CpBoxShape new(body, width, height)
         shape setUserData(this)
-        shape setCollisionType(CollisionTypes HEROES)
+        shape setCollisionType(CollisionTypes HERO)
         level space addShape(shape)
     }
 
@@ -100,7 +100,7 @@ Hero: class extends Entity {
         }
         bodyVel := body getVel()
 
-        skew := 0.2
+        skew := 0.3
 
         shootCount = shootRateInv
         vel := match (dir) {
@@ -115,7 +115,7 @@ Hero: class extends Entity {
         }
         vel = vel normalized() mul(shotSpeed)
 
-        tear := Tear new(level, pos add(0, 15), vel, TearType HERO)
+        tear := Tear new(level, pos add(0, 10), vel, TearType HERO)
         level add(tear)
     }
 

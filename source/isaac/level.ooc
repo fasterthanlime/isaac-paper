@@ -173,9 +173,12 @@ Entity: class {
 }
 
 CollisionTypes: enum from Int {
-    HEROES
-    ENEMIES
-    WALLS
+    HERO
+    ENEMY
+    BLOCK
+    HOLE
+    WALL
+    TEAR
 }
 
 Direction: enum {
@@ -293,7 +296,6 @@ Tile: abstract class extends Entity {
 
     setPos: func (pos: Vec2) {
         sprite pos set!(pos)
-        Game logger info("Moved shape to %s", pos _)
         body setPos(cpv(pos))
     }
 
@@ -307,6 +309,7 @@ Hole: class extends Tile {
 
     init: func (.level) {
         super(level)
+        shape setCollisionType(CollisionTypes HOLE)
     }
 
     getSprite: func -> String {
@@ -323,6 +326,7 @@ Block: class extends Tile {
 
     init: func (.level) {
         super(level)
+        shape setCollisionType(CollisionTypes BLOCK)
     }
 
     getSprite: func -> String {
@@ -335,6 +339,5 @@ Block: class extends Tile {
     }
 
 }
-
 
 

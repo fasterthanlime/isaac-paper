@@ -82,7 +82,7 @@ Walls: class extends Entity {
         shape := CpSegmentShape new(level space getStaticBody(), cpv(p1), cpv(p2), 1.0)
         shape setFriction(0.9)
         shape setElasticity(0.9)
-        shape setCollisionType(CollisionTypes WALLS)
+        shape setCollisionType(CollisionTypes WALL)
         level space addShape(shape)
         shapes add(shape)
     }

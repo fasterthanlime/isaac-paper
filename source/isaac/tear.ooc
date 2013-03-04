@@ -14,7 +14,7 @@ use gnaar
 import gnaar/[utils]
 
 // our stuff
-import isaac/[level, hero]
+import isaac/[level, hero, splash]
 
 
 Tear: class extends Entity {
@@ -30,6 +30,10 @@ Tear: class extends Entity {
     sprite: GlSprite
 
     type: TearType
+
+    hit := false
+
+    heroHandler, blockHandler: static CpCollisionHandler
 
     init: func (.level, .pos, .vel, =type) {
         super(level)
@@ -51,22 +55,8 @@ Tear: class extends Entity {
     update: func -> Bool {
         sprite sync(body)
 
-        hit := false
-        shape1, shape2: CpShape
-
-        body eachArbiter(|body, arbiter|
-            hit = true
-
-            arbiter getShapes(shape1&, shape2&)
-            if (shape1 userDataIs?(Hero) || shape2 userDataIs?(Hero)) {
-                if (type == TearType HERO) {
-                    hit = false
-                }
-            }
-        )
-
         if (hit) {
-            // TODO: splash
+            level add(Splash new(level, sprite pos))
             return false
         }
 
@@ -85,7 +75,23 @@ Tear: class extends Entity {
 
         shape = CpCircleShape new(body, radius, cpv(0, 0))
         shape setUserData(this)
+        shape setCollisionType(CollisionTypes TEAR)
         level space addShape(shape)
+
+        initHandlers()
+    }
+
+    initHandlers: func {
+        if (!heroHandler) {
+            heroHandler = HeroTearHandler new()
+            level space addCollisionHandler(CollisionTypes TEAR, CollisionTypes HERO, heroHandler)
+        }
+
+        if (!blockHandler) {
+            blockHandler = BlockTearHandler new()
+            level space addCollisionHandler(CollisionTypes TEAR, CollisionTypes BLOCK, blockHandler)
+            level space addCollisionHandler(CollisionTypes TEAR, CollisionTypes WALL, blockHandler)
+        }
     }
 
     destroy: func {
@@ -99,5 +105,40 @@ Tear: class extends Entity {
 TearType: enum {
     HERO
     OTHER
+}
+
+HeroTearHandler: class extends CpCollisionHandler {
+
+    preSolve: func (arbiter: CpArbiter, space: CpSpace) -> Bool {
+        shape1, shape2: CpShape
+        arbiter getShapes(shape1&, shape2&)
+
+        bounce := true
+        
+        tear := shape1 getUserData() as Tear
+        match (tear type) {
+            case TearType HERO =>
+               bounce = false 
+        }
+
+        bounce
+    }
+
+}
+
+BlockTearHandler: class extends CpCollisionHandler {
+
+    preSolve: func (arbiter: CpArbiter, space: CpSpace) -> Bool {
+        shape1, shape2: CpShape
+        arbiter getShapes(shape1&, shape2&)
+
+        bounce := true
+        
+        tear := shape1 getUserData() as Tear
+        tear hit = true
+
+        true
+    }
+
 }
 
