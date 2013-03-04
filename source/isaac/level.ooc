@@ -4,7 +4,7 @@ use chipmunk
 import chipmunk
 
 use dye
-import dye/[core, math, input]
+import dye/[core, math, input, sprite]
 
 use gnaar
 import gnaar/[utils]
@@ -33,13 +33,16 @@ Level: class {
     walls: Walls
 
     // layers
+    group: GlGroup
     floorGroup: GlGroup
     holeGroup: GlGroup
     blockGroup: GlGroup
     doorGroup: GlGroup
     charGroup: GlGroup
 
-    group: GlGroup
+    // grids
+    holeGrid  := Grid<Hole> new()
+    blockGrid := Grid<Block> new()
 
     dye: DyeContext { get { game dye } }
     input: Input { get { game dye input } }
@@ -195,4 +198,63 @@ DoorState: class {
         !(this == other)
     }
 }
+
+Grid: class {
+    list: Tile[]
+
+    width := 13
+    height := 7
+
+    init: func {
+        list = Tile[width * height] new()
+    }
+
+    _inside: func (col, row: Int) -> Bool {
+        (col >= 0 && col < width && \
+         row <= 0 && row < height)
+    }
+
+    _index: func (col, row: Int) -> Int {
+        col  + row * width
+    }
+
+    put: func (col, row: Int, obj: Tile) {
+        list[_index(col, row)] = obj
+    }
+
+    get: func (col, row: Int) -> Tile {
+        list[_index(col, row)]
+    }
+}
+
+Tile: abstract class extends Entity {
+
+    sprite: GlSprite
+
+    init: func {
+        sprite = GlSprite new(getSprite())
+
+    }
+
+    getSprite: abstract func -> String
+
+}
+
+Hole: class extends Tile {
+
+    getSprite: func -> String {
+        "assets/png/hole.png"
+    }
+
+}
+
+Block: class extends Tile {
+
+    getSprite: func -> String {
+        "assets/png/block.png"
+    }
+
+}
+
+
 
