@@ -147,8 +147,16 @@ Level: class {
     }
 
     updateLayers: func {
-        holeGrid each(|h| h update())
-        blockGrid each(|h| h update())
+        updateGrid(holeGrid)
+        updateGrid(blockGrid)
+    }
+
+    updateGrid: func (grid: Grid) {
+        grid each(|col, row, h|
+            if (!h update()) {
+                grid remove(col, row)
+            }
+        )
     }
 
     updatePhysics: func {
@@ -254,11 +262,20 @@ Grid: class {
         list[_index(col, row)]
     }
 
-    each: func (f: Func(Tile)) {
-        for (i in 0..list length) {
-            obj := list[i]
-            if (obj) {
-                f(obj)
+    remove: func (col, row: Int) {
+        index := _index(col, row)
+        obj := list[index]
+        obj destroy()
+        list[index] = null
+    }
+
+    each: func (f: Func(Int, Int, Tile)) {
+        for (col in 0..width) {
+            for (row in 0..height) {
+                obj := list[_index(col, row)]
+                if (obj) {
+                    f(col, row, obj)
+                }
             }
         }
     }
@@ -347,9 +364,15 @@ Block: class extends Tile {
 
 Poop: class extends Tile {
 
+    maxLife, life: Float
+    damageCount := 0
+
     init: func (.level) {
         super(level)
         shape setCollisionType(CollisionTypes BLOCK)
+
+        maxLife = 12.0
+        life = maxLife
     }
 
     getSprite: func -> String {
@@ -358,6 +381,33 @@ Poop: class extends Tile {
 
     getLayer: func -> GlGroup {
         level blockGroup
+    }
+
+    update: func -> Bool {
+        sprite opacity = life / maxLife
+
+        if (damageCount > 0) {
+            damageCount -= 1
+        }
+
+        if (life <= maxLife * 0.3) {
+            sprite scale y = 0.3
+        } else if (life <= maxLife * 0.6) {
+            sprite scale y = 0.6
+        }
+
+        if (life <= 0.0) {
+            return false
+        }
+
+        super()
+    }
+
+    harm: func (damage: Int) {
+        if (damageCount <= 0) {
+            life -= damage
+            damageCount = 40
+        }
     }
 
 }

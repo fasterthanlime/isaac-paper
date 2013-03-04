@@ -37,6 +37,8 @@ Hero: class extends Entity {
     shootRate := 1
     shootRateInv: Int { get { shootRate * 30 } }
 
+    damage := 4.0
+
     init: func (.level, .pos) {
         super(level)
 
@@ -115,7 +117,7 @@ Hero: class extends Entity {
         }
         vel = vel normalized() mul(shotSpeed)
 
-        tear := Tear new(level, pos add(0, 10), vel, TearType HERO)
+        tear := Tear new(level, pos add(0, 10), vel, TearType HERO, damage)
         level add(tear)
     }
 

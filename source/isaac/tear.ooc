@@ -22,6 +22,8 @@ Tear: class extends Entity {
     range := 100.0
     radius := 1.0
 
+    damage: Float
+
     pos, vel: Vec2
 
     body: CpBody
@@ -35,7 +37,7 @@ Tear: class extends Entity {
 
     heroHandler, blockHandler: static CpCollisionHandler
 
-    init: func (.level, .pos, .vel, =type) {
+    init: func (.level, .pos, .vel, =type, =damage) {
         super(level)
 
         this pos = vec2(pos)
@@ -136,6 +138,12 @@ BlockTearHandler: class extends CpCollisionHandler {
         
         tear := shape1 getUserData() as Tear
         tear hit = true
+
+        tile := shape2 getUserData() as Tile
+        match tile {
+            case poop: Poop =>
+                poop harm(tear damage)
+        }
 
         true
     }
