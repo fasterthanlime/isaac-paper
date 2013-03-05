@@ -17,7 +17,7 @@ import gnaar/[utils]
 import math, math/Random
 
 // our stuff
-import isaac/[level, parabola]
+import isaac/[level, parabola, shadow]
 
 /*
  * JUMP JUMP JUMP JUMP JUMP - Jump around!
@@ -29,7 +29,7 @@ Hopper: class extends Entity {
     pos: Vec2
     z := 0.0
 
-    speed := 200.0
+    speed := 230.0
 
     shape: CpShape
     body: CpBody
@@ -37,11 +37,13 @@ Hopper: class extends Entity {
 
     jumpCount := 0
     jumpCountMax := 100
-    radius := 200
+    radius := 250
 
     damage := 4.0
 
     parabola := Parabola new(1, 1)
+
+    shadow: Shadow
 
     init: func (.level, .pos) {
         super(level)
@@ -49,6 +51,7 @@ Hopper: class extends Entity {
         sprite = GlSprite new("assets/png/hopper.png")
         scale := 0.8
         sprite scale set!(scale, scale)
+        shadow = Shadow new(level, sprite width * scale)
 
         level charGroup add(sprite)
 
@@ -59,6 +62,7 @@ Hopper: class extends Entity {
     }
 
     update: func -> Bool {
+        // handle height
         z = parabola eval(jumpCountMax - jumpCount)
         if (jumpCount > 0) {
             jumpCount -= 1
@@ -66,16 +70,25 @@ Hopper: class extends Entity {
             jump()
         }
 
+        // friction
+        if (z < level groundLevel) {
+            friction := 0.95
+            vel := body getVel()
+            vel x *= friction
+            vel y *= friction
+            body setVel(vel)
+        }
+
         bodyPos := body getPos()
         sprite pos set!(bodyPos x, bodyPos y + 12 + z)
-
         pos set!(body getPos())
+        shadow setPos(pos)
 
         true
     }
 
     initPhysx: func {
-        (width, height) := (40, 40)
+        (width, height) := (20, 20)
         mass := 10.0
         moment := cpMomentForBox(mass, width, height)
 
@@ -104,13 +117,24 @@ Hopper: class extends Entity {
     }
 
     jump: func {
-        angle := Random randInt(1, 360) as Float
-        target := pos add(Vec2 fromAngle(angle toRadians()) mul(radius))
-        target = target clamp(level paddedBottomLeft, level paddedTopRight)
-        "target = %s" printfln(target _)
-        body setPos(cpv(target))
+        diff, target: Vec2
+        good := false
+        count := 8
 
-        parabola = Parabola new(70, jumpCountMax)
+        while (!good && count > 0) {
+            x := Random randInt(-100, 100) as Float / 100.0
+            y := Random randInt(-100, 100) as Float / 100.0
+            diff = vec2(x, y) normalized()
+            target = pos add(diff mul(radius))
+            good = target inside?(level paddedBottomLeft, level paddedTopRight)
+            count -= 1
+        }
+        target = target clamp(level paddedBottomLeft, level paddedTopRight)
+        //"target = %s, diff = %s" printfln(target _, target sub(pos) normalized() _)
+
+        body setVel(cpv(target sub(pos) normalized() mul(speed)))
+
+        parabola = Parabola new(90, jumpCountMax * 0.5)
         jumpCount = jumpCountMax
     }
 

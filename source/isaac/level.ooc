@@ -38,6 +38,7 @@ Level: class {
     holeGroup: GlGroup
     blockGroup: GlGroup
     doorGroup: GlGroup
+    shadowGroup: GlGroup
     charGroup: GlGroup
 
     // a few reference points
@@ -46,6 +47,8 @@ Level: class {
 
     paddedBottomLeft := vec2(100, 100)
     paddedTopRight := vec2(700, 400)
+
+    groundLevel := 10.0
 
     // grids
     holeGrid  := Grid<Hole> new()
@@ -79,7 +82,9 @@ Level: class {
             }
         }
 
-        add(Hopper new(this, vec2(600, 300)))
+        for (i in 0..3) {
+            add(Hopper new(this, vec2(600, 300)))
+        }
     }
 
     initGroups: func {
@@ -94,6 +99,9 @@ Level: class {
 
         doorGroup = GlGroup new()
         group add(doorGroup)
+
+        shadowGroup = GlGroup new()
+        group add(shadowGroup)
 
         charGroup = GlGroup new()
         group add(charGroup)
