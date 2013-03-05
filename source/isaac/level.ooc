@@ -69,9 +69,6 @@ Level: class {
         walls = Walls new(this)
 
         fillGrids()
-        for (i in 0..3) {
-            add(Hopper new(this, vec2(600, 300)))
-        }
     }
 
     fillGrids: func {
@@ -88,6 +85,11 @@ Level: class {
                 }
             }
         }
+
+        for (i in 0..3) {
+            add(Hopper new(this, vec2(600, 300)))
+        }
+
         walls setup()
     }
 
@@ -111,7 +113,6 @@ Level: class {
             case Direction LEFT   => vec2(700, 200)
         }
         hero setPos(heroPos)
-        walls setup()
     }
 
     getHeroStartPos: func -> Vec2 {

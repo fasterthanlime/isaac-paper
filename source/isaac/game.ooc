@@ -44,7 +44,7 @@ Game: class {
     // state stuff
     state := GameState PLAY
     changeRoomDir := Direction UP
-    changeRoomIncr := 25.0
+    changeRoomIncr := 30.0
 
     init: func {
         Logging setup()
@@ -274,8 +274,8 @@ Map: class {
         currentTile = add(pos)
         currentTile active = true
 
-        for (i in 0..20) {
-            length := Random randInt(1, 4)
+        for (i in 0..12) {
+            length := Random randInt(1, 5)
             dir := Random randInt(0, 3)
             diff := vec2i(0, 0)
 
