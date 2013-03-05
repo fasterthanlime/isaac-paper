@@ -6,6 +6,13 @@ import dye/[core, loop, input, primitives, math, sprite, text]
 use deadlogger
 import deadlogger/[Log, Logger]
 
+use gnaar
+import gnaar/[grid, utils]
+
+// sdk stuff
+import math/Random
+
+// our stuff
 import isaac/[logging, level]
 
 /*
@@ -26,6 +33,8 @@ Game: class {
 
     FONT := "assets/ttf/8-bit-wonder.ttf"
 
+    map: Map
+
     init: func {
         Logging setup()
 
@@ -38,6 +47,7 @@ Game: class {
         initGfx()
         initLevel()
         initUI()
+        initMap()
 
         loop = FixedLoop new(dye, 60.0)
         loop run(||
@@ -120,6 +130,10 @@ Game: class {
         bgGroup add(arenaBg)
     }
 
+    initMap: func {
+        map = Map new()
+    }
+
     update: func {
         level update()
     }
@@ -128,6 +142,51 @@ Game: class {
         dye quit()
         exit(0)
     }
+
+}
+
+Map: class {
+    grid := SparseGrid<MapTile> new()
+
+    init: func {
+        generate()
+    }
+
+    generate: func {
+        pos := vec2i(0, 0)
+        add(pos)
+
+        for (i in 0..3) {
+            length := Random randRange(3, 8)
+            dir := Random randRange(0, 3)
+            diff := vec2i(0, 0)
+
+            match dir {
+                case 0 => diff x = 1
+                case 1 => diff x = -1
+                case 2 => diff y = 1
+                case 3 => diff y = -1
+            }
+            "dir = %d, diff = %s, length = %d" printfln(dir, diff _, length)
+
+            mypos := vec2i(pos)
+            for (j in 0..length) {
+                mypos add!(diff)
+                add(mypos)
+            }
+        }
+
+        bounds := grid getBounds()
+        "Generated a map with bounds %s" printfln(bounds _)
+    }
+    
+    add: func (pos: Vec2i) {
+        "Putting map tile at %s" printfln(pos _)
+        grid put(pos x, pos y, MapTile new())
+    }
+}
+
+MapTile: class {
 
 }
 
