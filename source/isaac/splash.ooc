@@ -30,12 +30,16 @@ Splash: class extends Entity {
     scaleA := 0.4
     scaleB := 1.0
 
-    init: func (.level, pos: Vec2) {
-        super(level)
+    init: func (.level, .pos) {
+        super(level, pos)
 
-        sprite = GlSprite new("assets/png/tears-1.png")
+        sprite = GlSprite new(getSpritePath())
         sprite pos set!(pos)
         level group add(sprite)
+    }
+
+    getSpritePath: func -> String {
+        "assets/png/tears-1.png"
     }
 
     update: func -> Bool {

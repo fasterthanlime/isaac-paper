@@ -13,7 +13,7 @@ use gnaar
 import gnaar/[utils]
 
 // our stuff
-import isaac/[level]
+import isaac/[level, bomb]
 
 /*
  * Any type of enemy
@@ -22,7 +22,6 @@ Enemy: abstract class extends Entity {
 
     life := 10.0
 
-    pos: Vec2
     z := 0.0
 
     damageCount := 0
@@ -31,9 +30,7 @@ Enemy: abstract class extends Entity {
     redish: Bool
 
     init: func (.level, .pos) {
-        super(level)
-
-        this pos = vec2(pos)
+        super(level, pos)
     }
 
     harm: func (damage: Float) {
@@ -41,6 +38,10 @@ Enemy: abstract class extends Entity {
             damageCount = damageLength
             life -= damage
         }
+    }
+
+    bombHarm: func (bomb: Bomb) {
+        harm(bomb damage)            
     }
 
     update: func -> Bool {

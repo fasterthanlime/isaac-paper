@@ -13,7 +13,7 @@ import gnaar/[grid, utils]
 import math/Random
 
 // our stuff
-import isaac/[logging, level]
+import isaac/[logging, level, bomb, hero]
 
 /*
  * The game, duh.
@@ -34,6 +34,12 @@ Game: class {
     FONT := "assets/ttf/8-bit-wonder.ttf"
 
     map: Map
+
+    coinLabel, bombLabel, keyLabel: GlText
+
+    coinCount := 25
+    bombCount := 10
+    keyCount := 5
 
     init: func {
         Logging setup()
@@ -59,6 +65,14 @@ Game: class {
         scene input onKeyPress(KeyCode ESC, |kp|
             quit()
         )
+
+        scene input onKeyPress(KeyCode E, |kp|
+            dropBomb()
+        )
+    }
+
+    dropBomb: func {
+        level add(Bomb new(level, level hero pos))
     }
 
     initUI: func {
@@ -76,17 +90,17 @@ Game: class {
         labelFontSize := 18
         labelPadding := 28
 
-        coinLabel := GlText new(FONT, "*00", labelFontSize)
+        coinLabel = GlText new(FONT, "*00", labelFontSize)
         coinLabel pos set!(labelLeft, labelBottom + labelPadding * 2)
         coinLabel color set!(Color white())
         uiGroup add(coinLabel)
 
-        bombLabel := GlText new(FONT, "*01", labelFontSize)
+        bombLabel = GlText new(FONT, "*01", labelFontSize)
         bombLabel pos set!(labelLeft, labelBottom + labelPadding)
         bombLabel color set!(Color white())
         uiGroup add(bombLabel)
 
-        keyLabel := GlText new(FONT, "*03", labelFontSize)
+        keyLabel = GlText new(FONT, "*03", labelFontSize)
         keyLabel pos set!(labelLeft, labelBottom)
         keyLabel color set!(Color white())
         uiGroup add(keyLabel)
@@ -139,6 +153,10 @@ Game: class {
 
     update: func {
         level update()
+
+        coinLabel value = "*%02d" format(coinCount)
+        bombLabel value = "*%02d" format(bombCount)
+        keyLabel value = "*%02d" format(keyCount)
     }
 
     quit: func {
@@ -306,8 +324,6 @@ GlMapTile: class extends GlGroup {
 
     init: func (size: Vec2, active: Bool) {
         super()
-
-        "new glMapTile, size = %s" printfln(size _)
 
         fill = GlRectangle new(size sub(2, 2))
         if (active) {

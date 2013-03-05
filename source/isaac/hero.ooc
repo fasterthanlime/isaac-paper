@@ -23,7 +23,6 @@ Hero: class extends Entity {
 
     sprite: GlSprite
 
-    pos: Vec2
     speed := 200.0
 
     shape: CpShape
@@ -42,7 +41,7 @@ Hero: class extends Entity {
     shadow: Shadow
 
     init: func (.level, .pos) {
-        super(level)
+        super(level, pos)
 
         sprite = GlSprite new("assets/png/isaac-down.png")
         scale := 0.8
@@ -51,7 +50,6 @@ Hero: class extends Entity {
 
         level charGroup add(sprite)
 
-        this pos = vec2(pos)
         sprite pos set!(pos)
 
         initPhysx()

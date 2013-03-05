@@ -24,7 +24,7 @@ Tear: class extends Entity {
 
     damage: Float
 
-    pos, vel: Vec2
+    vel: Vec2
 
     body: CpBody
     shape: CpShape
@@ -38,9 +38,8 @@ Tear: class extends Entity {
     heroHandler, enemyHandler, blockHandler: static CpCollisionHandler
 
     init: func (.level, .pos, .vel, =type, =damage) {
-        super(level)
+        super(level, pos)
 
-        this pos = vec2(pos)
         this vel = vec2(vel)
 
         sprite = GlSprite new("assets/png/tears-1.png")
@@ -98,6 +97,7 @@ Tear: class extends Entity {
             blockHandler = BlockTearHandler new()
             level space addCollisionHandler(CollisionTypes TEAR, CollisionTypes BLOCK, blockHandler)
             level space addCollisionHandler(CollisionTypes TEAR, CollisionTypes WALL, blockHandler)
+            level space addCollisionHandler(CollisionTypes TEAR, CollisionTypes BOMB, blockHandler)
         }
     }
 

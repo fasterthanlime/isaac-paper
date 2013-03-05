@@ -17,7 +17,7 @@ import structs/[List, ArrayList, HashMap]
 import math/Random
 
 // our stuff
-import isaac/[game, hero, walls, hopper]
+import isaac/[game, hero, walls, hopper, bomb]
 
 Level: class {
 
@@ -188,13 +188,30 @@ Level: class {
         game map currentTile
     } }
 
+    eachInRadius: func (pos: Vec2, radius: Float, f: Func (Entity)) {
+        test := func (e: Entity) {
+            eRadius := pos dist(e pos)
+            if (eRadius <= radius) {
+                f(e)
+            }
+        }
+
+        for (e in entities) {
+            test(e)
+        }
+
+        blockGrid each(|col, row, e| test(e))
+    }
+
 }
 
 Entity: class {
 
+    pos: Vec2
     level: Level
 
-    init: func (=level) {
+    init: func (=level, .pos) {
+        this pos = vec2(pos)
     }
 
     update: func -> Bool {
@@ -202,6 +219,10 @@ Entity: class {
     }
 
     destroy: func {
+    }
+
+    bombHarm: func (bomb: Bomb) {
+        // override here
     }
 
 }
@@ -213,6 +234,7 @@ CollisionTypes: enum from Int {
     HOLE
     WALL
     TEAR
+    BOMB
 }
 
 Direction: enum {
@@ -309,8 +331,10 @@ Tile: abstract class extends Entity {
     shape: CpShape
     side := 50
 
+    alive := true
+
     init: func (.level) {
-        super(level)
+        super(level, vec2(0, 0))
         sprite = GlSprite new(getSprite())
         getLayer() add(sprite)
 
@@ -327,6 +351,10 @@ Tile: abstract class extends Entity {
     }
 
     update: func -> Bool {
+        if (!alive) {
+            return false
+        }
+
         sprite sync(body)
 
         true
@@ -337,9 +365,14 @@ Tile: abstract class extends Entity {
         level space removeShape(shape)
     }
 
-    setPos: func (pos: Vec2) {
+    setPos: func (.pos) {
+        this pos set!(pos)
         sprite pos set!(pos)
         body setPos(cpv(pos))
+    }
+
+    bombHarm: func (bomb: Bomb) {
+        alive = false
     }
 
     getSprite: abstract func -> String
@@ -361,6 +394,10 @@ Hole: class extends Tile {
 
     getLayer: func -> GlGroup {
         level holeGroup
+    }
+
+    bombHarm: func (bomb: Bomb) {
+        // holes don't get destroyed by bombs
     }
 
 }

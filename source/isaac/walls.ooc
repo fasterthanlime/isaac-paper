@@ -23,7 +23,7 @@ Walls: class extends Entity {
     upDoor, downDoor, leftDoor, rightDoor: Door
 
     init: func (.level) {
-        super(level)
+        super(level, vec2(0, 0))
 
         initDoors()
         initPhysx()
@@ -109,7 +109,6 @@ Walls: class extends Entity {
 Door: class extends Entity {
 
     dir: Direction
-    pos: Vec2
 
     sprite: GlSprite
 
@@ -124,6 +123,8 @@ Door: class extends Entity {
             case Direction RIGHT =>
                 pos = vec2(800 - 40, 75 + 170)
         }
+        super(level, pos)
+
 
         sprite = GlSprite new("assets/png/door-%s.png" format(dir toString()))
         sprite pos set!(pos)
