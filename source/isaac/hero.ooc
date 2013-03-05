@@ -14,7 +14,7 @@ use gnaar
 import gnaar/[utils]
 
 // our stuff
-import isaac/[level, tear]
+import isaac/[level, tear, shadow]
 
 /*
  * Dat Isaac...
@@ -39,12 +39,15 @@ Hero: class extends Entity {
 
     damage := 4.0
 
+    shadow: Shadow
+
     init: func (.level, .pos) {
         super(level)
 
         sprite = GlSprite new("assets/png/isaac-down.png")
         scale := 0.8
         sprite scale set!(scale, scale)
+        shadow = Shadow new(level, sprite width * scale)
 
         level charGroup add(sprite)
 
@@ -56,9 +59,9 @@ Hero: class extends Entity {
 
     update: func -> Bool {
         bodyPos := body getPos()
-        sprite pos set!(bodyPos x, bodyPos y + 12)
-
+        sprite pos set!(bodyPos x, bodyPos y + 20)
         pos set!(body getPos())
+        shadow setPos(pos)
 
         if (shootCount > 0) {
             shootCount -= 1
