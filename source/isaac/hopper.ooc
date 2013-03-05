@@ -45,6 +45,8 @@ Hopper: class extends Entity {
 
     shadow: Shadow
 
+    blockHandler: static CpCollisionHandler
+
     init: func (.level, .pos) {
         super(level)
 
@@ -61,6 +63,10 @@ Hopper: class extends Entity {
         initPhysx()
     }
 
+    grounded?: func -> Bool {
+        z < level groundLevel
+    }
+
     update: func -> Bool {
         // handle height
         z = parabola eval(jumpCountMax - jumpCount)
@@ -71,7 +77,7 @@ Hopper: class extends Entity {
         }
 
         // friction
-        if (z < level groundLevel) {
+        if (grounded?()) {
             friction := 0.95
             vel := body getVel()
             vel x *= friction
@@ -103,6 +109,15 @@ Hopper: class extends Entity {
         shape setUserData(this)
         shape setCollisionType(CollisionTypes ENEMY)
         level space addShape(shape)
+
+        initHandlers()
+    }
+
+    initHandlers: func {
+        if (!blockHandler) {
+            blockHandler = BlockHopperHandler new()
+            level space addCollisionHandler(CollisionTypes ENEMY, CollisionTypes BLOCK, blockHandler)
+        }
     }
 
     destroy: func {
@@ -136,6 +151,23 @@ Hopper: class extends Entity {
 
         parabola = Parabola new(90, jumpCountMax * 0.5)
         jumpCount = jumpCountMax
+    }
+
+}
+
+BlockHopperHandler: class extends CpCollisionHandler {
+
+    preSolve: func (arbiter: CpArbiter, space: CpSpace) -> Bool {
+        shape1, shape2: CpShape
+        arbiter getShapes(shape1&, shape2&)
+
+        object := shape1 getUserData() as Entity
+        match object {
+            case hopper: Hopper =>
+                hopper grounded?()
+            case =>
+                true
+        }
     }
 
 }
