@@ -65,9 +65,16 @@ Level: class {
         initGroups()
         initPhysx()
 
-        hero = Hero new(this, vec2(300, 300))
+        hero = Hero new(this, getHeroStartPos())
         walls = Walls new(this)
 
+        fillGrids()
+        for (i in 0..3) {
+            add(Hopper new(this, vec2(600, 300)))
+        }
+    }
+
+    fillGrids: func {
         for (col in 0..blockGrid width) {
             for (row in 0..blockGrid height) {
                 if (Random randInt(0, 10) < 8) {
@@ -81,10 +88,34 @@ Level: class {
                 }
             }
         }
+        walls setup()
+    }
 
-        for (i in 0..3) {
-            add(Hopper new(this, vec2(600, 300)))
+    reload: func (enterDir: Direction) {
+        holeGrid clear()
+        blockGrid clear()
+
+        iter := entities iterator()
+        while (iter hasNext?()) {
+            e := iter next()
+            iter remove()
+            e destroy()
         }
+
+        fillGrids()
+        
+        heroPos := match (enterDir) {
+            case Direction UP     => vec2(400, 100)
+            case Direction DOWN   => vec2(400, 400)
+            case Direction RIGHT  => vec2(100, 200)
+            case Direction LEFT   => vec2(700, 200)
+        }
+        hero setPos(heroPos)
+        walls setup()
+    }
+
+    getHeroStartPos: func -> Vec2 {
+        vec2(300, 300)
     }
 
     initGroups: func {
@@ -152,6 +183,7 @@ Level: class {
         updateLayers()
 
         hero update()
+        walls update()
 
         iter := entities iterator()
         while (iter hasNext?()) {
@@ -321,6 +353,12 @@ Grid: class {
                 }
             }
         }
+    }
+
+    clear: func {
+        each(|col, row, tile|
+            remove(col, row)
+        ) 
     }
 }
 

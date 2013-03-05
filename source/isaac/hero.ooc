@@ -68,6 +68,11 @@ Hero: class extends Entity {
         true
     }
 
+    setPos: func (.pos) {
+        this pos set!(pos)
+        body setPos(cpv(pos))
+    }
+
     initPhysx: func {
         (width, height) := (40, 40)
         mass := 10.0

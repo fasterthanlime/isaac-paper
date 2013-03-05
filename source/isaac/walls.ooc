@@ -89,10 +89,11 @@ Walls: class extends Entity {
     }
 
     setup: func {
-        upDoor setup(level currentTile hasTop?())
-        downDoor setup(level currentTile hasBottom?())
-        leftDoor setup(level currentTile hasLeft?())
-        rightDoor setup(level currentTile hasRight?())
+        tile := level currentTile
+        upDoor setup(tile hasTop?())
+        downDoor setup(tile hasBottom?())
+        leftDoor setup(tile hasLeft?())
+        rightDoor setup(tile hasRight?())
     }
 
     update: func -> Bool {
@@ -117,6 +118,7 @@ Door: class extends Entity {
 
     isaacHandler: static CpCollisionHandler
 
+    walkthrough := false
     open := false
 
     init: func (=level, =dir) {
@@ -171,6 +173,15 @@ Door: class extends Entity {
         open = visible
     }
 
+    update: func -> Bool {
+        if (walkthrough) {
+            walkthrough = false
+            level game changeRoom(dir)
+        }
+
+        true
+    }
+
 }
 
 IsaacDoorHandler: class extends CpCollisionHandler {
@@ -183,7 +194,7 @@ IsaacDoorHandler: class extends CpCollisionHandler {
         match ent {
             case door: Door =>
                 if (door open) {
-                    "Isaac is trying to go in direction %s" printfln(door dir toString())
+                    door walkthrough = true
                     return false
                 } else {
                     return true

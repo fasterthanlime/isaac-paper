@@ -78,6 +78,20 @@ Game: class {
         bombCount -= 1
     }
 
+    changeRoom: func (dir: Direction) {
+        delta := match dir {
+            case Direction UP    => vec2i(0, 1)
+            case Direction DOWN  => vec2i(0, -1)
+            case Direction LEFT  => vec2i(-1, 0)
+            case Direction RIGHT => vec2i(1, 0)
+        }
+
+        newPos := map currentTile pos add(delta)
+        map currentTile = map grid get(newPos x, newPos y)
+        map setup()
+        level reload(dir)
+    }
+
     initUI: func {
         uiGroup = GlGroup new()
         scene add(uiGroup)
@@ -200,7 +214,7 @@ Map: class {
 
         game mapGroup add(group)
 
-        update()
+        setup()
     }
 
     generate: func {
@@ -238,9 +252,10 @@ Map: class {
             bounds width, bounds height)
     }
 
-    update: func {
+    setup: func {
         grid each(|col, row, tile|
             tile reset()
+            tile active = (tile == currentTile)
         )
 
         bounds := grid getBounds()
@@ -315,7 +330,7 @@ MapTile: class {
     }
 
     hasNeighbor?: func (col, row: Int) -> Bool {
-        map grid contains?(col, row)
+        map grid contains?(pos x + col, pos y + row)
     }
     
 }

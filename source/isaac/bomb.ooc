@@ -44,6 +44,7 @@ Bomb: class extends Entity {
 
     update: func -> Bool {
         sprite sync(body)
+        pos set!(body getPos())
 
         countdown -= 1
         if (countdown <= 0) {
