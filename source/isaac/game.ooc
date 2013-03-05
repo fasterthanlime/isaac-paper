@@ -25,7 +25,7 @@ Game: class {
 
     loop: FixedLoop
 
-    uiGroup: GlGroup
+    uiGroup, mapGroup: GlGroup
 
     level: Level
 
@@ -106,6 +106,9 @@ Game: class {
         keyIcon := GlSprite new("assets/png/mini-key.png")
         keyIcon pos set!(iconLeft, iconBottom)
         uiGroup add(keyIcon)
+
+        mapGroup = GlGroup new()
+        uiGroup add(mapGroup)
     }
 
     initLevel: func {
@@ -131,7 +134,7 @@ Game: class {
     }
 
     initMap: func {
-        map = Map new()
+        map = Map new(this)
     }
 
     update: func {
@@ -145,20 +148,43 @@ Game: class {
 
 }
 
+/*
+ * The mini-map, and, incidently, what holds
+ * information about the current floor
+ */
 Map: class {
+    game: Game
+    screenSize := vec2(250, 85)
+    offset := vec2(20, 505)
+
     grid := SparseGrid<MapTile> new()
 
-    init: func {
+    group: GlGroup
+
+    init: func (=game) {
         generate()
+
+        group = GlGroup new()
+
+        bg := GlRectangle new(screenSize)
+        bg center = false
+        bg pos set!(offset)
+        grayShade := 50
+        bg color set!(Color new(grayShade, grayShade, grayShade)) 
+        game mapGroup add(bg)
+
+        game mapGroup add(group)
+
+        update()
     }
 
     generate: func {
         pos := vec2i(0, 0)
         add(pos)
 
-        for (i in 0..3) {
-            length := Random randRange(3, 8)
-            dir := Random randRange(0, 3)
+        for (i in 0..12) {
+            length := Random randInt(1, 6)
+            dir := Random randInt(0, 3)
             diff := vec2i(0, 0)
 
             match dir {
@@ -173,20 +199,100 @@ Map: class {
             for (j in 0..length) {
                 mypos add!(diff)
                 add(mypos)
+
+                if (Random randInt(0, 8) < 5) {
+                    pos set!(mypos)
+                }
             }
         }
 
         bounds := grid getBounds()
-        "Generated a map with bounds %s" printfln(bounds _)
+        "Generated a map with bounds %s. Size = %dx%d" printfln(bounds _,
+            bounds width, bounds height)
+    }
+
+    update: func {
+        grid each(|col, row, tile|
+            tile reset()
+        )
+
+        bounds := grid getBounds()
+        gridOffset := vec2i(bounds xMin, bounds yMin)
+
+        gWidth := (bounds width + 1)
+        gHeight := (bounds height + 1)
+
+        tileSize := vec2(
+            screenSize x / gWidth as Float,
+            screenSize y / gHeight as Float
+        )
+
+        grid each(|col, row, tile|
+            tile setup(col, row, tileSize, gridOffset)
+        )
     }
     
     add: func (pos: Vec2i) {
         "Putting map tile at %s" printfln(pos _)
-        grid put(pos x, pos y, MapTile new())
+        grid put(pos x, pos y, MapTile new(this))
     }
 }
 
 MapTile: class {
 
+    map: Map
+    rect: GlMapTile
+
+    init: func (=map) {
+    }
+
+    reset: func {
+        if (rect) {
+            map group remove(rect)            
+            rect = null
+        }
+    }
+
+    setup: func (col, row: Int, tileSize: Vec2, gridOffset: Vec2i) {
+        diff := vec2(
+            (col - gridOffset x ) * tileSize x,
+            (row - gridOffset y ) * tileSize y
+        )
+        offset := map offset add(diff)
+        rect = GlMapTile new(tileSize)
+        rect setPos(offset)
+        map group add(rect)
+    }
+    
+}
+
+GlMapTile: class extends GlGroup {
+
+    outline: GlRectangle
+    fill: GlRectangle
+
+    init: func (size: Vec2) {
+        super()
+
+        "new glMapTile, size = %s" printfln(size _)
+
+        fill = GlRectangle new(size sub(2, 2))
+        fill color set!(Color new(220, 220, 220))
+        fill center = false
+        add(fill)
+
+        outline = GlRectangle new(size)
+        outline color set!(Color new(10, 10, 10))
+        outline lineWidth = 4.0
+        outline center = false
+        outline filled = false
+        add(outline)
+    }
+
+    setPos: func (pos: Vec2) {
+        fill pos set!(pos)
+        outline pos set!(pos)
+    }
+    
 }
 
