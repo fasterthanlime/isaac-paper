@@ -35,7 +35,7 @@ Tear: class extends Entity {
 
     hit := false
 
-    heroHandler, blockHandler: static CpCollisionHandler
+    heroHandler, enemyHandler, blockHandler: static CpCollisionHandler
 
     init: func (.level, .pos, .vel, =type, =damage) {
         super(level)
@@ -89,6 +89,11 @@ Tear: class extends Entity {
             level space addCollisionHandler(CollisionTypes TEAR, CollisionTypes HERO, heroHandler)
         }
 
+        if (!enemyHandler) {
+            enemyHandler = EnemyTearHandler new()
+            level space addCollisionHandler(CollisionTypes TEAR, CollisionTypes ENEMY, enemyHandler)
+        }
+
         if (!blockHandler) {
             blockHandler = BlockTearHandler new()
             level space addCollisionHandler(CollisionTypes TEAR, CollisionTypes BLOCK, blockHandler)
@@ -106,7 +111,7 @@ Tear: class extends Entity {
 
 TearType: enum {
     HERO
-    OTHER
+    ENEMY
 }
 
 HeroTearHandler: class extends CpCollisionHandler {
@@ -121,6 +126,29 @@ HeroTearHandler: class extends CpCollisionHandler {
         match (tear type) {
             case TearType HERO =>
                bounce = false 
+            case =>
+                tear hit = true
+        }
+
+        bounce
+    }
+
+}
+
+EnemyTearHandler: class extends CpCollisionHandler {
+
+    preSolve: func (arbiter: CpArbiter, space: CpSpace) -> Bool {
+        shape1, shape2: CpShape
+        arbiter getShapes(shape1&, shape2&)
+
+        bounce := true
+        
+        tear := shape1 getUserData() as Tear
+        match (tear type) {
+            case TearType ENEMY =>
+               bounce = false 
+            case =>
+                tear hit = true
         }
 
         bounce

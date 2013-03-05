@@ -17,7 +17,7 @@ import structs/[List, ArrayList, HashMap]
 import math/Random
 
 // our stuff
-import isaac/[game, hero, walls]
+import isaac/[game, hero, walls, hopper]
 
 Level: class {
 
@@ -39,6 +39,13 @@ Level: class {
     blockGroup: GlGroup
     doorGroup: GlGroup
     charGroup: GlGroup
+
+    // a few reference points
+    bottomLeft := vec2(75, 75)
+    topRight := vec2(725, 425)
+
+    paddedBottomLeft := vec2(100, 100)
+    paddedTopRight := vec2(700, 400)
 
     // grids
     holeGrid  := Grid<Hole> new()
@@ -71,6 +78,8 @@ Level: class {
                 }
             }
         }
+
+        add(Hopper new(this, vec2(600, 300)))
     }
 
     initGroups: func {
