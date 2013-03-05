@@ -17,17 +17,12 @@ import gnaar/[utils]
 import math, math/Random
 
 // our stuff
-import isaac/[level, parabola, shadow]
+import isaac/[level, parabola, shadow, enemy]
 
 /*
  * JUMP JUMP JUMP JUMP JUMP - Jump around!
  */
-Hopper: class extends Entity {
-
-    sprite: GlSprite
-
-    pos: Vec2
-    z := 0.0
+Hopper: class extends Mob {
 
     speed := 230.0
 
@@ -43,6 +38,7 @@ Hopper: class extends Entity {
     damage := 4.0
     scale := 0.8
 
+    // parabola for jump
     parabola := Parabola new(1, 1)
 
     shadow: Shadow
@@ -50,22 +46,18 @@ Hopper: class extends Entity {
     blockHandler: static CpCollisionHandler
 
     init: func (.level, .pos) {
-        super(level)
+        super(level, pos)
+
+        life = 10.0
 
         sprite = GlSprite new("assets/png/hopper.png")
         sprite scale set!(scale, scale)
         shadow = Shadow new(level, sprite width * scale)
 
         level charGroup add(sprite)
-
-        this pos = vec2(pos)
         sprite pos set!(pos)
 
         initPhysx()
-    }
-
-    grounded?: func -> Bool {
-        z < level groundLevel
     }
 
     update: func -> Bool {
@@ -94,7 +86,7 @@ Hopper: class extends Entity {
         pos set!(body getPos())
         shadow setPos(pos)
 
-        true
+        super()
     }
 
     initPhysx: func {
@@ -125,6 +117,7 @@ Hopper: class extends Entity {
     }
 
     destroy: func {
+        shadow destroy()
         level space removeShape(shape)
         level space removeBody(body)
         level charGroup remove(sprite)

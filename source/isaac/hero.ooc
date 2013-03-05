@@ -89,6 +89,7 @@ Hero: class extends Entity {
     }
 
     destroy: func {
+        shadow destroy()
         level space removeShape(shape)
         level space removeBody(body)
         level charGroup remove(sprite)

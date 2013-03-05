@@ -14,7 +14,7 @@ use gnaar
 import gnaar/[utils]
 
 // our stuff
-import isaac/[level, hero, splash]
+import isaac/[level, hero, splash, enemy]
 
 
 Tear: class extends Entity {
@@ -125,7 +125,7 @@ HeroTearHandler: class extends CpCollisionHandler {
         tear := shape1 getUserData() as Tear
         match (tear type) {
             case TearType HERO =>
-               bounce = false 
+                bounce = false 
             case =>
                 tear hit = true
         }
@@ -144,11 +144,21 @@ EnemyTearHandler: class extends CpCollisionHandler {
         bounce := true
         
         tear := shape1 getUserData() as Tear
+        entity := shape2 getUserData() as Entity
+
         match (tear type) {
             case TearType ENEMY =>
-               bounce = false 
+                bounce = false 
             case =>
-                tear hit = true
+                match entity {
+                    case enemy: Enemy =>
+                        if (enemy grounded?()) {
+                            tear hit = true
+                            enemy harm(tear damage)
+                        } else {
+                            bounce = false
+                        }
+                }
         }
 
         bounce

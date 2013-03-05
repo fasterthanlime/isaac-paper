@@ -26,6 +26,8 @@ Shadow: class extends Entity {
     width: Float
 
     init: func (.level, =width) {
+        super(level)
+
         sprite = GlSprite new("assets/png/shadow.png")
         scale := width / sprite width as Float
         sprite scale set!(scale, scale)
@@ -35,6 +37,10 @@ Shadow: class extends Entity {
 
     setPos: func (pos: Vec2) {
         sprite pos set!(pos)
+    }
+
+    destroy: func {
+        level shadowGroup remove(sprite)
     }
 
 }

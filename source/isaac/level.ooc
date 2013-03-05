@@ -70,7 +70,7 @@ Level: class {
 
         for (col in 0..blockGrid width) {
             for (row in 0..blockGrid height) {
-                if (Random randInt(0, 10) < 7) {
+                if (Random randInt(0, 10) < 8) {
                     continue
                 }
 
@@ -82,7 +82,7 @@ Level: class {
             }
         }
 
-        for (i in 0..1) {
+        for (i in 0..3) {
             add(Hopper new(this, vec2(600, 300)))
         }
     }
