@@ -72,7 +72,10 @@ Game: class {
     }
 
     dropBomb: func {
+        if (bombCount <= 0) return
+
         level add(Bomb new(level, level hero pos))
+        bombCount -= 1
     }
 
     initUI: func {
