@@ -115,6 +115,10 @@ Door: class extends Entity {
     shape: CpShape
     body: CpBody
 
+    isaacHandler: static CpCollisionHandler
+
+    open := false
+
     init: func (=level, =dir) {
         match dir {
             case Direction UP =>
@@ -148,11 +152,45 @@ Door: class extends Entity {
 
         shape = CpBoxShape new(body, 50, 50)
         shape setUserData(this)
+        shape setCollisionType(CollisionTypes WALL)
         level space addShape(shape)
+
+        initHandlers()
+    }
+
+    initHandlers: func {
+        if (!isaacHandler) {
+            isaacHandler = IsaacDoorHandler new()
+            level space addCollisionHandler(CollisionTypes HERO,
+                CollisionTypes WALL, isaacHandler)
+        }
     }
     
     setup: func (visible: Bool) {
         sprite visible = visible
+        open = visible
+    }
+
+}
+
+IsaacDoorHandler: class extends CpCollisionHandler {
+
+    preSolve: func (arbiter: CpArbiter, space: CpSpace) -> Bool {
+        shape1, shape2: CpShape
+        arbiter getShapes(shape1&, shape2&)
+
+        ent := shape2 getUserData() as Entity
+        match ent {
+            case door: Door =>
+                if (door open) {
+                    "Isaac is trying to go in direction %s" printfln(door dir toString())
+                    return false
+                } else {
+                    return true
+                }
+        }
+
+        true
     }
 
 }
