@@ -343,7 +343,6 @@ Tile: abstract class extends Entity {
 
     initPhysx: func {
         body = CpBody new(INFINITY, INFINITY)
-        level space addBody(body)
 
         shape = CpBoxShape new(body, side, side)
         shape setUserData(this)

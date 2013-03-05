@@ -112,6 +112,9 @@ Door: class extends Entity {
 
     sprite: GlSprite
 
+    shape: CpShape
+    body: CpBody
+
     init: func (=level, =dir) {
         match dir {
             case Direction UP =>
@@ -125,10 +128,27 @@ Door: class extends Entity {
         }
         super(level, pos)
 
-
         sprite = GlSprite new("assets/png/door-%s.png" format(dir toString()))
         sprite pos set!(pos)
         level doorGroup add(sprite)
+
+        initPhysx()
+    }
+
+    initPhysx: func {
+        body = CpBody new(INFINITY, INFINITY)
+        body setPos(cpv(pos))
+
+        size := match dir {
+            case Direction UP || Direction DOWN =>
+                vec2(100, 30)
+            case =>
+                vec2(30, 100)
+        }
+
+        shape = CpBoxShape new(body, 50, 50)
+        shape setUserData(this)
+        level space addShape(shape)
     }
     
     setup: func (visible: Bool) {
