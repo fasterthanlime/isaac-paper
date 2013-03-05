@@ -103,7 +103,7 @@ Level: class {
         shadowGroup = GlGroup new()
         group add(shadowGroup)
 
-        charGroup = GlGroup new()
+        charGroup = GlSortedGroup new()
         group add(charGroup)
     }
 
