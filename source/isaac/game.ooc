@@ -25,7 +25,7 @@ Game: class {
 
     loop: FixedLoop
 
-    uiGroup, mapGroup: GlGroup
+    uiGroup, mapGroup, levelGroup: GlGroup
 
     level: Level
 
@@ -40,6 +40,11 @@ Game: class {
     coinCount := 25
     bombCount := 10
     keyCount := 5
+
+    // state stuff
+    state := GameState PLAY
+    changeRoomDir := Direction UP
+    changeRoomIncr := 25.0
 
     init: func {
         Logging setup()
@@ -78,18 +83,8 @@ Game: class {
         bombCount -= 1
     }
 
-    changeRoom: func (dir: Direction) {
-        delta := match dir {
-            case Direction UP    => vec2i(0, 1)
-            case Direction DOWN  => vec2i(0, -1)
-            case Direction LEFT  => vec2i(-1, 0)
-            case Direction RIGHT => vec2i(1, 0)
-        }
-
-        newPos := map currentTile pos add(delta)
-        map currentTile = map grid get(newPos x, newPos y)
-        map setup()
-        level reload(dir)
+    changeRoom: func (=changeRoomDir) {
+        state = GameState CHANGEROOM
     }
 
     initUI: func {
@@ -144,12 +139,15 @@ Game: class {
 
     initLevel: func {
         level = Level new(this)
-        scene add(level group)
+        levelGroup add(level group)
     }
 
     initGfx: func {
+        levelGroup = GlGroup new()
+        scene add(levelGroup)
+
         bgGroup := GlGroup new()
-        scene add(bgGroup)
+        levelGroup add(bgGroup)
        
         fullBg := GlRectangle new(vec2(800, 500)) 
         fullBg center = false
@@ -162,6 +160,7 @@ Game: class {
         arenaBg pos set!(75, 75)
         arenaBg color set!(Color new(230, 230, 230))
         bgGroup add(arenaBg)
+
     }
 
     initMap: func {
@@ -169,8 +168,61 @@ Game: class {
     }
 
     update: func {
-        level update()
+        match state {
+            case GameState PLAY =>
+                level update()
+                updateLabels()
 
+            case GameState CHANGEROOM =>
+                updateChangeRoom()
+        }
+    }
+
+    updateChangeRoom: func {
+        finished := false
+
+        match changeRoomDir {
+            case Direction UP =>
+                levelGroup pos y -= changeRoomIncr
+                finished = levelGroup pos y < -400
+            case Direction DOWN =>
+                levelGroup pos y += changeRoomIncr
+                finished = levelGroup pos y > 400
+            case Direction LEFT =>
+                levelGroup pos x += changeRoomIncr
+                finished = levelGroup pos x > 800
+            case Direction RIGHT =>
+                levelGroup pos x -= changeRoomIncr
+                finished = levelGroup pos x < -800
+        }
+
+        if (finished) {
+            finalizeChangeRoom()
+        }
+    }
+
+    changeRoomDelta: func -> Vec2i {
+        levelGroup pos set!(0, 0)
+
+        match changeRoomDir {
+            case Direction UP    => vec2i(0, 1)
+            case Direction DOWN  => vec2i(0, -1)
+            case Direction LEFT  => vec2i(-1, 0)
+            case Direction RIGHT => vec2i(1, 0)
+        }
+    }
+
+    finalizeChangeRoom: func {
+        delta := changeRoomDelta()
+        newPos := map currentTile pos add(delta)
+        map currentTile = map grid get(newPos x, newPos y)
+        map setup()
+        level reload(changeRoomDir)
+
+        state = GameState PLAY
+    }
+
+    updateLabels: func {
         coinLabel value = "*%02d" format(coinCount)
         bombLabel value = "*%02d" format(bombCount)
         keyLabel value = "*%02d" format(keyCount)
@@ -365,5 +417,10 @@ GlMapTile: class extends GlGroup {
         outline pos set!(pos)
     }
     
+}
+
+GameState: enum {
+    PLAY
+    CHANGEROOM
 }
 
