@@ -48,7 +48,7 @@ Level: class {
     paddedBottomLeft := vec2(100, 100)
     paddedTopRight := vec2(700, 400)
 
-    groundLevel := 10.0
+    groundLevel := 3.0
 
     // grids
     holeGrid  := Grid<Hole> new()
@@ -82,7 +82,7 @@ Level: class {
             }
         }
 
-        for (i in 0..3) {
+        for (i in 0..1) {
             add(Hopper new(this, vec2(600, 300)))
         }
     }

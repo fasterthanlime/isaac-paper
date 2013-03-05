@@ -37,9 +37,11 @@ Hopper: class extends Entity {
 
     jumpCount := 0
     jumpCountMax := 100
+    jumpHeight := 90.0
     radius := 250
 
     damage := 4.0
+    scale := 0.8
 
     parabola := Parabola new(1, 1)
 
@@ -51,7 +53,6 @@ Hopper: class extends Entity {
         super(level)
 
         sprite = GlSprite new("assets/png/hopper.png")
-        scale := 0.8
         sprite scale set!(scale, scale)
         shadow = Shadow new(level, sprite width * scale)
 
@@ -76,9 +77,12 @@ Hopper: class extends Entity {
             jump()
         }
 
+        sprite scale x = (0.6 + (0.4 * (1.0 - (z / jumpHeight))))
+        sprite scale y = (1.3 - (0.3 * (1.0 - (z / jumpHeight))))
+
         // friction
         if (grounded?()) {
-            friction := 0.95
+            friction := 0.9
             vel := body getVel()
             vel x *= friction
             vel y *= friction
@@ -149,7 +153,7 @@ Hopper: class extends Entity {
 
         body setVel(cpv(target sub(pos) normalized() mul(speed)))
 
-        parabola = Parabola new(90, jumpCountMax * 0.5)
+        parabola = Parabola new(jumpHeight, jumpCountMax * 0.5)
         jumpCount = jumpCountMax
     }
 
