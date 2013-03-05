@@ -27,6 +27,7 @@ Walls: class extends Entity {
 
         initDoors()
         initPhysx()
+        setup()
     }
 
     initDoors: func {
@@ -87,6 +88,13 @@ Walls: class extends Entity {
         shapes add(shape)
     }
 
+    setup: func {
+        upDoor setup(level currentTile hasTop?())
+        downDoor setup(level currentTile hasBottom?())
+        leftDoor setup(level currentTile hasLeft?())
+        rightDoor setup(level currentTile hasRight?())
+    }
+
     update: func -> Bool {
         upDoor update()
         downDoor update()
@@ -120,6 +128,10 @@ Door: class extends Entity {
         sprite = GlSprite new("assets/png/door-%s.png" format(dir toString()))
         sprite pos set!(pos)
         level doorGroup add(sprite)
+    }
+    
+    setup: func (visible: Bool) {
+        sprite visible = visible
     }
 
 }

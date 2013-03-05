@@ -184,6 +184,10 @@ Level: class {
         }
     }
 
+    currentTile: MapTile { get {
+        game map currentTile
+    } }
+
 }
 
 Entity: class {
@@ -401,16 +405,10 @@ Poop: class extends Tile {
     }
 
     update: func -> Bool {
-        sprite opacity = life / maxLife
+        sprite opacity = sprite opacity * 0.9 + (0.1 * (life / maxLife))
 
         if (damageCount > 0) {
             damageCount -= 1
-        }
-
-        if (life <= maxLife * 0.3) {
-            sprite scale y = 0.3
-        } else if (life <= maxLife * 0.6) {
-            sprite scale y = 0.6
         }
 
         if (life <= 0.0) {
@@ -423,7 +421,7 @@ Poop: class extends Tile {
     harm: func (damage: Int) {
         if (damageCount <= 0) {
             life -= damage
-            damageCount = 40
+            damageCount = 10
         }
     }
 

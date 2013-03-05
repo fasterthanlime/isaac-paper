@@ -45,9 +45,9 @@ Game: class {
 
         initEvents()
         initGfx()
-        initLevel()
         initUI()
         initMap()
+        initLevel()
 
         loop = FixedLoop new(dye, 60.0)
         loop run(||
@@ -161,6 +161,10 @@ Map: class {
 
     group: GlGroup
 
+    currentTile: MapTile
+
+    mapSize: Vec2i
+
     init: func (=game) {
         generate()
 
@@ -180,10 +184,11 @@ Map: class {
 
     generate: func {
         pos := vec2i(0, 0)
-        add(pos)
+        currentTile = add(pos)
+        currentTile active = true
 
-        for (i in 0..12) {
-            length := Random randInt(1, 6)
+        for (i in 0..20) {
+            length := Random randInt(1, 4)
             dir := Random randInt(0, 3)
             diff := vec2i(0, 0)
 
@@ -207,6 +212,7 @@ Map: class {
         }
 
         bounds := grid getBounds()
+        mapSize = vec2i(bounds width, bounds height)
         "Generated a map with bounds %s. Size = %dx%d" printfln(bounds _,
             bounds width, bounds height)
     }
@@ -232,9 +238,11 @@ Map: class {
         )
     }
     
-    add: func (pos: Vec2i) {
+    add: func (pos: Vec2i) -> MapTile {
         "Putting map tile at %s" printfln(pos _)
-        grid put(pos x, pos y, MapTile new(this))
+        tile := MapTile new(this, pos)
+        grid put(pos x, pos y, tile)
+        tile
     }
 }
 
@@ -243,7 +251,12 @@ MapTile: class {
     map: Map
     rect: GlMapTile
 
-    init: func (=map) {
+    pos: Vec2i
+
+    active := false
+
+    init: func (=map, .pos) {
+        this pos = vec2i(pos)
     }
 
     reset: func {
@@ -259,9 +272,29 @@ MapTile: class {
             (row - gridOffset y ) * tileSize y
         )
         offset := map offset add(diff)
-        rect = GlMapTile new(tileSize)
+        rect = GlMapTile new(tileSize, active)
         rect setPos(offset)
         map group add(rect)
+    }
+
+    hasTop?: func -> Bool {
+        hasNeighbor?(0, 1)
+    }
+
+    hasBottom?: func -> Bool {
+        hasNeighbor?(0, -1)
+    }
+
+    hasLeft?: func -> Bool {
+        hasNeighbor?(-1, 0)
+    }
+
+    hasRight?: func -> Bool {
+        hasNeighbor?(1, 0)
+    }
+
+    hasNeighbor?: func (col, row: Int) -> Bool {
+        map grid contains?(col, row)
     }
     
 }
@@ -271,13 +304,17 @@ GlMapTile: class extends GlGroup {
     outline: GlRectangle
     fill: GlRectangle
 
-    init: func (size: Vec2) {
+    init: func (size: Vec2, active: Bool) {
         super()
 
         "new glMapTile, size = %s" printfln(size _)
 
         fill = GlRectangle new(size sub(2, 2))
-        fill color set!(Color new(220, 220, 220))
+        if (active) {
+            fill color set!(Color new(255, 255, 255))
+        } else {
+            fill color set!(Color new(120, 120, 120))
+        }
         fill center = false
         add(fill)
 

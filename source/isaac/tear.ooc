@@ -68,7 +68,7 @@ Tear: class extends Entity {
     initPhysx: func {
         mass := 2.0
 
-        moment := cpMomentForCircle(mass, 0, radius, cpv(radius, radius))
+        moment := cpMomentForCircle(mass, 0, 2.0, cpv(2.0, 2.0))
 
         body = CpBody new(mass, moment)
         body setPos(cpv(pos))

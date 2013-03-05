@@ -27,6 +27,8 @@ Enemy: abstract class extends Entity {
 
     damageCount := 0
     damageLength := 20
+    
+    redish: Bool
 
     init: func (.level, .pos) {
         super(level)
@@ -46,12 +48,12 @@ Enemy: abstract class extends Entity {
             damageCount -= 1
             intval := damageCount / (damageLength * 0.4)
             if (intval % 2 == 0) {
-                setOpacity(0.2)
+                redish = true
             } else {
-                setOpacity(1.0)
+                redish = false
             }
         } else {
-            setOpacity(1.0)
+            redish = false
         }
 
         if (life <= 0.0) {
@@ -79,6 +81,16 @@ Mob: class extends Enemy {
 
     setOpacity: func (opacity: Float) {
         sprite opacity = opacity
+    }
+
+    update: func -> Bool {
+        if (redish) {
+            sprite color set!(255, 30, 30)
+        } else {
+            sprite color set!(255, 255, 255)
+        }
+
+        super()
     }
 
 }
