@@ -17,6 +17,11 @@ Each possible level is separated by a blank line
   * `#` - block
   * `p` - poop
   * `T` - TNT
+  * `c` - collectible (bomb, key, money, chest)
+  * `C` - chest
+  * `f` - fire
+  * `F` - orange fire (evil)
+  * `I` - treasure item
 
 ### Mini-bosses
 
@@ -25,12 +30,21 @@ Each possible level is separated by a blank line
 
 ### Basement
 
+  * `e` - embryo (little blastocyst)
+  * `q` - pacer
+  * `g` - gaper
+  * `G` - gusher
+  * `u` - sucker
+  * `U` - spit
+
 ### Cellar
 
   * `s` - spider
   * `S` - big spider
+  * `Z` - trite
   * `w` - cobweb
   * `m` - mulliboom
+  * `k` - sack
 
 ### Cave
 
