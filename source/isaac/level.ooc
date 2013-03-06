@@ -100,8 +100,8 @@ Level: class {
         heroPos := match (enterDir) {
             case Direction UP     => vec2(400, 100)
             case Direction DOWN   => vec2(400, 400)
-            case Direction RIGHT  => vec2(100, 200)
-            case Direction LEFT   => vec2(700, 200)
+            case Direction RIGHT  => vec2(100, 240)
+            case Direction LEFT   => vec2(700, 240)
         }
         hero setPos(heroPos)
     }
@@ -360,6 +360,7 @@ Tile: abstract class extends Entity {
     body: CpBody
     shape: CpShape
     side := 50
+    padding := 10
 
     alive := true
 
@@ -374,7 +375,8 @@ Tile: abstract class extends Entity {
     initPhysx: func {
         body = CpBody new(INFINITY, INFINITY)
 
-        shape = CpBoxShape new(body, side, side)
+        physicSide := side - padding
+        shape = CpBoxShape new(body, physicSide, physicSide)
         shape setUserData(this)
         level space addShape(shape)
     }
