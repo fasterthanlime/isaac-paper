@@ -40,7 +40,7 @@ Each possible level is separated by a blank line
   * `O` - attack fly
   * `~` - pooter
   * `^` - fat fly  
-
+  * `h` - horf
 
 
 ### Cellar
