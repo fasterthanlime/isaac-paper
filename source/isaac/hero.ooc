@@ -100,7 +100,9 @@ Hero: class extends Entity {
 
     move: func (dir: Vec2) {
         vel := dir mul(speed)
-        body setVel(cpv(vel))
+        currVel := vec2(body getVel())
+        currVel interpolate!(vel, 0.95)
+        body setVel(cpv(currVel))
     }
 
     shoot: func (dir: Direction) {
