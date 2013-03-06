@@ -37,9 +37,9 @@ Each possible level is separated by a blank line
   * `U` - spit
   * `P` - hopper
   * `o` - black fly
-  * `ö` - attack fly
-  * `O` - pooter
-  * `Ô` - fat fly  
+  * `O` - attack fly
+  * `~` - pooter
+  * `^` - fat fly  
 
 
 
