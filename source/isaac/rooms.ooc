@@ -64,7 +64,7 @@ RoomSet: class {
                 line = reader readLine()
                 lineno += 1
 
-                if (line != "") {
+                if (line != "" && reader hasNext?()) {
                     _err(path, lineno, "Expected empty line, got '%s'" format(line))
                 }
                 rooms add(room)
