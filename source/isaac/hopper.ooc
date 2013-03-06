@@ -123,11 +123,6 @@ Hopper: class extends Mob {
         level charGroup remove(sprite)
     }
 
-    move: func (dir: Vec2) {
-        vel := dir mul(speed)
-        body setVel(cpv(vel))
-    }
-
     jump: func {
         diff, target: Vec2
         good := false

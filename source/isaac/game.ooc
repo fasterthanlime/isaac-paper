@@ -64,6 +64,7 @@ Game: class {
         initUI()
         initMap()
         initLevel()
+        map setup()
 
         loop = FixedLoop new(dye, 60.0)
         loop run(||

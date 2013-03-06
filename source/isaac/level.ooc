@@ -17,7 +17,7 @@ import structs/[List, ArrayList, HashMap]
 import math/Random
 
 // our stuff
-import isaac/[game, hero, walls, hopper, bomb]
+import isaac/[game, hero, walls, hopper, bomb, rooms]
 
 Level: class {
 
@@ -70,26 +70,17 @@ Level: class {
 
         fillGrids()
     }
+    
+    gridPos: func (x, y: Int) -> Vec2 {
+        vec2(paddedBottomLeft x + 50.0 * x,
+             paddedBottomLeft y + 50.0 * y)
+    }
 
     fillGrids: func {
-        for (col in 0..blockGrid width) {
-            for (row in 0..blockGrid height) {
-                if (Random randInt(0, 10) < 8) {
-                    continue
-                }
-
-                if (Random randInt(0, 10) < 8) {
-                    blockGrid put(col, row, Block new(this))
-                } else {
-                    blockGrid put(col, row, Poop new(this))
-                }
-            }
-        }
-
-        for (i in 0..3) {
-            add(Hopper new(this, vec2(600, 300)))
-        }
-
+        // FIXME: don't hardcode stuff
+        roomSet := game rooms sets get("cellar")
+        room := Random choice(roomSet rooms)
+        room spawn(this)
         walls setup()
     }
 

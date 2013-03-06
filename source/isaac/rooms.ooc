@@ -7,6 +7,9 @@ import deadlogger/[Log, Logger]
 import structs/[ArrayList, List, HashMap]
 import io/[FileReader]
 
+// our stuff
+import isaac/[level, spider]
+
 Rooms: class {
     sets := HashMap<String, RoomSet> new()
 
@@ -83,7 +86,36 @@ RoomSet: class {
 }
 
 Room: class {
+    logger := static Log getLogger(This name)
+
     rows := ArrayList<String> new()
 
     init: func
+
+    spawn: func (level: Level) {
+        y := 0
+        for (row in rows) {
+            x := 0
+            for (c in row) {
+                spawn(x, y, c, level)
+                x += 1
+            }
+            y += 1
+        }
+    }
+
+    spawn: func ~specific (x, y: Int, c: Char, level: Level) {
+        match c {
+            case '.' || ' ' =>
+                 // ignore
+            case '#' =>
+                level blockGrid put(x, y, Block new(level))
+            case 'p' =>
+                level blockGrid put(x, y, Poop new(level))
+            case 's' =>
+                level add(Spider new(level, level gridPos(x, y)))
+            case =>
+                logger warn("Unknown identifier: %c", c)
+        }
+    }
 }
