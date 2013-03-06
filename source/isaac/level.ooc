@@ -79,7 +79,8 @@ Level: class {
     fillGrids: func {
         // FIXME: don't hardcode stuff
         roomSet := game rooms sets get("cellar")
-        room := Random choice(roomSet rooms)
+        //room := Random choice(roomSet rooms)
+        room := roomSet rooms get(17)
         room spawn(this)
         walls setup()
     }

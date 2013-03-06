@@ -1,5 +1,4 @@
 
-
 // third-party stuff
 use deadlogger
 import deadlogger/[Log, Logger]
@@ -17,33 +16,32 @@ import gnaar/[utils]
 import math, math/Random
 
 // our stuff
-import isaac/[level, shadow, enemy, hero, utils]
+import isaac/[level, shadow, enemy, hero, utils, spider]
 
 /*
- * Spidery... yum
+ * Spiderer.
  */
-Spider: class extends Mob {
+Sack: class extends Mob {
 
     shape: CpShape
     body: CpBody
-    rotateConstraint: CpConstraint
+    rotateConstraint, springConstraint: CpConstraint
 
-    moveCount := 80
-    moveCountMax := 80
+    spawnCount := 80
+    spawnCountMax := 80
     radius := 180
 
+    damage := 4.0
     scale := 0.8
 
     shadow: Shadow
-
-    mover: Mover
 
     init: func (.level, .pos) {
         super(level, pos)
 
         life = 8.0
 
-        sprite = GlSprite new("assets/png/spider.png")
+        sprite = GlSprite new("assets/png/sack.png")
         sprite scale set!(scale, scale)
         shadow = Shadow new(level, sprite width * scale * 0.5)
 
@@ -51,16 +49,14 @@ Spider: class extends Mob {
         sprite pos set!(pos)
 
         initPhysx()
-        mover = Mover new(body, 280.0)
     }
 
     update: func -> Bool {
-        if (moveCount > 0) {
-            moveCount -= 1
+        if (spawnCount > 0) {
+            spawnCount -= 1
         } else {
-            updateTarget()
+            spawn()
         }
-        mover update(pos)
 
         bodyPos := body getPos()
         sprite pos set!(bodyPos x, bodyPos y + 4 + z)
@@ -70,22 +66,27 @@ Spider: class extends Mob {
         super()
     }
 
-    updateTarget: func {
-        mover setTarget(Target choose(pos, level, radius))
-        moveCount = moveCountMax + Random randInt(-10, 40)
+    spawn: func {
+        level add(Spider new(level, pos))
+        spawnCount = spawnCountMax + Random randInt(-20, 120)
     }
 
     initPhysx: func {
         (width, height) := (10, 10)
-        mass := 15.0
+        mass := 20.0
         moment := cpMomentForBox(mass, width, height)
 
         body = CpBody new(mass, moment)
-        body setPos(cpv(pos))
+        bodyPos := cpv(pos)
+        body setPos(bodyPos)
         level space addBody(body)
 
         rotateConstraint = CpRotaryLimitJoint new(body, level space getStaticBody(), 0, 0)
         level space addConstraint(rotateConstraint)
+
+        springConstraint = CpDampedSpring new(body,
+            level space getStaticBody(), cpv(0, 0), bodyPos, 0, 30_000, 5_000)
+        level space addConstraint(springConstraint)
 
         shape = CpBoxShape new(body, width, height)
         shape setUserData(this)
