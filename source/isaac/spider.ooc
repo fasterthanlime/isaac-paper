@@ -24,8 +24,6 @@ import isaac/[level, parabola, shadow, enemy, hero, utils]
  */
 Spider: class extends Mob {
 
-    speed := 280.0
-
     shape: CpShape
     body: CpBody
     rotateConstraint: CpConstraint
@@ -36,18 +34,15 @@ Spider: class extends Mob {
 
     damage := 4.0
     scale := 0.8
-    target: Vec2
-    moving := false
 
     shadow: Shadow
+
+    mover: Mover
 
     init: func (.level, .pos) {
         super(level, pos)
 
-        // boldly going nowhere
-        target = vec2(pos)
-
-        life = 5.0
+        life = 8.0
 
         sprite = GlSprite new("assets/png/spider.png")
         sprite scale set!(scale, scale)
@@ -57,27 +52,16 @@ Spider: class extends Mob {
         sprite pos set!(pos)
 
         initPhysx()
+        mover = Mover new(body, 280.0)
     }
 
     update: func -> Bool {
         if (moveCount > 0) {
             moveCount -= 1
         } else {
-            move()
+            updateTarget()
         }
-
-        dist := pos dist(target)
-        if (moving && moveCount > 50 && dist > 20.0) {
-            body setVel(cpv(target sub(pos) normalized() mul(speed)))
-        } else {
-            moving = false
-            // friction
-            friction := 0.8
-            vel := body getVel()
-            vel x *= friction
-            vel y *= friction
-            body setVel(vel)
-        }
+        mover update(pos)
 
         bodyPos := body getPos()
         sprite pos set!(bodyPos x, bodyPos y + 4 + z)
@@ -85,6 +69,11 @@ Spider: class extends Mob {
         shadow setPos(pos)
 
         super()
+    }
+
+    updateTarget: func {
+        mover setTarget(Target choose(pos, level, radius))
+        moveCount = moveCountMax + Random randInt(-10, 40)
     }
 
     initPhysx: func {
@@ -115,12 +104,6 @@ Spider: class extends Mob {
         level space removeShape(shape)
         level space removeBody(body)
         level charGroup remove(sprite)
-    }
-
-    move: func {
-        target = Target choose(pos, level, radius)
-        moving = true
-        moveCount = moveCountMax + Random randInt(-10, 40)
     }
 
 }

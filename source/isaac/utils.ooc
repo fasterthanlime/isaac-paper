@@ -3,6 +3,12 @@
 use dye
 import dye/math
 
+use chipmunk
+import chipmunk
+
+use gnaar
+import gnaar/[utils]
+
 // sdk stuff
 import math/Random
 
@@ -32,6 +38,39 @@ Target: class {
         target = target clamp(level paddedBottomLeft, level paddedTopRight)
 
         target
+    }
+
+}
+
+Mover: class {
+
+    target: Vec2
+    body: CpBody
+    speed: Float
+
+    moving := false
+
+    init: func (=body, =speed) {
+        target = vec2(body getPos())
+    }
+
+    update: func (pos: Vec2) {
+        dist := pos dist(target)
+        if (moving && dist > 20.0) {
+            body setVel(cpv(target sub(pos) normalized() mul(speed)))
+        } else {
+            moving = false
+            // friction
+            friction := 0.8
+            vel := body getVel()
+            vel x *= friction
+            vel y *= friction
+            body setVel(vel)
+        }
+    }
+
+    setTarget: func (=target) {
+        moving = true
     }
 
 }
