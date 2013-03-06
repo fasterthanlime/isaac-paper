@@ -13,7 +13,7 @@ import gnaar/[grid, utils]
 import math/Random
 
 // our stuff
-import isaac/[logging, level, bomb, hero]
+import isaac/[logging, level, bomb, hero, rooms]
 
 /*
  * The game, duh.
@@ -33,8 +33,11 @@ Game: class {
 
     FONT := "assets/ttf/8-bit-wonder.ttf"
 
+    // map-related stuff
     map: Map
+    rooms: Rooms
 
+    // resources
     coinLabel, bombLabel, keyLabel: GlText
 
     coinCount := 25
@@ -53,6 +56,8 @@ Game: class {
         dye setClearColor(Color white())
 
         scene = dye currentScene
+
+        rooms = Rooms new()
 
         initEvents()
         initGfx()
@@ -285,7 +290,7 @@ Map: class {
                 case 2 => diff y = 1
                 case 3 => diff y = -1
             }
-            "dir = %d, diff = %s, length = %d" printfln(dir, diff _, length)
+            //"dir = %d, diff = %s, length = %d" printfln(dir, diff _, length)
 
             mypos := vec2i(pos)
             for (j in 0..length) {
@@ -327,7 +332,6 @@ Map: class {
     }
     
     add: func (pos: Vec2i) -> MapTile {
-        "Putting map tile at %s" printfln(pos _)
         tile := MapTile new(this, pos)
         grid put(pos x, pos y, tile)
         tile
