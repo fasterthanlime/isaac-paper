@@ -17,6 +17,12 @@ import isaac/[level, hero]
 
 Target: class {
 
+    direction: static func -> Vec2 {
+        x := Random randInt(-100, 100) as Float / 100.0
+        y := Random randInt(-100, 100) as Float / 100.0
+        vec2(x, y) normalized()
+    }
+
     choose: static func (pos: Vec2, level: Level, radius: Float) -> Vec2 {
         diff, target: Vec2
         good := false
@@ -27,9 +33,7 @@ Target: class {
             target = level hero pos
         } else {
             while (!good && count > 0) {
-                x := Random randInt(-100, 100) as Float / 100.0
-                y := Random randInt(-100, 100) as Float / 100.0
-                diff = vec2(x, y) normalized()
+                diff = direction()
                 target = pos add(diff mul(radius))
                 good = target inside?(level paddedBottomLeft, level paddedTopRight)
                 count -= 1

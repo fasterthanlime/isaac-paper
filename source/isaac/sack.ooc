@@ -16,7 +16,7 @@ import gnaar/[utils]
 import math, math/Random
 
 // our stuff
-import isaac/[level, shadow, enemy, hero, utils, spider]
+import isaac/[level, shadow, enemy, hero, utils, spider, parabola]
 
 /*
  * Spiderer.
@@ -28,7 +28,7 @@ Sack: class extends Mob {
     rotateConstraint: CpConstraint
 
     spawnCount := 200
-    spawnCountMax := 80
+    spawnCountMax := 140
     radius := 180
 
     damage := 4.0
@@ -58,7 +58,10 @@ Sack: class extends Mob {
            }
         } else {
             if (spawnCount > 0) {
-                spawnCount -= 1
+                dist := level hero pos dist(pos)
+                if (dist < radius) {
+                    spawnCount -= Random randInt(1, 2)
+                }
             } else {
                 spawn()
             }
@@ -80,7 +83,12 @@ Sack: class extends Mob {
     }
 
     spawn: func {
-        level add(Spider new(level, pos))
+        spider := Spider new(level, pos)
+        spawnVel := 160.0
+        spider parabola = Parabola new(50, 40)
+        spider shape setSensor(true)
+        spider body setVel(cpv(Target direction() mul(spawnVel)))
+        level add(spider)
         resetSpawnCount()
     }
 
@@ -89,7 +97,7 @@ Sack: class extends Mob {
     }
 
     initPhysx: func {
-        (width, height) := (10, 10)
+        (width, height) := (20, 20)
 
         body = CpBody new(INFINITY, INFINITY)
         bodyPos := cpv(pos)

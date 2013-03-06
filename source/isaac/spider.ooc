@@ -17,7 +17,7 @@ import gnaar/[utils]
 import math, math/Random
 
 // our stuff
-import isaac/[level, shadow, enemy, hero, utils]
+import isaac/[level, shadow, enemy, hero, utils, parabola]
 
 /*
  * Spidery... yum
@@ -38,6 +38,8 @@ Spider: class extends Mob {
 
     mover: Mover
 
+    parabola: Parabola
+
     init: func (.level, .pos) {
         super(level, pos)
 
@@ -55,12 +57,25 @@ Spider: class extends Mob {
     }
 
     update: func -> Bool {
+        if (parabola) {
+            // handle height
+            x := moveCountMax - moveCount
+            z = parabola eval(x)
+            if (x > parabola length) {
+                z = parabola bottom
+                parabola = null
+                shape setSensor(true)
+            }
+        }
+
         if (moveCount > 0) {
             moveCount -= 1
         } else {
             updateTarget()
         }
-        mover update(pos)
+        if (!parabola) {
+            mover update(pos)
+        }
 
         bodyPos := body getPos()
         sprite pos set!(bodyPos x, bodyPos y + 4 + z)
