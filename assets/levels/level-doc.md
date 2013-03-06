@@ -1,4 +1,3 @@
-
 ## Levels
 
 The levels format is as follows:
@@ -36,6 +35,13 @@ Each possible level is separated by a blank line
   * `G` - gusher
   * `u` - sucker
   * `U` - spit
+  * `P` - hopper
+  * `o` - black fly
+  * `ö` - attack fly
+  * `O` - pooter
+  * `Ô` - fat fly  
+
+
 
 ### Cellar
 
