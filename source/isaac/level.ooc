@@ -360,7 +360,7 @@ Tile: abstract class extends Entity {
     body: CpBody
     shape: CpShape
     side := 50
-    padding := 10
+    padding := 8
 
     alive := true
 
@@ -375,8 +375,8 @@ Tile: abstract class extends Entity {
     initPhysx: func {
         body = CpBody new(INFINITY, INFINITY)
 
-        physicSide := side - padding
-        shape = CpBoxShape new(body, physicSide, physicSide)
+        radius := 0.5 * (side - padding)
+        shape = CpCircleShape new(body, radius, cpv(0, 0))
         shape setUserData(this)
         level space addShape(shape)
     }
