@@ -155,6 +155,7 @@ Game: class {
         bgGroup := GlGroup new()
         levelGroup add(bgGroup)
        
+        /*
         fullBg := GlRectangle new(vec2(800, 500)) 
         fullBg center = false
         fullBg pos set!(0, 0)
@@ -166,6 +167,11 @@ Game: class {
         arenaBg pos set!(75, 75)
         arenaBg color set!(Color new(230, 230, 230))
         bgGroup add(arenaBg)
+        */
+        bgPic := GlSprite new("assets/png/basement-bg.png")
+        bgPic pos set!(0, 0)
+        bgPic center = false
+        bgGroup add(bgPic)
 
     }
 
