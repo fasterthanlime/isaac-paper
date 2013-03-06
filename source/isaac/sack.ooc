@@ -25,25 +25,25 @@ Sack: class extends Mob {
 
     shape: CpShape
     body: CpBody
-    rotateConstraint, springConstraint: CpConstraint
+    rotateConstraint: CpConstraint
 
-    spawnCount := 80
+    spawnCount := 200
     spawnCountMax := 80
     radius := 180
 
     damage := 4.0
-    scale := 0.8
 
     shadow: Shadow
+    maxLife := 30.0
+    lifeIncr := 0.04
 
     init: func (.level, .pos) {
         super(level, pos)
 
-        life = 8.0
+        life = maxLife
 
         sprite = GlSprite new("assets/png/sack.png")
-        sprite scale set!(scale, scale)
-        shadow = Shadow new(level, sprite width * scale * 0.5)
+        shadow = Shadow new(level, sprite width * 0.5)
 
         level charGroup add(sprite)
         sprite pos set!(pos)
@@ -52,10 +52,16 @@ Sack: class extends Mob {
     }
 
     update: func -> Bool {
-        if (spawnCount > 0) {
-            spawnCount -= 1
+        if (life < maxLife) {
+           if (damageCount <= 0) {
+                life += lifeIncr
+           }
         } else {
-            spawn()
+            if (spawnCount > 0) {
+                spawnCount -= 1
+            } else {
+                spawn()
+            }
         }
 
         bodyPos := body getPos()
@@ -63,30 +69,35 @@ Sack: class extends Mob {
         pos set!(body getPos())
         shadow setPos(pos)
 
+        scale := 0.8 * life / maxLife
+        sprite scale set!(scale, scale)
+
+        if (life <= 8.0) {
+            return false
+        }
+
         super()
     }
 
     spawn: func {
         level add(Spider new(level, pos))
+        resetSpawnCount()
+    }
+
+    resetSpawnCount: func {
         spawnCount = spawnCountMax + Random randInt(-20, 120)
     }
 
     initPhysx: func {
         (width, height) := (10, 10)
-        mass := 20.0
-        moment := cpMomentForBox(mass, width, height)
 
-        body = CpBody new(mass, moment)
+        body = CpBody new(INFINITY, INFINITY)
         bodyPos := cpv(pos)
         body setPos(bodyPos)
         level space addBody(body)
 
         rotateConstraint = CpRotaryLimitJoint new(body, level space getStaticBody(), 0, 0)
         level space addConstraint(rotateConstraint)
-
-        springConstraint = CpDampedSpring new(body,
-            level space getStaticBody(), cpv(0, 0), bodyPos, 0, 30_000, 5_000)
-        level space addConstraint(springConstraint)
 
         shape = CpBoxShape new(body, width, height)
         shape setUserData(this)
@@ -104,6 +115,11 @@ Sack: class extends Mob {
         level space removeShape(shape)
         level space removeBody(body)
         level charGroup remove(sprite)
+    }
+
+    harm: func (damage: Float) {
+        super(damage)
+        resetSpawnCount()
     }
 
 }
