@@ -97,9 +97,9 @@ Game: class {
         uiGroup = GlGroup new()
         scene add(uiGroup)
 
-        uiBg := GlRectangle new(vec2(800, 100))
+        uiBg := GlRectangle new(vec2(800, 105))
         uiBg center = false
-        uiBg pos set!(0, 500)
+        uiBg pos set!(0, 495)
         uiBg color set!(Color new(20, 20, 20))
         uiGroup add(uiBg)
 
