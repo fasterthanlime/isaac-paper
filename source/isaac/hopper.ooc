@@ -113,6 +113,7 @@ Hopper: class extends Mob {
         if (!blockHandler) {
             blockHandler = BlockHopperHandler new()
             level space addCollisionHandler(CollisionTypes ENEMY, CollisionTypes BLOCK, blockHandler)
+            level space addCollisionHandler(CollisionTypes ENEMY, CollisionTypes HERO, blockHandler)
         }
     }
 
