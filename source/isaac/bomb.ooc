@@ -52,13 +52,32 @@ Bomb: class extends Entity {
             return false
         }
 
-        sprite opacity = 1.0
-        if (countdown < 30) {
+        yellowish := false
+        redish := false
+
+        if (countdown < 40) {
             if (countdown % 5 == 0) {
-                sprite opacity = 0.2
+                yellowish = true
             }
-        } else if (countdown % 12 == 0) {
-            sprite opacity = 0.2
+            if (countdown % 4 == 0) {
+                redish = true
+            }
+        } else {
+            if (countdown % 12 == 0) {
+                yellowish = true
+            }
+            if (countdown % 13 == 0) {
+                redish = true
+            }
+        }
+
+        sprite color set!(255, 255, 255)
+        if (yellowish) {
+            sprite color b = 30
+        }
+        if (redish) {
+            sprite color g = 30
+            sprite color b = 30
         }
 
         // friction
@@ -77,7 +96,7 @@ Bomb: class extends Entity {
         level add(Explosion new(level, sprite pos))
 
         // explode here
-        explosionRadius := 80.0
+        explosionRadius := 95.0
     
         level eachInRadius(pos, explosionRadius, |ent|
             ent bombHarm(this)

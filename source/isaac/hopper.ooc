@@ -90,7 +90,7 @@ Hopper: class extends Mob {
     }
 
     initPhysx: func {
-        (width, height) := (20, 20)
+        (width, height) := (24, 24)
         mass := 10.0
         moment := cpMomentForBox(mass, width, height)
 
