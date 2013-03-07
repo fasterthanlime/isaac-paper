@@ -8,7 +8,7 @@ import structs/[ArrayList, List, HashMap]
 import io/[FileReader]
 
 // our stuff
-import isaac/[level, spider, sack, fly, hopper]
+import isaac/[level, spider, sack, fly, hopper, trite]
 
 Rooms: class {
     sets := HashMap<String, RoomSet> new()
@@ -120,6 +120,8 @@ Room: class {
                 level add(Fly new(level, level gridPos(x, y)))
             case 'P' =>
                 level add(Hopper new(level, level gridPos(x, y)))
+            case 'Z' =>
+                level add(Trite new(level, level gridPos(x, y)))
             case =>
                 logger warn("Unknown identifier: %c", c)
         }

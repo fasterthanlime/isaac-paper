@@ -50,7 +50,7 @@ Hopper: class extends Mob {
 
         life = 10.0
 
-        sprite = GlSprite new("assets/png/hopper.png")
+        sprite = GlSprite new(getSpritePath())
         sprite scale set!(scale, scale)
         shadow = Shadow new(level, sprite width * scale)
 
@@ -58,6 +58,10 @@ Hopper: class extends Mob {
         sprite pos set!(pos)
 
         initPhysx()
+    }
+
+    getSpritePath: func -> String {
+        "assets/png/hopper.png"
     }
 
     update: func -> Bool {
