@@ -320,8 +320,29 @@ Map: class {
             screenSize y / gHeight as Float
         )
 
+        idealTileSize := vec2(25, 12)
+
+        ratio := tileSize x / tileSize y
+        idealRatio := idealTileSize x / idealTileSize y
+
+        centerOffset := vec2(0, 0)
+
+        // compute best size with ideal ratio, then re-center map
+        // by adjusting offset
+        if (ratio < idealRatio) {
+            tileSize y = tileSize x / idealRatio
+
+            realHeight := tileSize y * gHeight
+            centerOffset y += screenSize y * 0.5 - realHeight * 0.5
+        } else {
+            tileSize x = tileSize y * idealRatio
+
+            realWidth := tileSize x * gWidth
+            centerOffset x += screenSize x * 0.5 - realWidth * 0.5
+        }
+
         grid each(|col, row, tile|
-            tile setup(col, row, tileSize, gridOffset)
+            tile setup(col, row, tileSize, gridOffset, centerOffset)
         )
     }
     
@@ -352,10 +373,10 @@ MapTile: class {
         }
     }
 
-    setup: func (col, row: Int, tileSize: Vec2, gridOffset: Vec2i) {
+    setup: func (col, row: Int, tileSize: Vec2, gridOffset: Vec2i, centerOffset: Vec2) {
         diff := vec2(
-            (col - gridOffset x ) * tileSize x,
-            (row - gridOffset y ) * tileSize y
+            (col - gridOffset x) * tileSize x + centerOffset x,
+            (row - gridOffset y) * tileSize y + centerOffset y
         )
         offset := map offset add(diff)
         rect = GlMapTile new(tileSize, active)
@@ -393,7 +414,14 @@ GlMapTile: class extends GlGroup {
     init: func (size: Vec2, active: Bool) {
         super()
 
+        outline = GlRectangle new(size)
+        outline color set!(Color new(10, 10, 10))
+        outline lineWidth = 4.0
+        outline center = false
+        add(outline)
+
         fill = GlRectangle new(size sub(2, 2))
+        fill pos set!(1, 1)
         if (active) {
             fill color set!(Color new(255, 255, 255))
         } else {
@@ -401,13 +429,6 @@ GlMapTile: class extends GlGroup {
         }
         fill center = false
         add(fill)
-
-        outline = GlRectangle new(size)
-        outline color set!(Color new(10, 10, 10))
-        outline lineWidth = 4.0
-        outline center = false
-        outline filled = false
-        add(outline)
     }
 
     setPos: func (pos: Vec2) {
