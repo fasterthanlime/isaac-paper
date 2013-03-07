@@ -33,6 +33,8 @@ Game: class {
 
     FONT := "assets/ttf/8-bit-wonder.ttf"
 
+    floor := "cellar"
+
     // map-related stuff
     map: Map
     rooms: Rooms
@@ -269,11 +271,13 @@ Map: class {
     }
 
     generate: func {
+        treasureDone := false
+
         pos := vec2i(0, 0)
-        currentTile = add(pos)
+        currentTile = add(pos, RoomType FIRST)
         currentTile active = true
 
-        for (i in 0..12) {
+        for (i in 0..8) {
             length := Random randInt(1, 5)
             dir := Random randInt(0, 3)
             diff := vec2i(0, 0)
@@ -289,9 +293,15 @@ Map: class {
             mypos := vec2i(pos)
             for (j in 0..length) {
                 mypos add!(diff)
-                add(mypos)
 
-                if (Random randInt(0, 8) < 5) {
+                if (Random randInt(0, 8) < 2 && !treasureDone) {
+                    treasureDone = true
+                    add(mypos, RoomType TREASURE)
+                } else {
+                    add(mypos, RoomType NORMAL)
+                }
+
+                if (Random randInt(0, 8) < 2) {
                     pos set!(mypos)
                 }
             }
@@ -346,11 +356,28 @@ Map: class {
         )
     }
     
-    add: func (pos: Vec2i) -> MapTile {
-        tile := MapTile new(this, pos)
+    add: func (pos: Vec2i, roomType := RoomType NORMAL) -> MapTile {
+        roomSet := game rooms sets get(game floor)
+        room := Random choice(roomSet rooms)
+        if (roomType == RoomType FIRST) {
+            room = roomSet rooms first()
+        }
+
+        tile := MapTile new(this, pos, room)
         grid put(pos x, pos y, tile)
         tile
     }
+}
+
+RoomType: enum {
+    FIRST
+    NORMAL
+    BOSS
+    TREASURE
+    SHOP
+    MINIBOSS
+    SECRET
+    SUPERSECRET
 }
 
 MapTile: class {
@@ -359,10 +386,11 @@ MapTile: class {
     rect: GlMapTile
 
     pos: Vec2i
+    room: Room
 
     active := false
 
-    init: func (=map, .pos) {
+    init: func (=map, .pos, =room) {
         this pos = vec2i(pos)
     }
 

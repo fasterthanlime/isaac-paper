@@ -68,7 +68,7 @@ Level: class {
         hero = Hero new(this, getHeroStartPos())
         walls = Walls new(this)
 
-        fillGrids(true)
+        fillGrids()
     }
     
     gridPos: func (x, y: Int) -> Vec2 {
@@ -76,14 +76,8 @@ Level: class {
              paddedBottomLeft y + 50.0 * y)
     }
 
-    fillGrids: func (first := false) {
-        // FIXME: don't hardcode stuff
-        roomSet := game rooms sets get("basement")
-        room := Random choice(roomSet rooms)
-        if (first) {
-            room = roomSet rooms first()
-        }
-        room spawn(this)
+    fillGrids: func {
+        currentTile room spawn(this)
         walls setup()
     }
 
