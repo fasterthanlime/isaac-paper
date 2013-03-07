@@ -40,6 +40,8 @@ Hero: class extends Entity {
 
     shadow: Shadow
 
+    webCount := 0
+
     init: func (.level, .pos) {
         super(level, pos)
 
@@ -99,10 +101,23 @@ Hero: class extends Entity {
     }
 
     move: func (dir: Vec2) {
-        vel := dir mul(speed)
+        vel := dir mul(getSpeed())
         currVel := vec2(body getVel())
         currVel interpolate!(vel, 0.95)
         body setVel(cpv(currVel))
+    }
+
+    getSpeed: func -> Float {
+        if (webCount > 0 && !flying?()) {
+            speed * 0.5
+        } else {
+            speed
+        }
+    }
+
+    flying?: func -> Bool {
+        // TODO: fly!
+        false
     }
 
     shoot: func (dir: Direction) {

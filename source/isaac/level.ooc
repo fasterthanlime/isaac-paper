@@ -37,6 +37,7 @@ Level: class {
     floorGroup: GlGroup
     holeGroup: GlGroup
     blockGroup: GlGroup
+    webGroup: GlGroup
     doorGroup: GlGroup
     shadowGroup: GlGroup
     charGroup: GlGroup
@@ -116,6 +117,9 @@ Level: class {
 
         blockGroup = GlGroup new()
         group add(blockGroup)
+
+        webGroup = GlGroup new()
+        group add(webGroup)
 
         doorGroup = GlGroup new()
         group add(doorGroup)
@@ -256,6 +260,7 @@ CollisionTypes: enum from Int {
     WALL
     TEAR
     BOMB
+    COBWEB
 }
 
 Direction: enum {
