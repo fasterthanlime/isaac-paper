@@ -28,7 +28,7 @@ Spider: class extends Mob {
     body: CpBody
     rotateConstraint: CpConstraint
 
-    moveCount := 80
+    moveCount := 60
     moveCountMax := 80
     radius := 180
 

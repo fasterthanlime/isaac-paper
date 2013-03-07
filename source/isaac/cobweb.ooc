@@ -19,7 +19,7 @@ import math, math/Random
 import isaac/[level, hero, utils, bomb]
 
 /*
- * Spiderer.
+ * Slowww is the tempo
  */
 Cobweb: class extends Entity {
 
@@ -37,6 +37,7 @@ Cobweb: class extends Entity {
         super(level, pos)
 
         sprite = GlSprite new("assets/png/cobweb.png")
+        sprite opacity = 0.5
 
         level webGroup add(sprite)
         sprite pos set!(pos)

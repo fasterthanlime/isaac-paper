@@ -30,7 +30,7 @@ Hopper: class extends Mob {
     body: CpBody
     rotateConstraint: CpConstraint
 
-    jumpCount := 0
+    jumpCount := 60
     jumpCountMax := 100
     jumpHeight := 90.0
     radius := 250

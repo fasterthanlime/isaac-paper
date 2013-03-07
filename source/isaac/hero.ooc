@@ -14,12 +14,14 @@ use gnaar
 import gnaar/[utils]
 
 // our stuff
-import isaac/[level, tear, shadow]
+import isaac/[level, tear, shadow, bomb]
 
 /*
  * Dat Isaac...
  */
 Hero: class extends Entity {
+
+    logger := static Log getLogger(This name)
 
     sprite: GlSprite
 
@@ -41,6 +43,8 @@ Hero: class extends Entity {
     shadow: Shadow
 
     webCount := 0
+
+    redLife := 6
 
     init: func (.level, .pos) {
         super(level, pos)
@@ -143,6 +147,25 @@ Hero: class extends Entity {
 
         tear := Tear new(level, pos add(0, 10), vel, TearType HERO, damage)
         level add(tear)
+    }
+
+    hasWafer?: func -> Bool {
+        // TODO: implement, duh
+        false
+    }
+
+    harmHero: func (damage: Int) {
+        if (hasWafer?()) {
+            damage = 1
+        }
+
+        // TODO: soul hearts, eternal hearts
+        redLife -= damage
+        logger info("redLife remaining = %d", redLife)
+    }
+
+    bombHarm: func (bomb: Bomb) {
+        harmHero(2)
     }
 
 }

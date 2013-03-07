@@ -14,7 +14,7 @@ use gnaar
 import gnaar/[utils]
 
 // our stuff
-import isaac/[level, hero, splash, enemy]
+import isaac/[level, hero, splash, enemy, fire]
 
 
 Tear: class extends Entity {
@@ -35,7 +35,7 @@ Tear: class extends Entity {
 
     hit := false
 
-    heroHandler, enemyHandler, blockHandler: static CpCollisionHandler
+    heroHandler, enemyHandler, blockHandler, fireHandler: static CpCollisionHandler
 
     init: func (.level, .pos, .vel, =type, =damage) {
         super(level, pos)
@@ -77,6 +77,7 @@ Tear: class extends Entity {
         shape = CpCircleShape new(body, radius, cpv(0, 0))
         shape setUserData(this)
         shape setCollisionType(CollisionTypes TEAR)
+        shape setGroup(CollisionGroups TEAR)
         level space addShape(shape)
 
         initHandlers()
@@ -98,6 +99,11 @@ Tear: class extends Entity {
             level space addCollisionHandler(CollisionTypes TEAR, CollisionTypes BLOCK, blockHandler)
             level space addCollisionHandler(CollisionTypes TEAR, CollisionTypes WALL, blockHandler)
             level space addCollisionHandler(CollisionTypes TEAR, CollisionTypes BOMB, blockHandler)
+        }
+
+        if (!fireHandler) {
+            fireHandler = FireTearHandler new()
+            level space addCollisionHandler(CollisionTypes TEAR, CollisionTypes FIRE, fireHandler)
         }
     }
 
@@ -123,10 +129,16 @@ HeroTearHandler: class extends CpCollisionHandler {
         bounce := true
         
         tear := shape1 getUserData() as Tear
+        if (tear hit) {
+            return false
+        }
+
         match (tear type) {
             case TearType HERO =>
                 bounce = false 
             case =>
+                hero := shape2 getUserData() as Hero
+                hero harmHero(tear damage as Int)
                 tear hit = true
         }
 
@@ -144,6 +156,10 @@ EnemyTearHandler: class extends CpCollisionHandler {
         bounce := true
         
         tear := shape1 getUserData() as Tear
+        if (tear hit) {
+            return false
+        }
+
         entity := shape2 getUserData() as Entity
 
         match (tear type) {
@@ -181,6 +197,31 @@ BlockTearHandler: class extends CpCollisionHandler {
         match tile {
             case poop: Poop =>
                 poop harm(tear damage)
+        }
+
+        false
+    }
+
+}
+
+FireTearHandler: class extends CpCollisionHandler {
+
+    preSolve: func (arbiter: CpArbiter, space: CpSpace) -> Bool {
+        shape1, shape2: CpShape
+        arbiter getShapes(shape1&, shape2&)
+
+        bounce := true
+        
+        tear := shape1 getUserData() as Tear
+
+        match (tear type) {
+            case TearType HERO =>
+                tear hit = true
+                fire := shape2 getUserData() as Fire
+                fire harm(tear damage)
+                true
+            case TearType ENEMY =>
+                false
         }
 
         true
