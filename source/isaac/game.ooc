@@ -105,9 +105,9 @@ Game: class {
         uiBg color set!(Color new(20, 20, 20))
         uiGroup add(uiBg)
 
-        labelLeft := 350
+        labelLeft := 340
         labelBottom := 500
-        labelFontSize := 18
+        labelFontSize := 14
         labelPadding := 28
 
         coinLabel = GlText new(FONT, "*00", labelFontSize)
@@ -125,21 +125,38 @@ Game: class {
         keyLabel color set!(Color white())
         uiGroup add(keyLabel)
 
-        iconLeft := 330
+        iconLeft := 325
         iconBottom := 528
         iconPadding := labelPadding
+        iconScale := 0.9
 
         coinIcon := GlSprite new("assets/png/mini-coin.png")
         coinIcon pos set!(iconLeft, iconBottom + iconPadding * 2)
+        coinIcon scale set!(iconScale, iconScale)
         uiGroup add(coinIcon)
 
         bombIcon := GlSprite new("assets/png/mini-bomb.png")
         bombIcon pos set!(iconLeft, iconBottom + iconPadding)
+        bombIcon scale set!(iconScale, iconScale)
         uiGroup add(bombIcon)
 
         keyIcon := GlSprite new("assets/png/mini-key.png")
         keyIcon pos set!(iconLeft, iconBottom)
+        keyIcon scale set!(iconScale, iconScale)
         uiGroup add(keyIcon)
+
+        outlineBottom := 548
+        outlineScale := 0.9
+
+        arrowsIcon := GlSprite new("assets/png/ui-arrows.png")
+        arrowsIcon scale set!(outlineScale, outlineScale)
+        arrowsIcon pos set!(432, outlineBottom)
+        uiGroup add(arrowsIcon)
+
+        spaceIcon := GlSprite new("assets/png/ui-space.png")
+        spaceIcon scale set!(outlineScale, outlineScale)
+        spaceIcon pos set!(510, outlineBottom)
+        uiGroup add(spaceIcon)
 
         mapGroup = GlGroup new()
         uiGroup add(mapGroup)
@@ -258,12 +275,12 @@ Map: class {
 
         group = GlGroup new()
 
-        bg := GlRectangle new(screenSize)
-        bg center = false
-        bg pos set!(offset)
-        grayShade := 50
-        bg color set!(Color new(grayShade, grayShade, grayShade)) 
-        game mapGroup add(bg)
+        //bg := GlRectangle new(screenSize)
+        //bg center = false
+        //bg pos set!(offset)
+        //grayShade := 50
+        //bg color set!(Color new(grayShade, grayShade, grayShade)) 
+        //game mapGroup add(bg)
 
         game mapGroup add(group)
 
