@@ -42,9 +42,9 @@ Game: class {
     // resources
     coinLabel, bombLabel, keyLabel: GlText
 
-    coinCount := 25
-    bombCount := 10
-    keyCount := 5
+    coinCount := 0
+    bombCount := 1
+    keyCount := 0
 
     // state stuff
     state := GameState PLAY
