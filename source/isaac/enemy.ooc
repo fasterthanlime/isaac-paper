@@ -13,7 +13,7 @@ use gnaar
 import gnaar/[utils]
 
 // our stuff
-import isaac/[level, bomb]
+import isaac/[level, bomb, tear]
 
 /*
  * Any type of enemy
@@ -26,6 +26,9 @@ Enemy: abstract class extends Entity {
 
     damageCount := 0
     damageLength := 20
+
+    shape: CpShape
+    body: CpBody
     
     redish: Bool
 
@@ -69,6 +72,14 @@ Enemy: abstract class extends Entity {
 
     grounded?: func -> Bool {
         z < level groundLevel
+    }
+
+    hitBack: func (tear: Tear) {
+        // TODO: make blast dependant on tear damage
+        dir := pos sub(tear pos) normalized()
+        hitbackSpeed := 200
+        vel := dir mul(hitbackSpeed)
+        body setVel(cpv(vel))
     }
 
     die: func {

@@ -26,8 +26,6 @@ Hopper: class extends Mob {
 
     speed := 230.0
 
-    shape: CpShape
-    body: CpBody
     rotateConstraint: CpConstraint
 
     jumpCount := 60

@@ -54,7 +54,7 @@ Mover: class {
     target: Vec2
     body: CpBody
     speed: Float
-    alpha := 0.9
+    alpha := 0.95
 
     moving := false
 
@@ -67,7 +67,7 @@ Mover: class {
         if (moving && dist > 20.0) {
             vel := vec2(body getVel())
             idealVel := target sub(pos) normalized() mul(speed)
-            vel interpolate!(idealVel, alpha)
+            vel interpolate!(idealVel, 1 - alpha)
             body setVel(cpv(vel))
         } else {
             moving = false

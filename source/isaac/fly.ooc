@@ -24,8 +24,6 @@ import isaac/[game, level, paths, shadow, enemy, hero, utils, tear]
  */
 Fly: class extends Mob {
 
-    shape: CpShape
-    body: CpBody
     rotateConstraint: CpConstraint
 
     moveCount := 0
@@ -54,7 +52,7 @@ Fly: class extends Mob {
 
     rosish := false
     rosishCount := 0
-    rosishCountMax := 15
+    rosishCountMax := 25
 
     init: func (.level, .pos, =type) {
         super(level, pos)
@@ -87,7 +85,6 @@ Fly: class extends Mob {
 
         initPhysx()
         mover = Mover new(body, 70.0)
-        mover alpha = 0.99
     }
 
     getSpritePath: func -> String {

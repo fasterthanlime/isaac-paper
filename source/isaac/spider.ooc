@@ -24,8 +24,6 @@ import isaac/[level, shadow, enemy, hero, utils, paths]
  */
 Spider: class extends Mob {
 
-    shape: CpShape
-    body: CpBody
     rotateConstraint: CpConstraint
 
     moveCount := 60

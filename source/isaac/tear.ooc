@@ -176,6 +176,7 @@ EnemyTearHandler: class extends CpCollisionHandler {
                         if (enemy grounded?()) {
                             tear hit = true
                             enemy harm(tear damage)
+                            enemy hitBack(tear)
                         } else {
                             bounce = false
                         }
