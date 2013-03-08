@@ -133,6 +133,8 @@ Room: class {
                 level add(Fly new(level, level gridPos(x, y), FlyType SUCKER))
             case 'U' =>
                 level add(Fly new(level, level gridPos(x, y), FlyType SPIT))
+            case '8' =>
+                level add(Fly new(level, level gridPos(x, y), FlyType MOTER))
             case 'P' =>
                 level add(Hopper new(level, level gridPos(x, y)))
             case 'Z' =>

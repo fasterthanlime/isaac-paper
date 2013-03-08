@@ -14,6 +14,7 @@ Each possible level is separated by a blank line
 
   * `.` - nothing
   * `#` - block
+  * `"` - hole
   * `p` - poop
   * `T` - TNT
   * `c` - collectible (bomb, key, money, chest)
@@ -40,6 +41,7 @@ Each possible level is separated by a blank line
   * `O` - attack fly
   * `~` - pooter
   * `^` - fat fly  
+  * '8' - moter
   * `h` - horf
 
 

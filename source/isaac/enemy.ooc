@@ -58,6 +58,7 @@ Enemy: abstract class extends Entity {
         }
 
         if (life <= 0.0) {
+            die()
             return false
         }
 
@@ -68,6 +69,10 @@ Enemy: abstract class extends Entity {
 
     grounded?: func -> Bool {
         z < level groundLevel
+    }
+
+    die: func {
+        // normally, die in peace
     }
 
 }

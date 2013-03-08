@@ -107,6 +107,31 @@ Fly: class extends Mob {
         }
     }
 
+    attackFly?: func -> Bool {
+        match type {
+            case FlyType ATTACK_FLY || FlyType MOTER =>
+                // moters also blink and also zero in on
+                // isaac so, it's all good. 
+                true
+            case =>
+                false
+        }
+    }
+
+    spawnAttackFly: func (pos: Vec2) {
+        fly := Fly new(level, pos, FlyType ATTACK_FLY)
+        level add(fly)
+    }
+
+    die: func {
+        if (type == FlyType MOTER) {
+            // spawn two of our children!
+            spread := 5.0
+            spawnAttackFly(pos add(-spread, 0.0))
+            spawnAttackFly(pos add( spread, 0.0))
+        }
+    }
+
     update: func -> Bool {
         z = 5.0 + sinus eval()
 
@@ -120,7 +145,7 @@ Fly: class extends Mob {
         bodyPos := body getPos()
         sprite pos set!(bodyPos x, bodyPos y + 8 + z)
         pos set!(body getPos())
-        shadow setPos(pos)
+        shadow setPos(pos sub(0.0, 3.0))
 
         if (fires?()) {
             dist := pos dist(level hero pos)
@@ -134,7 +159,7 @@ Fly: class extends Mob {
             }
         }
 
-        if (type == FlyType ATTACK_FLY) {
+        if (attackFly?()) {
             rosishCount -= 1
             if (rosishCount <= 0) {
                 rosishCount = rosishCountMax
@@ -238,7 +263,7 @@ Fly: class extends Mob {
     }
 
     initPhysx: func {
-        (width, height) := (10, 10)
+        (width, height) := (15, 15)
         mass := 15.0
         moment := cpMomentForBox(mass, width, height)
 
@@ -252,6 +277,7 @@ Fly: class extends Mob {
         shape = CpBoxShape new(body, width, height)
         shape setUserData(this)
         shape setCollisionType(CollisionTypes ENEMY)
+        // FIXME: that's not proper, dude.
         shape setSensor(true)
         level space addShape(shape)
 
