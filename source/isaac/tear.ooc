@@ -35,7 +35,7 @@ Tear: class extends Entity {
 
     hit := false
 
-    heroHandler, enemyHandler, blockHandler, fireHandler: static CpCollisionHandler
+    heroHandler, enemyHandler, blockHandler, fireHandler, ignoreHandler: static CpCollisionHandler
 
     init: func (.level, .pos, .vel, =type, =damage) {
         super(level, pos)
@@ -99,6 +99,11 @@ Tear: class extends Entity {
             level space addCollisionHandler(CollisionTypes TEAR, CollisionTypes BLOCK, blockHandler)
             level space addCollisionHandler(CollisionTypes TEAR, CollisionTypes WALL, blockHandler)
             level space addCollisionHandler(CollisionTypes TEAR, CollisionTypes BOMB, blockHandler)
+        }
+
+        if (!ignoreHandler) {
+            ignoreHandler = IgnoreTearHandler new()
+            level space addCollisionHandler(CollisionTypes TEAR, CollisionTypes COLLECTIBLE, ignoreHandler)
         }
 
         if (!fireHandler) {
@@ -223,6 +228,14 @@ FireTearHandler: class extends CpCollisionHandler {
             case TearType ENEMY =>
                 false
         }
+    }
+
+}
+
+IgnoreTearHandler: class extends CpCollisionHandler {
+
+    begin: func (arbiter: CpArbiter, space: CpSpace) -> Bool {
+        false
     }
 
 }
