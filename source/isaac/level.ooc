@@ -374,7 +374,6 @@ Tile: abstract class extends Entity {
     init: func (.level) {
         super(level, vec2(0, 0))
         sprite = GlSprite new(getSprite())
-        sprite opacity = 0.9
         getLayer() add(sprite)
 
         initPhysx()

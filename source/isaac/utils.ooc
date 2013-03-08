@@ -23,21 +23,24 @@ Target: class {
         vec2(x, y) normalized()
     }
 
-    choose: static func (pos: Vec2, level: Level, radius: Float) -> Vec2 {
+    choose: static func (pos: Vec2, level: Level, radius: Float, trackHero := true) -> Vec2 {
         diff, target: Vec2
         good := false
         count := 8
 
-        heroDiff := level hero pos sub(pos)
-        if (heroDiff norm() <= radius) {
-            target = level hero pos
-        } else {
-            while (!good && count > 0) {
-                diff = direction()
-                target = pos add(diff mul(radius))
-                good = target inside?(level paddedBottomLeft, level paddedTopRight)
-                count -= 1
+        if (trackHero) {
+            heroDiff := level hero pos sub(pos)
+            if (heroDiff norm() <= radius) {
+                target = level hero pos
+                good = true
             }
+        }
+
+        while (!good && count > 0) {
+            diff = direction()
+            target = pos add(diff mul(radius))
+            good = target inside?(level paddedBottomLeft, level paddedTopRight)
+            count -= 1
         }
         target = target clamp(level paddedBottomLeft, level paddedTopRight)
 
@@ -51,6 +54,7 @@ Mover: class {
     target: Vec2
     body: CpBody
     speed: Float
+    alpha := 0.9
 
     moving := false
 
@@ -61,7 +65,10 @@ Mover: class {
     update: func (pos: Vec2) {
         dist := pos dist(target)
         if (moving && dist > 20.0) {
-            body setVel(cpv(target sub(pos) normalized() mul(speed)))
+            vel := vec2(body getVel())
+            idealVel := target sub(pos) normalized() mul(speed)
+            vel interpolate!(idealVel, alpha)
+            body setVel(cpv(vel))
         } else {
             moving = false
             // friction

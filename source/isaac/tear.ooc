@@ -223,8 +223,6 @@ FireTearHandler: class extends CpCollisionHandler {
             case TearType ENEMY =>
                 false
         }
-
-        true
     }
 
 }

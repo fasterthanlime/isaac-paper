@@ -86,9 +86,9 @@ Fire: class extends Entity {
         spriteFlame scale set!(scale, scale) 
 
         if (evil) {
-            spriteFlame color set!(220, 100, 0)
+            spriteFlame color set!(220, 100, 30)
         } else {
-            spriteFlame color set!(200, 200, 0)
+            spriteFlame color set!(200, 200, 30)
         }
 
         if (evil) {

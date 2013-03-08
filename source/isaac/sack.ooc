@@ -16,7 +16,7 @@ import gnaar/[utils]
 import math, math/Random
 
 // our stuff
-import isaac/[level, shadow, enemy, hero, utils, spider, parabola]
+import isaac/[level, shadow, enemy, hero, utils, spider, paths]
 
 /*
  * Spiderer.

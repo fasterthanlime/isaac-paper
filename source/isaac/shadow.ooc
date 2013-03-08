@@ -17,7 +17,7 @@ import gnaar/[utils]
 import math, math/Random
 
 // our stuff
-import isaac/[level, parabola]
+import isaac/[level, paths]
 
 Shadow: class extends Entity {
 

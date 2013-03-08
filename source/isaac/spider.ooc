@@ -17,7 +17,7 @@ import gnaar/[utils]
 import math, math/Random
 
 // our stuff
-import isaac/[level, shadow, enemy, hero, utils, parabola]
+import isaac/[level, shadow, enemy, hero, utils, paths]
 
 /*
  * Spidery... yum
@@ -59,9 +59,8 @@ Spider: class extends Mob {
     update: func -> Bool {
         if (parabola) {
             // handle height
-            x := moveCountMax - moveCount
-            z = parabola eval(x)
-            if (x > parabola length) {
+            z = parabola eval(moveCountMax - moveCount)
+            if (parabola done?()) {
                 z = parabola bottom
                 parabola = null
                 shape setSensor(true)

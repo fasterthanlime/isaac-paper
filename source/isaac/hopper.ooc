@@ -17,7 +17,7 @@ import gnaar/[utils]
 import math, math/Random
 
 // our stuff
-import isaac/[level, parabola, shadow, enemy, hero, utils]
+import isaac/[level, paths, shadow, enemy, hero, utils]
 
 /*
  * JUMP JUMP JUMP JUMP JUMP - Jump around!

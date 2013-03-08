@@ -17,7 +17,7 @@ import gnaar/[utils]
 import math, math/Random
 
 // our stuff
-import isaac/[level, parabola, shadow, enemy, hero, utils]
+import isaac/[game, level, paths, shadow, enemy, hero, utils, tear]
 
 /*
  * Bzzzzzz
@@ -42,23 +42,74 @@ Fly: class extends Mob {
 
     parabola: Parabola
 
-    init: func (.level, .pos) {
+    type: FlyType
+
+    fireRadius := 300.0
+    fireSpeed := 240.0
+
+    fireCount := 40
+    maxFireCount := 60
+
+    sinus := Sinus new(2.0)
+
+    rosish := false
+    rosishCount := 0
+    rosishCountMax := 15
+
+    init: func (.level, .pos, =type) {
         super(level, pos)
 
-        life = 8.0
+        match type {
+            case FlyType BLACK_FLY =>
+                life = 2.0
+            case FlyType ATTACK_FLY =>
+                life = 6.0
+            case FlyType MOTER =>
+                life = 10.0
+            case =>
+                life = 8.0
+        }
 
-        sprite = GlSprite new("assets/png/fly.png")
+        sinus incr = 0.15
+
+        sprite = GlSprite new(getSpritePath())
         sprite scale set!(scale, scale)
-        shadow = Shadow new(level, sprite width * scale * 0.5)
+
+        factor := 0.2
+
+        if (type == FlyType FAT_FLY) {
+            factor = 0.4
+        }
+        shadow = Shadow new(level, sprite width * scale * factor)
 
         level charGroup add(sprite)
         sprite pos set!(pos)
 
         initPhysx()
         mover = Mover new(body, 70.0)
+        mover alpha = 0.99
+    }
+
+    getSpritePath: func -> String {
+        match type {
+            case FlyType POOTER =>
+                "assets/png/pooter.png"
+            case FlyType FAT_FLY =>
+                "assets/png/fat-fly.png"
+            case FlyType SUCKER || FlyType SPIT =>
+                "assets/png/sucker-spit.png"
+            case FlyType MOTER =>
+                "assets/png/moter.png"
+            case FlyType ATTACK_FLY =>
+                "assets/png/attack-fly.png"
+            case =>
+                "assets/png/black-fly.png"
+        }
     }
 
     update: func -> Bool {
+        z = 5.0 + sinus eval()
+
         if (moveCount > 0) {
             moveCount -= 1
         } else {
@@ -71,19 +122,119 @@ Fly: class extends Mob {
         pos set!(body getPos())
         shadow setPos(pos)
 
-        super()
+        if (fires?()) {
+            dist := pos dist(level hero pos)
+            if (dist < fireRadius) {
+                fireCount -= 1
+                if (fireCount <= 0) {
+                    fire()
+                }
+            } else {
+                resetFireCount()
+            }
+        }
+
+        if (type == FlyType ATTACK_FLY) {
+            rosishCount -= 1
+            if (rosishCount <= 0) {
+                rosishCount = rosishCountMax
+                rosish = !rosish
+            }
+        }
+
+        retVal := super()
+
+        if (rosish && !redish) {
+            sprite color set!(255, 140, 140)
+        }
+
+        retVal
+    }
+
+    grounded?: func -> Bool {
+        // kinda..
+        true
+    }
+
+    fires?: func -> Bool {
+        match type {
+            case FlyType POOTER || FlyType FAT_FLY =>
+                true
+            case =>
+                false
+        }
+    }
+
+    fire: func {
+        diff := level hero pos sub(pos) normalized()
+        match type {
+            case FlyType POOTER =>
+                spawnTear(pos, diff)
+            case FlyType FAT_FLY =>
+                angle := diff angle()
+                spread := PI / 18.0
+                a1 := angle -= spread
+                a2 := angle -= spread
+                offset := 3.0
+
+                spawnTear(pos add(Vec2 fromAngle(a1 + PI / 2.0) mul(offset)),
+                    Vec2 fromAngle(a1))
+                spawnTear(pos add(Vec2 fromAngle(a2 - PI / 2.0) mul(offset)),
+                    Vec2 fromAngle(a2))
+        }
+
+        resetFireCount()
+    }
+
+    spawnTear: func (pos, dir: Vec2) {
+        vel := dir mul(fireSpeed)
+        tear := Tear new(level, pos, vel, TearType ENEMY, 1)
+        level add(tear)
+    }
+
+    resetFireCount: func {
+        fireCount = maxFireCount + Random randInt(-10, 20)
+    }
+
+    aggressive?: func -> Bool {
+        type == FlyType ATTACK_FLY
     }
 
     updateTarget: func {
-        mover setTarget(Target choose(pos, level, radius))
-        dist := level hero pos dist(pos)
-        if (dist < speedyRadius) {
-            mover speed = Random randInt(100, 120) as Float
-            moveCount = 20
+        if (aggressive?()) {
+            tracks := true
+            if (Random randInt(0, 8) < 3) {
+                // sometimes, rarely, we just decide to leave
+                // poor isaac alone.
+                tracks = false
+            }
+            target := Target choose(pos, level, radius, tracks)
+
+            clumsy := (Random randInt(0, 8) < 3)
+            if (clumsy) {
+                // woops, we can't aim very well, can we?
+                clumsyRadius := Random randInt(-8, 8) as Float
+                target = target add(Target direction() mul(clumsyRadius))
+            }
+            mover setTarget(target)
+
+            dist := level hero pos dist(pos)
+            if (dist < speedyRadius) {
+                mover speed = Random randInt(90, 110) as Float
+                moveCount = Random randInt(20, 40)
+            } else {
+                resetSpeedAndCount()
+            }
         } else {
-            mover speed = Random randInt(80, 90) as Float
-            moveCount = moveCountMax + Random randInt(-10, 40)
+            // don't track hero, we're just moving around
+            mover setTarget(Target choose(pos, level, radius, false))
+            resetSpeedAndCount()
         }
+    }
+    
+    resetSpeedAndCount: func {
+        mover speed = Random randInt(80, 90) as Float
+        moveCount = moveCountMax + Random randInt(-10, 40)
     }
 
     initPhysx: func {
@@ -117,5 +268,15 @@ Fly: class extends Mob {
         level charGroup remove(sprite)
     }
 
+}
+
+FlyType: enum {
+    ATTACK_FLY
+    BLACK_FLY
+    MOTER
+    POOTER 
+    FAT_FLY
+    SUCKER
+    SPIT
 }
 

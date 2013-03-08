@@ -21,6 +21,7 @@ Rooms: class {
         load("cellar")
         load("lust")
         load("treasure")
+        load("test")
     }
 
     load: func (name: String) {
@@ -91,6 +92,9 @@ Room: class {
 
     rows := ArrayList<String> new()
 
+    width := 13
+    height := 7
+
     init: func
 
     spawn: func (level: Level) {
@@ -98,7 +102,7 @@ Room: class {
         for (row in rows) {
             x := 0
             for (c in row) {
-                spawn(x, y, c, level)
+                spawn(x, height - 1 - y, c, level)
                 x += 1
             }
             y += 1
@@ -117,8 +121,18 @@ Room: class {
                 level add(Spider new(level, level gridPos(x, y)))
             case 'k' =>
                 level add(Sack new(level, level gridPos(x, y)))
+            case 'o' =>
+                level add(Fly new(level, level gridPos(x, y), FlyType BLACK_FLY))
             case 'O' =>
-                level add(Fly new(level, level gridPos(x, y)))
+                level add(Fly new(level, level gridPos(x, y), FlyType ATTACK_FLY))
+            case '~' =>
+                level add(Fly new(level, level gridPos(x, y), FlyType POOTER))
+            case '^' =>
+                level add(Fly new(level, level gridPos(x, y), FlyType FAT_FLY))
+            case 'u' =>
+                level add(Fly new(level, level gridPos(x, y), FlyType SUCKER))
+            case 'U' =>
+                level add(Fly new(level, level gridPos(x, y), FlyType SPIT))
             case 'P' =>
                 level add(Hopper new(level, level gridPos(x, y)))
             case 'Z' =>
