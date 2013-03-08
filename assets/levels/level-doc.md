@@ -44,7 +44,6 @@ Each possible level is separated by a blank line
   * '8' - moter
   * `h` - horf
 
-
 ### Cellar
 
   * `s` - spider
@@ -52,6 +51,7 @@ Each possible level is separated by a blank line
   * `Z` - trite
   * `w` - cobweb
   * `m` - mulliboom
+  * `M` - mulligan or mulligoon
   * `k` - sack
 
 ### Cave
