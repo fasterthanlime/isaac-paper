@@ -33,6 +33,10 @@ Collectible: abstract class extends Entity {
 
     yOffset := 5
 
+    collected := false
+
+    collectibleHandler: static CpCollisionHandler
+
     init: func (.level, .pos) {
         super(level, pos)
 
@@ -45,6 +49,10 @@ Collectible: abstract class extends Entity {
     getSpritePath: abstract func -> String
 
     update: func -> Bool {
+        if (collected) {
+            return false
+        }
+
         pos set!(body getPos())
         sprite pos set!(pos x, pos y + yOffset)
 
@@ -68,6 +76,16 @@ Collectible: abstract class extends Entity {
         shape setCollisionType(CollisionTypes COLLECTIBLE)
         shape setGroup(CollisionGroups COLLECTIBLE)
         level space addShape(shape)
+
+        initHandlers()
+    }
+
+    initHandlers: func {
+        if (!collectibleHandler) {
+            collectibleHandler = CollectibleHeroHandler new()
+            level space addCollisionHandler(CollisionTypes COLLECTIBLE,
+                CollisionTypes HERO, collectibleHandler)
+        }
     }
 
     destroy: func {
@@ -83,6 +101,8 @@ Collectible: abstract class extends Entity {
         body setVel(cpv(vel))
     }
 
+    // well, what happens now?
+    collect: abstract func
 }
 
 CoinType: enum {
@@ -93,15 +113,26 @@ CoinType: enum {
 
 CollectibleCoin: class extends Collectible {
 
-    init: func (.level, .pos) {
+    type: CoinType
+    worth: Int
+
+    init: func (.level, .pos, type := CoinType PENNY) {
+        this type = type
+        worth = match type {
+            case CoinType DIME   => 10
+            case CoinType NICKEL => 5
+            case => 1
+        }
+
         super(level, pos)
     }
 
-    // TODO: other coin types
-    type := CoinType PENNY
-
     getSpritePath: func -> String {
         "assets/png/collectible-coin.png"
+    }
+
+    collect: func {
+        level game pickupCoin(this)
     }
 
 }
@@ -113,8 +144,16 @@ BombType: enum {
 
 CollectibleBomb: class extends Collectible {
 
-    init: func (.level, .pos) {
+    type: BombType
+    worth: Int
+
+    init: func (.level, .pos, type := BombType ONE) {
         radius = 20.0
+        this type = type
+        worth = match type {
+            case BombType TWO => 2
+            case => 1
+        }
 
         super(level, pos)
 
@@ -122,11 +161,12 @@ CollectibleBomb: class extends Collectible {
         sprite scale set!(scale, scale)
     }
 
-    // TODO: other coin types
-    type := BombType ONE
-
     getSpritePath: func -> String {
         "assets/png/collectible-bomb.png"
+    }
+
+    collect: func {
+        level game pickupBomb(this)
     }
 
 }
@@ -139,6 +179,27 @@ CollectibleKey: class extends Collectible {
 
     getSpritePath: func -> String {
         "assets/png/collectible-key.png"
+    }
+
+    collect: func {
+        level game pickupKey(this)
+    }
+
+}
+
+CollectibleHeroHandler: class extends CpCollisionHandler {
+
+    begin: func (arbiter: CpArbiter, space: CpSpace) -> Bool {
+        shape1, shape2: CpShape
+        arbiter getShapes(shape1&, shape2&)
+
+        collectible := shape1 getUserData() as Collectible
+        if (!collectible collected) {
+            collectible collected = true
+            collectible collect()
+        }
+
+        false
     }
 
 }

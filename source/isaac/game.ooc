@@ -13,7 +13,7 @@ import gnaar/[grid, utils]
 import math/Random
 
 // our stuff
-import isaac/[logging, level, bomb, hero, rooms]
+import isaac/[logging, level, bomb, hero, rooms, collectible]
 
 /*
  * The game, duh.
@@ -246,6 +246,21 @@ Game: class {
         keyLabel value = "*%02d" format(keyCount)
     }
 
+    // hero actions
+    pickupCoin: func (coin: CollectibleCoin) {
+        // TODO: lotsa modifiers (e.g. most of the trinkets)
+        coinCount += coin worth
+    }
+
+    pickupKey: func (key: CollectibleKey) {
+        keyCount += 1
+    }
+
+    pickupBomb: func (bomb: CollectibleBomb) {
+        keyCount += bomb worth
+    }
+
+    // quitter!
     quit: func {
         dye quit()
         exit(0)

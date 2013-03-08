@@ -27,7 +27,8 @@ Bomb: class extends Entity {
     countdown: Int
     maxCountdown := 120
 
-    radius := 50
+    radius := 40
+    explosionRadius := 105.0
 
     damage := 20
 
@@ -96,8 +97,6 @@ Bomb: class extends Entity {
         level add(Explosion new(level, sprite pos))
 
         // explode here
-        explosionRadius := 95.0
-    
         level eachInRadius(pos, explosionRadius, |ent|
             ent bombHarm(this)
         )
