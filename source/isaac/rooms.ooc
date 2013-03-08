@@ -6,10 +6,11 @@ import deadlogger/[Log, Logger]
 // sdk stuff
 import structs/[ArrayList, List, HashMap]
 import io/[FileReader]
+import math/Random
 
 // our stuff
 import isaac/[level, spider, sack, fly, hopper, trite, cobweb,
-    fire]
+    fire, collectible]
 
 Rooms: class {
     sets := HashMap<String, RoomSet> new()
@@ -115,6 +116,8 @@ Room: class {
                  // ignore
             case '#' =>
                 level blockGrid put(x, y, Block new(level))
+            case 'c' =>
+                spawnCollectible(x, y, level)
             case 'p' =>
                 level blockGrid put(x, y, Poop new(level))
             case 's' =>
@@ -147,6 +150,18 @@ Room: class {
                 level add(Fire new(level, level gridPos(x, y), true))
             case =>
                 logger warn("Unknown identifier: %c", c)
+        }
+    }
+
+    spawnCollectible: func (x, y: Int, level: Level) {
+        number := Random randInt(0, 8)
+        pos := level gridPos(x, y)
+        if (number < 4) {
+            level add(CollectibleCoin new(level, pos))
+        } else if (number < 6) {
+            level add(CollectibleBomb new(level, pos))
+        } else {
+            level add(CollectibleKey new(level, pos))
         }
     }
 }

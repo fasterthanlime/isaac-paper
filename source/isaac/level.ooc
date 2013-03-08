@@ -262,10 +262,12 @@ CollisionTypes: enum from Int {
     BOMB
     COBWEB
     FIRE
+    COLLECTIBLE
 }
 
 CollisionGroups: enum from Int {
     TEAR
+    COLLECTIBLE
 }
 
 Direction: enum {

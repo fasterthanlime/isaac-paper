@@ -27,7 +27,7 @@ Bomb: class extends Entity {
     countdown: Int
     maxCountdown := 120
 
-    radius := 40
+    radius := 50
 
     damage := 20
 

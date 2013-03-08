@@ -24,7 +24,7 @@ Logging: class {
                 formatter = ColoredFormatter new(formatter)
             }
             console setFormatter(formatter)
-            console setFilter(LevelFilter new(Level info..Level critical))
+            //console setFilter(LevelFilter new(Level info..Level critical))
             Log root attachHandler(console)
 
             // aaand log to file.
