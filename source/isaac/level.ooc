@@ -226,6 +226,7 @@ Level: class {
         }
 
         blockGrid each(|col, row, e| test(e))
+        test(hero)
     }
 
 }

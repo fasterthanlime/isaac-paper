@@ -17,7 +17,7 @@ import gnaar/[utils]
 import math, math/Random
 
 // our stuff
-import isaac/[level, paths, shadow, enemy, hero, utils]
+import isaac/[level, game, paths, shadow, enemy, hero, utils]
 
 /*
  * JUMP JUMP JUMP JUMP JUMP - Jump around!
@@ -30,6 +30,7 @@ Hopper: class extends Mob {
 
     jumpCount := 60
     jumpCountMax := 100
+    jumpGracePeriod := 40
     jumpHeight := 90.0
     radius := 250
 
@@ -62,6 +63,10 @@ Hopper: class extends Mob {
         "assets/png/hopper.png"
     }
 
+    grounded?: func -> Bool {
+        super() && jumpCount < (jumpCountMax - jumpGracePeriod)
+    }
+
     update: func -> Bool {
         // handle height
         z = parabola eval(jumpCountMax - jumpCount)
@@ -91,6 +96,15 @@ Hopper: class extends Mob {
         super()
     }
 
+    touchHero: func (hero: Hero) -> Bool {
+        // we can't hurt the hero if we're in the air
+        if (grounded?()) {
+            return super()
+        }
+
+        false
+    }
+
     initPhysx: func {
         (width, height) := (24, 24)
         mass := 10.0
@@ -107,11 +121,10 @@ Hopper: class extends Mob {
         shape setUserData(this)
         shape setCollisionType(CollisionTypes ENEMY)
         level space addShape(shape)
-
-        initHandlers()
     }
 
     initHandlers: func {
+        super()
         if (!blockHandler) {
             blockHandler = BlockHopperHandler new()
             level space addCollisionHandler(CollisionTypes ENEMY, CollisionTypes BLOCK, blockHandler)
@@ -127,11 +140,11 @@ Hopper: class extends Mob {
     }
 
     jump: func {
+        jumpCount = jumpCountMax
         target := Target choose(pos, level, radius)
         body setVel(cpv(target sub(pos) normalized() mul(speed)))
 
         parabola = Parabola new(jumpHeight, jumpCountMax * 0.5)
-        jumpCount = jumpCountMax
     }
 
 }

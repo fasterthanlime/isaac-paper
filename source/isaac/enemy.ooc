@@ -13,7 +13,7 @@ use gnaar
 import gnaar/[utils]
 
 // our stuff
-import isaac/[level, bomb, tear]
+import isaac/[level, bomb, tear, hero]
 
 /*
  * Any type of enemy
@@ -32,8 +32,12 @@ Enemy: abstract class extends Entity {
     
     redish: Bool
 
+    heroHandler: CpCollisionHandler
+
     init: func (.level, .pos) {
         super(level, pos)
+
+        initHandlers()
     }
 
     harm: func (damage: Float) {
@@ -95,6 +99,21 @@ Enemy: abstract class extends Entity {
         // normally, die in peace
     }
 
+    touchHero: func (hero: Hero) -> Bool {
+        // override if the enemy doesn't hurt on touch
+        // (most enemies do, though..)
+        hero harmHero(1)
+        true
+    }
+
+    initHandlers: func {
+        if (!heroHandler) {
+            heroHandler = EnemyHeroHandler new()
+            level space addCollisionHandler(CollisionTypes ENEMY,
+                CollisionTypes HERO, heroHandler)
+        }
+    }
+
 }
 
 Mob: class extends Enemy {
@@ -117,6 +136,20 @@ Mob: class extends Enemy {
         }
 
         super()
+    }
+
+}
+
+EnemyHeroHandler: class extends CpCollisionHandler {
+
+    begin: func (arbiter: CpArbiter, space: CpSpace) -> Bool {
+        shape1, shape2: CpShape
+        arbiter getShapes(shape1&, shape2&)
+
+        enemy := shape1 getUserData() as Enemy
+        hero := shape2 getUserData() as Hero
+
+        enemy touchHero(hero)
     }
 
 }

@@ -53,6 +53,11 @@ Sack: class extends Mob {
         true
     }
 
+    touchHero: func (hero: Hero) -> Bool {
+        // we only spawn spiders, we don't hurt per se
+        true
+    }
+
     update: func -> Bool {
         if (life < maxLife) {
            if (damageCount <= 0) {

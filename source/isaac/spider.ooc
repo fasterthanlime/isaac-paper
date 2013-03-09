@@ -52,6 +52,7 @@ Spider: class extends Mob {
 
         initPhysx()
         mover = Mover new(body, 280.0)
+        mover alpha = 0.8
     }
 
     update: func -> Bool {
@@ -103,11 +104,6 @@ Spider: class extends Mob {
         shape setUserData(this)
         shape setCollisionType(CollisionTypes ENEMY)
         level space addShape(shape)
-
-        initHandlers()
-    }
-
-    initHandlers: func {
     }
 
     destroy: func {

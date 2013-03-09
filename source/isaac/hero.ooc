@@ -48,6 +48,9 @@ Hero: class extends Entity {
     redLife := 3
     healthChanged := true
 
+    invicibilityCount := 0
+    invicibilityCountMax := 40
+
     init: func (.level, .pos) {
         super(level, pos)
 
@@ -63,11 +66,25 @@ Hero: class extends Entity {
         initPhysx()
     }
 
+    setOpacity: func (opacity: Float) {
+        sprite opacity = opacity
+        shadow sprite opacity = opacity
+    }
+
     update: func -> Bool {
         bodyPos := body getPos()
         sprite pos set!(bodyPos x, bodyPos y + 20)
         pos set!(body getPos())
         shadow setPos(pos)
+
+        setOpacity(1.0)
+        if (invicibilityCount > 0) {
+            invicibilityCount -= 1
+            val := invicibilityCount / 8
+            if (val % 2 == 0) {
+                setOpacity(0.0)
+            }
+        }
 
         if (shootCount > 0) {
             shootCount -= 1
@@ -156,7 +173,15 @@ Hero: class extends Entity {
         false
     }
 
+    totalHealth: func -> Int {
+        redLife
+    }
+
     harmHero: func (damage: Int) {
+        if (invicibilityCount > 0) {
+            return // invincible, biatch!
+        }
+
         if (hasWafer?()) {
             damage = 1
         }
@@ -164,6 +189,7 @@ Hero: class extends Entity {
         // TODO: soul hearts, eternal hearts
         redLife -= damage
         healthChanged = true
+        invicibilityCount = invicibilityCountMax
     }
 
     bombHarm: func (bomb: Bomb) {

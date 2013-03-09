@@ -166,22 +166,14 @@ Fire: class extends Entity {
 
 FireHeroHandler: class extends CpCollisionHandler {
 
-    begin: func (arbiter: CpArbiter, space: CpSpace) -> Bool {
-        delta(arbiter, 1)
-    }
-
-    separate: func (arbiter: CpArbiter, space: CpSpace) {
-        delta(arbiter, -1)
-    }
-
-    delta: func (arbiter: CpArbiter, diff: Int) -> Bool {
+    preSolve: func (arbiter: CpArbiter, space: CpSpace) -> Bool {
         shape1, shape2: CpShape
         arbiter getShapes(shape1&, shape2&)
 
         hero := shape2 getUserData() as Hero
         hero harmHero(1)
 
-        false
+        true
     }
 
 }

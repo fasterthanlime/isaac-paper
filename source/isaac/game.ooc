@@ -11,6 +11,7 @@ import gnaar/[grid, utils]
 
 // sdk stuff
 import math/Random
+import structs/[HashMap, ArrayList]
 
 // our stuff
 import isaac/[logging, level, bomb, hero, rooms, collectible, health]
@@ -33,7 +34,7 @@ Game: class {
 
     FONT := "assets/ttf/8-bit-wonder.ttf"
 
-    floor := "cellar"
+    floor: String
 
     // map-related stuff
     map: Map
@@ -65,14 +66,39 @@ Game: class {
         initEvents()
         initGfx()
         initUI()
+        chooseFloor()
         initMap()
         initLevel()
-        map setup()
 
         loop = FixedLoop new(dye, 60.0)
         loop run(||
             update()
         )
+    }
+
+    reset: func {
+        initStats()
+        chooseFloor()
+
+        map reset()
+        level reload(Direction UP)
+    }
+
+    chooseFloor: func {
+        list := ArrayList<String> new()
+        list add("cellar"). add("basement")
+        floor = Random choice(list)
+    }
+
+    initStats: func {
+        coinCount = 0
+        bombCount = 1
+        keyCount = 0
+
+        // other characters have other stats
+        level hero containers = 3
+        level hero redLife = 3
+        level hero healthChanged = true
     }
 
     initEvents: func {
@@ -199,6 +225,9 @@ Game: class {
             case GameState PLAY =>
                 level update()
                 updateLabels()
+                if (level hero totalHealth() <= 0) {
+                    reset()
+                }
 
             case GameState CHANGEROOM =>
                 updateChangeRoom()
@@ -300,14 +329,6 @@ Map: class {
         generate()
 
         group = GlGroup new()
-
-        //bg := GlRectangle new(screenSize)
-        //bg center = false
-        //bg pos set!(offset)
-        //grayShade := 50
-        //bg color set!(Color new(grayShade, grayShade, grayShade)) 
-        //game mapGroup add(bg)
-
         game mapGroup add(group)
 
         setup()
@@ -318,7 +339,6 @@ Map: class {
 
         pos := vec2i(0, 0)
         currentTile = add(pos, RoomType FIRST)
-        currentTile active = true
 
         for (i in 0..8) {
             length := Random randInt(1, 5)
@@ -356,11 +376,20 @@ Map: class {
             bounds width, bounds height)
     }
 
+    reset: func {
+        grid clear()
+        generate()
+        setup()
+    }
+
     setup: func {
+        group clear()
+
         grid each(|col, row, tile|
             tile reset()
-            tile active = (tile == currentTile)
+            tile active = false
         )
+        currentTile active = true
 
         bounds := grid getBounds()
         gridOffset := vec2i(bounds xMin, bounds yMin)

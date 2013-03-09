@@ -282,6 +282,7 @@ Fly: class extends Mob {
     }
 
     initHandlers: func {
+        super()
     }
 
     destroy: func {
@@ -289,6 +290,16 @@ Fly: class extends Mob {
         level space removeShape(shape)
         level space removeBody(body)
         level charGroup remove(sprite)
+    }
+
+    touchHero: func (hero: Hero) -> Bool {
+        if (type == FlyType BLACK_FLY) {
+            // we're innocuous
+            return true
+        }
+
+        // TODO: fly love
+        super(hero)
     }
 
 }
