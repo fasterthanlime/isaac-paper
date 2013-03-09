@@ -268,7 +268,7 @@ Game: class {
     }
 
     pickupBomb: func (bomb: CollectibleBomb) {
-        keyCount += bomb worth
+        bombCount += bomb worth
     }
 
     // quitter!
