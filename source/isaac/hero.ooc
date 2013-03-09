@@ -163,8 +163,6 @@ Hero: class extends Entity {
 
         // TODO: soul hearts, eternal hearts
         redLife -= damage
-        logger info("redLife remaining = %d", redLife)
-
         healthChanged = true
     }
 
