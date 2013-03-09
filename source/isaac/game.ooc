@@ -334,13 +334,24 @@ Map: class {
         setup()
     }
 
+    getRoomBudget: func -> Int {
+        match (game floor) {
+            case "cellar" || "basement" => 9
+            case => 2
+        }
+    }
+
     generate: func {
+        roomBudget := getRoomBudget()
         treasureDone := false
 
         pos := vec2i(0, 0)
         currentTile = add(pos, RoomType FIRST)
+        roomBudget -= 1
 
         for (i in 0..8) {
+            if (roomBudget <= 0) break
+
             length := Random randInt(1, 5)
             dir := Random randInt(0, 3)
             diff := vec2i(0, 0)
@@ -355,6 +366,8 @@ Map: class {
 
             mypos := vec2i(pos)
             for (j in 0..length) {
+                if (roomBudget <= 0) break
+
                 mypos add!(diff)
 
                 if (Random randInt(0, 8) < 2 && !treasureDone) {
@@ -363,6 +376,7 @@ Map: class {
                 } else {
                     add(mypos, RoomType NORMAL)
                 }
+                roomBudget -= 1
 
                 if (Random randInt(0, 8) < 2) {
                     pos set!(mypos)
