@@ -306,6 +306,28 @@ Game: class {
         exit(0)
     }
 
+    // floor info
+    floorIndex: func -> Int {
+        match floor {
+            case "cellar" || "basement" => 0
+            case "caves" || "catacombs" => 1
+            case "the-depths" || "necropolis" => 2
+            case "the-womb" || "utero" => 3
+            case "sheol" || "cathedral" => 4
+            case "chest" => 5
+            case => 0 // unknown room? art thou testing, dev?
+        }
+    }
+
+    xlFloor?: func -> Bool {
+        // *no* idea how to really implement that
+        false
+    }
+
+    hardFloor?: func -> Bool {
+        floorIndex() >= 3 // from the womb / utero - it's a hard floor
+    }
+
 }
 
 /*
@@ -335,27 +357,54 @@ Map: class {
     }
 
     getRoomBudget: func -> Int {
-        match (game floor) {
+        value := match (game floor) {
             case "cellar" || "basement" => 9
             case => 2
+        }
+
+        if (game xlFloor?()) {
+            // double it up, johnny!
+            value += value
+        }
+
+        value
+    }
+
+    treasureRoomCount: func -> Int {
+        if (game hardFloor?()) {
+            return 0
+        }
+
+        match (game xlFloor?()) {
+            case true => 2
+            case => 1
         }
     }
 
     generate: func {
         roomBudget := getRoomBudget()
-        treasureDone := false
+        maxLength := roomBudget / 3
 
         pos := vec2i(0, 0)
         currentTile = add(pos, RoomType FIRST)
         roomBudget -= 1
 
-        for (i in 0..8) {
-            if (roomBudget <= 0) break
+        prevDir := 0
+        globalCount := 80
 
-            length := Random randInt(1, 5)
+        while (roomBudget > 0 && globalCount > 0) {
+            globalCount -= 1
+
+            length := Random randInt(1, maxLength)
             dir := Random randInt(0, 3)
-            diff := vec2i(0, 0)
+            count := 3
+            while (count > 0 && dir == prevDir) {
+                dir = Random randInt(0, 3)
+                count -= 1
+            }
+            prevDir = dir
 
+            diff := vec2i(0, 0)
             match dir {
                 case 0 => diff x = 1
                 case 1 => diff x = -1
@@ -370,13 +419,12 @@ Map: class {
 
                 mypos add!(diff)
 
-                if (Random randInt(0, 8) < 2 && !treasureDone) {
-                    treasureDone = true
-                    add(mypos, RoomType TREASURE)
+                mapTile := add(mypos, RoomType NORMAL)
+                if (mapTile) {
+                    roomBudget -= 1
                 } else {
-                    add(mypos, RoomType NORMAL)
+                    break
                 }
-                roomBudget -= 1
 
                 if (Random randInt(0, 8) < 2) {
                     pos set!(mypos)
@@ -441,8 +489,43 @@ Map: class {
             tile setup(col, row, tileSize, gridOffset, centerOffset)
         )
     }
+
+    neighborCount: func (pos: Vec2i) -> Int {
+        count := 0
+        test := func (col, row: Int) {
+            if (grid contains?(col, row)) {
+                count += 1
+            }
+        }
+
+        /*  Order:
+         ************
+         *  0  1  2
+         *  7  .  3
+         *  6  5  4
+         ************
+         */
+        test(pos x - 1, pos y - 1) // bottom left
+        test(pos x - 1, pos y    ) // center left
+        test(pos x - 1, pos y + 1) // top left
+        test(pos x    , pos y + 1) // top center 
+        test(pos x + 1, pos y + 1) // top right
+        test(pos x + 1, pos y    ) // center right
+        test(pos x + 1, pos y - 1) // bottom right
+        test(pos x    , pos y - 1) // bottom center
+
+        count
+    }
     
     add: func (pos: Vec2i, roomType := RoomType NORMAL) -> MapTile {
+        if (grid contains?(pos x, pos y)) {
+            return null
+        }
+
+        if (neighborCount(pos) > 3 && !game xlFloor?()) {
+            return null
+        }
+
         roomSet := game rooms sets get(game floor)
         room := Random choice(roomSet rooms)
         if (roomType == RoomType FIRST) {

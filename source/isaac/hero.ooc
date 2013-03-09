@@ -177,12 +177,21 @@ Hero: class extends Entity {
         redLife
     }
 
+    /*
+     * Harm the hero. Damage is counted in half-hearts
+     */
     harmHero: func (damage: Int) {
         if (invicibilityCount > 0) {
             return // invincible, biatch!
         }
 
+        if (level game hardFloor?()) {
+            // takes a full heart of damage
+            damage = 2
+        }
+
         if (hasWafer?()) {
+            // the wafer is an awesome item
             damage = 1
         }
 
