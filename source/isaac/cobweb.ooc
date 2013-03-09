@@ -90,7 +90,9 @@ Cobweb: class extends Entity {
 
     destroy: func {
         level space removeShape(shape)
+        shape free()
         level space removeBody(body)
+        body free()
         level webGroup remove(sprite)
     }
 

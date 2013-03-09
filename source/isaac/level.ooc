@@ -318,7 +318,7 @@ Grid: class {
     blockSide := 50.0
 
     init: func {
-        list = Tile[width * height] new()
+        initList()
     }
 
     _inside: func (col, row: Int) -> Bool {
@@ -359,8 +359,13 @@ Grid: class {
 
     clear: func {
         each(|col, row, tile|
-            remove(col, row)
+            tile destroy()
         ) 
+        initList()
+    }
+
+    initList: func {
+        list = Tile[width * height] new()
     }
 }
 
@@ -404,6 +409,8 @@ Tile: abstract class extends Entity {
     destroy: func {
         getLayer() remove(sprite)
         level space removeShape(shape)
+        shape free()
+        body free()
     }
 
     setPos: func (.pos) {
