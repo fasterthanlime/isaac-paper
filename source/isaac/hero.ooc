@@ -44,7 +44,9 @@ Hero: class extends Entity {
 
     webCount := 0
 
-    redLife := 6
+    containers := 3
+    redLife := 3
+    healthChanged := true
 
     init: func (.level, .pos) {
         super(level, pos)
@@ -162,6 +164,8 @@ Hero: class extends Entity {
         // TODO: soul hearts, eternal hearts
         redLife -= damage
         logger info("redLife remaining = %d", redLife)
+
+        healthChanged = true
     }
 
     bombHarm: func (bomb: Bomb) {

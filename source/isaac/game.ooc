@@ -13,7 +13,7 @@ import gnaar/[grid, utils]
 import math/Random
 
 // our stuff
-import isaac/[logging, level, bomb, hero, rooms, collectible]
+import isaac/[logging, level, bomb, hero, rooms, collectible, health]
 
 /*
  * The game, duh.
@@ -41,6 +41,7 @@ Game: class {
 
     // resources
     coinLabel, bombLabel, keyLabel: GlText
+    health: Health
 
     coinCount := 0
     bombCount := 1
@@ -160,6 +161,14 @@ Game: class {
 
         mapGroup = GlGroup new()
         uiGroup add(mapGroup)
+
+        health = Health new()
+        uiGroup add(health)
+
+        lifeLabel := GlText new(FONT, "LIFE", labelFontSize)
+        lifeLabel pos set!(650, 560)
+        lifeLabel color set!(255, 255, 255)
+        uiGroup add(lifeLabel)
     }
 
     initLevel: func {
@@ -244,6 +253,8 @@ Game: class {
         coinLabel value = "*%02d" format(coinCount)
         bombLabel value = "*%02d" format(bombCount)
         keyLabel value = "*%02d" format(keyCount)
+
+        health update(level)
     }
 
     // hero actions
