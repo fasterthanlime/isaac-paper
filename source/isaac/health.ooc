@@ -21,25 +21,26 @@ Health: class extends GlGroup {
     bottom := 554.0
     paddingY := 28.0
 
+    game: Game
 
-    init: func {
+    init: func (=game) {
         super()
     }
 
-    update: func (level: Level) {
-        if (level hero healthChanged) {
-            level hero healthChanged = false
-            setup(level)
+    update: func {
+        if (game heroStats healthChanged) {
+            game heroStats healthChanged = false
+            setup()
         }
     }
 
-    setup: func (level: Level) {
+    setup: func {
         children clear()
 
-        rest := level hero redLife
+        rest := game heroStats redLife
         index := 0
 
-        for (i in 0..level hero containers) {
+        for (i in 0..game heroStats containers) {
             if (rest >= 2) {
                 add(Heart new(getPos(index), HeartType FULL))
                 rest -= 2

@@ -66,7 +66,7 @@ Level: class {
         initGroups()
         initPhysx()
 
-        hero = Hero new(this, getHeroStartPos())
+        hero = Hero new(this, getHeroStartPos(), game heroStats)
         walls = Walls new(this)
 
         fillGrids()
@@ -82,7 +82,7 @@ Level: class {
         walls setup()
     }
 
-    reload: func (enterDir: Direction) {
+    destroy: func {
         holeGrid clear()
         blockGrid clear()
 
@@ -92,16 +92,7 @@ Level: class {
             iter remove()
             e destroy()
         }
-
-        fillGrids()
-        
-        heroPos := match (enterDir) {
-            case Direction UP     => vec2(400, 100)
-            case Direction DOWN   => vec2(400, 400)
-            case Direction RIGHT  => vec2(100, 240)
-            case Direction LEFT   => vec2(700, 240)
-        }
-        hero setPos(heroPos)
+        space free()
     }
 
     getHeroStartPos: func -> Vec2 {
@@ -279,11 +270,21 @@ Direction: enum {
 
     toString: func -> String {
         match this {
-            case This UP => "up"
-            case This DOWN => "down"
-            case This LEFT => "left"
+            case This UP    => "up"
+            case This DOWN  => "down"
+            case This LEFT  => "left"
             case This RIGHT => "right"
-            case => "<unknown direction>"
+            case            => "<unknown direction>"
+        }
+    }
+
+    toAngle: func -> Float {
+        match this {
+            case This UP     => 0
+            case This LEFT   => 90
+            case This DOWN   => 180
+            case This RIGHT  => 270
+            case => 45 // nonsensical value to make sure we notice it
         }
     }
 }

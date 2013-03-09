@@ -40,13 +40,12 @@ Game: class {
     map: Map
     rooms: Rooms
 
+    // the hero's stats!
+    heroStats: HeroStats
+
     // resources
     coinLabel, bombLabel, keyLabel: GlText
     health: Health
-
-    coinCount := 0
-    bombCount := 1
-    keyCount := 0
 
     // state stuff
     state := GameState PLAY
@@ -56,6 +55,9 @@ Game: class {
     resetCount := 0
     resetCountThreshold := 40
 
+    enterDir := Direction UP
+
+    /* Initialization, duh */
     init: func {
         Logging setup()
 
@@ -69,9 +71,9 @@ Game: class {
         initEvents()
         initGfx()
         initUI()
-        chooseFloor()
-        initMap()
-        initLevel()
+        map = Map new(this)
+
+        startGame()
 
         loop = FixedLoop new(dye, 60.0)
         loop run(||
@@ -79,12 +81,50 @@ Game: class {
         )
     }
 
-    reset: func {
+    startGame: func {
+        // re-initialize our stats
         initStats()
+
+        loadFloor()
+    }
+
+    loadFloor: func {
         chooseFloor()
 
-        map reset()
-        level reload(Direction UP)
+        if (map) {
+            map destroy()
+        }
+        map = Map new(this)
+        map generate()
+        loadRoom()
+    }
+
+    loadRoom: func {
+        map setup()
+        initLevel()
+    }
+
+    initLevel: func {
+        if (level) {
+            levelGroup remove(level group)
+            level destroy()
+            level = null
+        }
+
+        level = Level new(this)
+        levelGroup add(level group)
+        
+        heroPos := match (enterDir) {
+            case Direction UP     => vec2(400, 100)
+            case Direction DOWN   => vec2(400, 400)
+            case Direction RIGHT  => vec2(100, 240)
+            case Direction LEFT   => vec2(700, 240)
+        }
+        level hero setPos(heroPos)
+    }
+
+    reset: func {
+        startGame()
     }
 
     chooseFloor: func {
@@ -94,14 +134,7 @@ Game: class {
     }
 
     initStats: func {
-        coinCount = 0
-        bombCount = 1
-        keyCount = 0
-
-        // other characters have other stats
-        level hero containers = 3
-        level hero redLife = 3
-        level hero healthChanged = true
+        heroStats = HeroStats new(this)
     }
 
     initEvents: func {
@@ -115,10 +148,10 @@ Game: class {
     }
 
     dropBomb: func {
-        if (bombCount <= 0) return
+        if (heroStats bombCount <= 0) return
 
         level add(Bomb new(level, level hero pos))
-        bombCount -= 1
+        heroStats bombCount -= 1
     }
 
     changeRoom: func (=changeRoomDir) {
@@ -191,18 +224,13 @@ Game: class {
         mapGroup = GlGroup new()
         uiGroup add(mapGroup)
 
-        health = Health new()
+        health = Health new(this)
         uiGroup add(health)
 
         lifeLabel := GlText new(FONT, "LIFE", labelFontSize)
         lifeLabel pos set!(650, 560)
         lifeLabel color set!(255, 255, 255)
         uiGroup add(lifeLabel)
-    }
-
-    initLevel: func {
-        level = Level new(this)
-        levelGroup add(level group)
     }
 
     initGfx: func {
@@ -219,16 +247,12 @@ Game: class {
 
     }
 
-    initMap: func {
-        map = Map new(this)
-    }
-
     update: func {
         match state {
             case GameState PLAY =>
                 level update()
                 updateLabels()
-                if (level hero totalHealth() <= 0) {
+                if (heroStats totalHealth() <= 0) {
                     reset()
                 }
                 if (level input isPressed(KeyCode R)) {
@@ -284,32 +308,17 @@ Game: class {
         delta := changeRoomDelta()
         newPos := map currentTile pos add(delta)
         map currentTile = map grid get(newPos x, newPos y)
-        map setup()
-        level reload(changeRoomDir)
+        loadRoom()
 
         state = GameState PLAY
     }
 
     updateLabels: func {
-        coinLabel value = "*%02d" format(coinCount)
-        bombLabel value = "*%02d" format(bombCount)
-        keyLabel value = "*%02d" format(keyCount)
+        coinLabel value = "*%02d" format(heroStats coinCount)
+        bombLabel value = "*%02d" format(heroStats bombCount)
+        keyLabel value = "*%02d" format(heroStats keyCount)
 
-        health update(level)
-    }
-
-    // hero actions
-    pickupCoin: func (coin: CollectibleCoin) {
-        // TODO: lotsa modifiers (e.g. most of the trinkets)
-        coinCount += coin worth
-    }
-
-    pickupKey: func (key: CollectibleKey) {
-        keyCount += 1
-    }
-
-    pickupBomb: func (bomb: CollectibleBomb) {
-        bombCount += bomb worth
+        health update()
     }
 
     // quitter!
@@ -360,12 +369,13 @@ Map: class {
     mapSize: Vec2i
 
     init: func (=game) {
-        generate()
-
         group = GlGroup new()
         game mapGroup add(group)
+    }
 
-        setup()
+    destroy: func {
+        grid clear()
+        game mapGroup remove(group)
     }
 
     getRoomBudget: func -> Int {
@@ -448,12 +458,6 @@ Map: class {
         mapSize = vec2i(bounds width, bounds height)
         "Generated a map with bounds %s. Size = %dx%d" printfln(bounds _,
             bounds width, bounds height)
-    }
-
-    reset: func {
-        grid clear()
-        generate()
-        setup()
     }
 
     setup: func {

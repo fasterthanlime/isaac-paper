@@ -13,7 +13,7 @@ use gnaar
 import gnaar/[utils]
 
 // our stuff
-import isaac/[level, bomb]
+import isaac/[game, hero, level, bomb]
 
 /**
  * All that can be picked up
@@ -134,7 +134,7 @@ CollectibleCoin: class extends Collectible {
     }
 
     collect: func {
-        level game pickupCoin(this)
+        level game heroStats pickupCoin(this)
     }
 
 }
@@ -168,7 +168,7 @@ CollectibleBomb: class extends Collectible {
     }
 
     collect: func {
-        level game pickupBomb(this)
+        level game heroStats pickupBomb(this)
     }
 
 }
@@ -184,7 +184,7 @@ CollectibleKey: class extends Collectible {
     }
 
     collect: func {
-        level game pickupKey(this)
+        level game heroStats pickupKey(this)
     }
 
 }

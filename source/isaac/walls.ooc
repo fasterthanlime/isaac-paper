@@ -111,7 +111,9 @@ Door: class extends Entity {
 
     dir: Direction
 
+    group: GlGroup
     sprite: GlSprite
+    bgSprite: GlSprite
 
     shape: CpShape
     body: CpBody
@@ -134,9 +136,18 @@ Door: class extends Entity {
         }
         super(level, pos)
 
-        sprite = GlSprite new("assets/png/door-%s.png" format(dir toString()))
+        group = GlGroup new()
+        level doorGroup add(group)
+
+        bgSprite = GlSprite new("assets/png/door-closed.png")
+        bgSprite angle = dir toAngle()
+        bgSprite pos set!(pos)
+        group add(bgSprite)
+
+        sprite = GlSprite new("assets/png/door-regular.png")
+        sprite angle = dir toAngle()
         sprite pos set!(pos)
-        level doorGroup add(sprite)
+        group add(sprite)
 
         initPhysx()
     }
@@ -169,7 +180,7 @@ Door: class extends Entity {
     }
     
     setup: func (visible: Bool) {
-        sprite visible = visible
+        group visible = visible
         open = visible
     }
 

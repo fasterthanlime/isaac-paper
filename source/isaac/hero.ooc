@@ -14,7 +14,7 @@ use gnaar
 import gnaar/[utils]
 
 // our stuff
-import isaac/[level, tear, shadow, bomb]
+import isaac/[game, level, tear, shadow, bomb, collectible]
 
 /*
  * Dat Isaac...
@@ -44,14 +44,12 @@ Hero: class extends Entity {
 
     webCount := 0
 
-    containers := 3
-    redLife := 3
-    healthChanged := true
-
     invicibilityCount := 0
     invicibilityCountMax := 40
 
-    init: func (.level, .pos) {
+    stats: HeroStats
+
+    init: func (.level, .pos, =stats) {
         super(level, pos)
 
         sprite = GlSprite new("assets/png/isaac-down.png")
@@ -170,15 +168,6 @@ Hero: class extends Entity {
         level add(tear)
     }
 
-    hasWafer?: func -> Bool {
-        // TODO: implement, duh
-        false
-    }
-
-    totalHealth: func -> Int {
-        redLife
-    }
-
     /*
      * Harm the hero. Damage is counted in half-hearts
      */
@@ -186,8 +175,58 @@ Hero: class extends Entity {
         if (invicibilityCount > 0) {
             return // invincible, biatch!
         }
+        invicibilityCount = invicibilityCountMax
 
-        if (level game hardFloor?()) {
+        // ouch
+        stats takeDamage(damage)
+    }
+
+    bombHarm: func (bomb: Bomb) {
+        harmHero(2)
+    }
+
+}
+
+HeroStats: class {
+
+    containers := 3
+    redLife := 3
+    healthChanged := true
+
+    coinCount := 0
+    bombCount := 1
+    keyCount := 0
+
+    game: Game
+
+    init: func (=game) {
+    }
+
+    totalHealth: func -> Int {
+        redLife
+    }
+
+    hasWafer?: func -> Bool {
+        // TODO: implement, duh
+        false
+    }
+
+    // actions
+    pickupCoin: func (coin: CollectibleCoin) {
+        // TODO: lotsa modifiers (e.g. most of the trinkets)
+        coinCount += coin worth
+    }
+
+    pickupKey: func (key: CollectibleKey) {
+        keyCount += 1
+    }
+
+    pickupBomb: func (bomb: CollectibleBomb) {
+        bombCount += bomb worth
+    }
+
+    takeDamage: func (damage: Int) {
+        if (game hardFloor?()) {
             // takes a full heart of damage
             damage = 2
         }
@@ -200,11 +239,6 @@ Hero: class extends Entity {
         // TODO: soul hearts, eternal hearts
         redLife -= damage
         healthChanged = true
-        invicibilityCount = invicibilityCountMax
-    }
-
-    bombHarm: func (bomb: Bomb) {
-        harmHero(2)
     }
 
 }
