@@ -53,6 +53,9 @@ Game: class {
     changeRoomDir := Direction UP
     changeRoomIncr := 30.0
 
+    resetCount := 0
+    resetCountThreshold := 40
+
     init: func {
         Logging setup()
 
@@ -227,6 +230,15 @@ Game: class {
                 updateLabels()
                 if (level hero totalHealth() <= 0) {
                     reset()
+                }
+                if (level input isPressed(KeyCode R)) {
+                    resetCount += 1
+                    if (resetCount >= resetCountThreshold) {
+                        resetCount = 0
+                        reset()
+                    }
+                } else {
+                    resetCount = 0
                 }
 
             case GameState CHANGEROOM =>
