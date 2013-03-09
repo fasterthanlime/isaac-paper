@@ -49,6 +49,10 @@ Sack: class extends Mob {
         initPhysx()
     }
 
+    fixed?: func -> Bool {
+        true
+    }
+
     update: func -> Bool {
         if (life < maxLife) {
            if (damageCount <= 0) {

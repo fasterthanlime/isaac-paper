@@ -74,7 +74,16 @@ Enemy: abstract class extends Entity {
         z < level groundLevel
     }
 
+    fixed?: func -> Bool {
+        // override for stuff like sacks etc.
+        false
+    }
+
     hitBack: func (tear: Tear) {
+        if (fixed?()) {
+            return
+        }
+
         // TODO: make blast dependant on tear damage
         dir := pos sub(tear pos) normalized()
         hitbackSpeed := 200

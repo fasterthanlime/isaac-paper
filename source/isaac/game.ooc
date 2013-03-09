@@ -33,7 +33,7 @@ Game: class {
 
     FONT := "assets/ttf/8-bit-wonder.ttf"
 
-    floor := "basement"
+    floor := "cellar"
 
     // map-related stuff
     map: Map
