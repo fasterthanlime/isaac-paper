@@ -25,20 +25,11 @@ Hero: class extends Entity {
 
     sprite: GlSprite
 
-    speed := 200.0
-
     shape: CpShape
     body: CpBody
     rotateConstraint: CpConstraint
 
-    shotSpeed := 400.0
-
     shootCount := 0
-
-    shootRate := 1
-    shootRateInv: Int { get { shootRate * 30 } }
-
-    damage := 4.0
 
     shadow: Shadow
 
@@ -132,9 +123,9 @@ Hero: class extends Entity {
 
     getSpeed: func -> Float {
         if (webCount > 0 && !flying?()) {
-            speed * 0.5
+            stats speed * 0.5
         } else {
-            speed
+            stats speed
         }
     }
 
@@ -151,7 +142,7 @@ Hero: class extends Entity {
 
         skew := 0.3
 
-        shootCount = shootRateInv
+        shootCount = stats shootRateInv
         vel := match (dir) {
             case Direction RIGHT =>
                 vec2( 1, bodyVel y > 20 ? skew : (bodyVel y < -20 ? -skew : 0))
@@ -162,9 +153,9 @@ Hero: class extends Entity {
             case Direction UP    =>
                 vec2(bodyVel x > 20 ? skew : (bodyVel x < -20 ? -skew : 0), 1)
         }
-        vel = vel normalized() mul(shotSpeed)
+        vel = vel normalized() mul(stats shotSpeed)
 
-        tear := Tear new(level, pos add(0, 10), vel, TearType HERO, damage)
+        tear := Tear new(level, pos add(0, 10), vel, TearType HERO, stats damage)
         level add(tear)
     }
 
@@ -188,6 +179,17 @@ Hero: class extends Entity {
 }
 
 HeroStats: class {
+
+    speed := 200.0
+
+    shotSpeed := 400.0
+
+    //shootRate := 2
+    shootRate := 6 // testing
+
+    shootRateInv: Int { get { 60 / shootRate } }
+
+    damage := 4.0
 
     containers := 3
     redLife := 3
