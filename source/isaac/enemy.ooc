@@ -32,7 +32,7 @@ Enemy: abstract class extends Entity {
     
     redish: Bool
 
-    heroHandler: CollisionHandler
+    heroHandler: static CollisionHandler
 
     init: func (.level, .pos) {
         super(level, pos)
