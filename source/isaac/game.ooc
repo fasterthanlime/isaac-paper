@@ -44,7 +44,7 @@ Game: class {
     heroStats: HeroStats
 
     // resources
-    coinLabel, bombLabel, keyLabel: GlText
+    coinLabel, bombLabel, keyLabel, fpsLabel: GlText
     health: Health
 
     // state stuff
@@ -54,8 +54,6 @@ Game: class {
 
     resetCount := 0
     resetCountThreshold := 40
-
-    enterDir := Direction UP
 
     /* Initialization, duh */
     init: func {
@@ -114,7 +112,7 @@ Game: class {
         level = Level new(this)
         levelGroup add(level group)
         
-        heroPos := match (enterDir) {
+        heroPos := match (changeRoomDir) {
             case Direction UP     => vec2(400, 100)
             case Direction DOWN   => vec2(400, 400)
             case Direction RIGHT  => vec2(100, 240)
@@ -187,6 +185,11 @@ Game: class {
         keyLabel pos set!(labelLeft, labelBottom)
         keyLabel color set!(Color white())
         uiGroup add(keyLabel)
+
+        fpsLabel = GlText new(FONT, "60FPS", labelFontSize)
+        fpsLabel pos set!(10, 40)
+        fpsLabel color set!(Color new(30, 30, 30))
+        uiGroup add(fpsLabel)
 
         iconLeft := 325
         iconBottom := 528
@@ -317,6 +320,7 @@ Game: class {
         coinLabel value = "*%02d" format(heroStats coinCount)
         bombLabel value = "*%02d" format(heroStats bombCount)
         keyLabel value = "*%02d" format(heroStats keyCount)
+        fpsLabel value = "%.0fFPS" format(loop fps)
 
         health update()
     }
