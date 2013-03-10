@@ -35,7 +35,7 @@ Tear: class extends Entity {
 
     hit := false
 
-    heroHandler, enemyHandler, blockHandler, fireHandler, ignoreHandler: static CpCollisionHandler
+    heroHandler, enemyHandler, blockHandler, fireHandler, ignoreHandler: static CollisionHandler
 
     init: func (.level, .pos, .vel, =type, =damage) {
         super(level, pos)
@@ -86,30 +86,28 @@ Tear: class extends Entity {
     initHandlers: func {
         if (!heroHandler) {
             heroHandler = HeroTearHandler new()
-            level space addCollisionHandler(CollisionTypes TEAR, CollisionTypes HERO, heroHandler)
         }
+        heroHandler ensure(level)
 
         if (!enemyHandler) {
             enemyHandler = EnemyTearHandler new()
-            level space addCollisionHandler(CollisionTypes TEAR, CollisionTypes ENEMY, enemyHandler)
         }
+        enemyHandler ensure(level)
 
         if (!blockHandler) {
             blockHandler = BlockTearHandler new()
-            level space addCollisionHandler(CollisionTypes TEAR, CollisionTypes BLOCK, blockHandler)
-            level space addCollisionHandler(CollisionTypes TEAR, CollisionTypes WALL, blockHandler)
-            level space addCollisionHandler(CollisionTypes TEAR, CollisionTypes BOMB, blockHandler)
         }
+        blockHandler ensure(level)
 
         if (!ignoreHandler) {
             ignoreHandler = IgnoreTearHandler new()
-            level space addCollisionHandler(CollisionTypes TEAR, CollisionTypes COLLECTIBLE, ignoreHandler)
         }
+        ignoreHandler ensure(level)
 
         if (!fireHandler) {
             fireHandler = FireTearHandler new()
-            level space addCollisionHandler(CollisionTypes TEAR, CollisionTypes FIRE, fireHandler)
         }
+        fireHandler ensure(level)
     }
 
     destroy: func {
@@ -127,7 +125,7 @@ TearType: enum {
     ENEMY
 }
 
-HeroTearHandler: class extends CpCollisionHandler {
+HeroTearHandler: class extends CollisionHandler {
 
     preSolve: func (arbiter: CpArbiter, space: CpSpace) -> Bool {
         shape1, shape2: CpShape
@@ -152,9 +150,13 @@ HeroTearHandler: class extends CpCollisionHandler {
         bounce
     }
 
+    add: func (f: Func (Int, Int)) {
+        f(CollisionTypes TEAR, CollisionTypes HERO)
+    }
+
 }
 
-EnemyTearHandler: class extends CpCollisionHandler {
+EnemyTearHandler: class extends CollisionHandler {
 
     preSolve: func (arbiter: CpArbiter, space: CpSpace) -> Bool {
         shape1, shape2: CpShape
@@ -188,9 +190,13 @@ EnemyTearHandler: class extends CpCollisionHandler {
         bounce
     }
 
+    add: func (f: Func (Int, Int)) {
+        f(CollisionTypes TEAR, CollisionTypes ENEMY)
+    }
+
 }
 
-BlockTearHandler: class extends CpCollisionHandler {
+BlockTearHandler: class extends CollisionHandler {
 
     preSolve: func (arbiter: CpArbiter, space: CpSpace) -> Bool {
         shape1, shape2: CpShape
@@ -210,9 +216,15 @@ BlockTearHandler: class extends CpCollisionHandler {
         false
     }
 
+    add: func (f: Func (Int, Int)) {
+        f(CollisionTypes TEAR, CollisionTypes BLOCK)
+        f(CollisionTypes TEAR, CollisionTypes WALL)
+        f(CollisionTypes TEAR, CollisionTypes BOMB)
+    }
+
 }
 
-FireTearHandler: class extends CpCollisionHandler {
+FireTearHandler: class extends CollisionHandler {
 
     preSolve: func (arbiter: CpArbiter, space: CpSpace) -> Bool {
         shape1, shape2: CpShape
@@ -233,12 +245,20 @@ FireTearHandler: class extends CpCollisionHandler {
         }
     }
 
+    add: func (f: Func (Int, Int)) {
+        f(CollisionTypes TEAR, CollisionTypes FIRE)
+    }
+
 }
 
-IgnoreTearHandler: class extends CpCollisionHandler {
+IgnoreTearHandler: class extends CollisionHandler {
 
     begin: func (arbiter: CpArbiter, space: CpSpace) -> Bool {
         false
+    }
+
+    add: func (f: Func (Int, Int)) {
+        f(CollisionTypes TEAR, CollisionTypes COLLECTIBLE)
     }
 
 }

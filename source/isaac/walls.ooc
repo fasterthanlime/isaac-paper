@@ -118,7 +118,7 @@ Door: class extends Entity {
     shape: CpShape
     body: CpBody
 
-    isaacHandler: static CpCollisionHandler
+    isaacHandler: static CollisionHandler
 
     walkthrough := false
     open := false
@@ -174,9 +174,8 @@ Door: class extends Entity {
     initHandlers: func {
         if (!isaacHandler) {
             isaacHandler = IsaacDoorHandler new()
-            level space addCollisionHandler(CollisionTypes HERO,
-                CollisionTypes WALL, isaacHandler)
         }
+        isaacHandler ensure(level)
     }
     
     setup: func (visible: Bool) {
@@ -195,7 +194,7 @@ Door: class extends Entity {
 
 }
 
-IsaacDoorHandler: class extends CpCollisionHandler {
+IsaacDoorHandler: class extends CollisionHandler {
 
     preSolve: func (arbiter: CpArbiter, space: CpSpace) -> Bool {
         shape1, shape2: CpShape
@@ -213,6 +212,10 @@ IsaacDoorHandler: class extends CpCollisionHandler {
         }
 
         true
+    }
+
+    add: func (f: Func (Int, Int)) {
+        f(CollisionTypes HERO, CollisionTypes WALL)
     }
 
 }

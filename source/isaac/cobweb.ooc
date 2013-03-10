@@ -29,7 +29,7 @@ Cobweb: class extends Entity {
 
     sprite: GlSprite
 
-    webHeroHandler: static CpCollisionHandler
+    webHeroHandler: static CollisionHandler
 
     alive := true
 
@@ -83,9 +83,8 @@ Cobweb: class extends Entity {
     initHandlers: func {
         if (!webHeroHandler) {
             webHeroHandler = WebHeroHandler new()
-            level space addCollisionHandler(CollisionTypes COBWEB, CollisionTypes HERO,
-                webHeroHandler)
         }
+        webHeroHandler ensure(level)
     }
 
     destroy: func {
@@ -106,7 +105,7 @@ Cobweb: class extends Entity {
 
 }
 
-WebHeroHandler: class extends CpCollisionHandler {
+WebHeroHandler: class extends CollisionHandler {
 
     begin: func (arbiter: CpArbiter, space: CpSpace) -> Bool {
         delta(arbiter, 1)
@@ -124,6 +123,10 @@ WebHeroHandler: class extends CpCollisionHandler {
         hero webCount += diff
 
         false
+    }
+
+    add: func (f: Func (Int, Int)) {
+        f(CollisionTypes COBWEB, CollisionTypes HERO)
     }
 
 }

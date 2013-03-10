@@ -262,6 +262,23 @@ CollisionGroups: enum from Int {
     COLLECTIBLE
 }
 
+CollisionHandler: abstract class extends CpCollisionHandler {
+
+    cachedLevel: Level
+
+    ensure: func (level: Level) {
+        if (level != cachedLevel) {
+            cachedLevel = level
+            add(|a, b|
+                level space addCollisionHandler(a, b, this)
+            )
+        }
+    }
+
+    add: abstract func (f: Func (Int, Int))
+
+}
+
 Direction: enum {
     LEFT
     RIGHT

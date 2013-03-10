@@ -35,7 +35,7 @@ Collectible: abstract class extends Entity {
 
     collected := false
 
-    collectibleHandler: static CpCollisionHandler
+    collectibleHandler: static CollisionHandler
 
     init: func (.level, .pos) {
         super(level, pos)
@@ -83,9 +83,8 @@ Collectible: abstract class extends Entity {
     initHandlers: func {
         if (!collectibleHandler) {
             collectibleHandler = CollectibleHeroHandler new()
-            level space addCollisionHandler(CollisionTypes COLLECTIBLE,
-                CollisionTypes HERO, collectibleHandler)
         }
+        collectibleHandler ensure(level)
     }
 
     destroy: func {
@@ -189,7 +188,7 @@ CollectibleKey: class extends Collectible {
 
 }
 
-CollectibleHeroHandler: class extends CpCollisionHandler {
+CollectibleHeroHandler: class extends CollisionHandler {
 
     begin: func (arbiter: CpArbiter, space: CpSpace) -> Bool {
         shape1, shape2: CpShape
@@ -202,6 +201,10 @@ CollectibleHeroHandler: class extends CpCollisionHandler {
         }
 
         false
+    }
+
+    add: func (f: Func (Int, Int)) {
+        f(CollisionTypes COLLECTIBLE, CollisionTypes HERO)
     }
 
 }

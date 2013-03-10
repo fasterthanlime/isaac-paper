@@ -32,7 +32,7 @@ Enemy: abstract class extends Entity {
     
     redish: Bool
 
-    heroHandler: CpCollisionHandler
+    heroHandler: CollisionHandler
 
     init: func (.level, .pos) {
         super(level, pos)
@@ -109,9 +109,8 @@ Enemy: abstract class extends Entity {
     initHandlers: func {
         if (!heroHandler) {
             heroHandler = EnemyHeroHandler new()
-            level space addCollisionHandler(CollisionTypes ENEMY,
-                CollisionTypes HERO, heroHandler)
         }
+        heroHandler ensure(level)
     }
 
 }
@@ -140,7 +139,7 @@ Mob: class extends Enemy {
 
 }
 
-EnemyHeroHandler: class extends CpCollisionHandler {
+EnemyHeroHandler: class extends CollisionHandler {
 
     begin: func (arbiter: CpArbiter, space: CpSpace) -> Bool {
         shape1, shape2: CpShape
@@ -150,6 +149,10 @@ EnemyHeroHandler: class extends CpCollisionHandler {
         hero := shape2 getUserData() as Hero
 
         enemy touchHero(hero)
+    }
+
+    add: func (f: Func (Int, Int)) {
+        f(CollisionTypes ENEMY, CollisionTypes HERO)
     }
 
 }

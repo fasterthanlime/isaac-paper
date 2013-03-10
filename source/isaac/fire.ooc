@@ -29,7 +29,7 @@ Fire: class extends Entity {
 
     spriteWood, spriteFlame: GlSprite
 
-    fireHeroHandler: static CpCollisionHandler
+    fireHeroHandler: static CollisionHandler
 
     damageCount := 0
     damageCountMax := 20
@@ -139,9 +139,8 @@ Fire: class extends Entity {
     initHandlers: func {
         if (!fireHeroHandler) {
             fireHeroHandler = FireHeroHandler new()
-            level space addCollisionHandler(CollisionTypes FIRE, CollisionTypes HERO,
-                fireHeroHandler)
         }
+        fireHeroHandler ensure(level)
     }
 
     destroy: func {
@@ -166,7 +165,7 @@ Fire: class extends Entity {
 
 }
 
-FireHeroHandler: class extends CpCollisionHandler {
+FireHeroHandler: class extends CollisionHandler {
 
     preSolve: func (arbiter: CpArbiter, space: CpSpace) -> Bool {
         shape1, shape2: CpShape
@@ -176,6 +175,10 @@ FireHeroHandler: class extends CpCollisionHandler {
         hero harmHero(1)
 
         true
+    }
+
+    add: func (f: Func(Int, Int)) {
+        f(CollisionTypes FIRE, CollisionTypes HERO)
     }
 
 }

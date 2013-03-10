@@ -42,7 +42,7 @@ Hopper: class extends Mob {
 
     shadow: Shadow
 
-    blockHandler: static CpCollisionHandler
+    blockHandler: static CollisionHandler
 
     init: func (.level, .pos) {
         super(level, pos)
@@ -127,9 +127,8 @@ Hopper: class extends Mob {
         super()
         if (!blockHandler) {
             blockHandler = BlockHopperHandler new()
-            level space addCollisionHandler(CollisionTypes ENEMY, CollisionTypes BLOCK, blockHandler)
-            level space addCollisionHandler(CollisionTypes ENEMY, CollisionTypes HERO, blockHandler)
         }
+        blockHandler ensure(level)
     }
 
     destroy: func {
@@ -151,7 +150,7 @@ Hopper: class extends Mob {
 
 }
 
-BlockHopperHandler: class extends CpCollisionHandler {
+BlockHopperHandler: class extends CollisionHandler {
 
     preSolve: func (arbiter: CpArbiter, space: CpSpace) -> Bool {
         shape1, shape2: CpShape
@@ -164,6 +163,11 @@ BlockHopperHandler: class extends CpCollisionHandler {
             case =>
                 true
         }
+    }
+
+    add: func (f: Func (Int, Int)) {
+        f(CollisionTypes ENEMY, CollisionTypes BLOCK)
+        f(CollisionTypes ENEMY, CollisionTypes HERO)
     }
 
 }
