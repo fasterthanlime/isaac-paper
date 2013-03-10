@@ -26,9 +26,19 @@ Level: class {
     game: Game
 
     space: CpSpace
-    physicSteps := 10
+    physicSteps := 5
 
+    // when locked, some operations are buffered
+    locked := false
+    addCount := 0
+    removeCount := 0
+
+    // actual entity list
     entities := ArrayList<Entity> new()
+
+    // buffers
+    addBuffer := ArrayList<Entity> new()
+
     hero: Hero
     walls: Walls
 
@@ -90,9 +100,13 @@ Level: class {
         while (iter hasNext?()) {
             e := iter next()
             iter remove()
+            removeCount += 1
             e destroy()
         }
         space free()
+
+        logger debug("Finished destroying, add / remove = %d / %d",
+            addCount, removeCount)
     }
 
     getHeroStartPos: func -> Vec2 {
@@ -127,7 +141,12 @@ Level: class {
     }
 
     add: func (e: Entity) {
-        entities add(e)
+        addCount += 1
+        if (locked) {
+            addBuffer add(e)
+        } else {
+            entities add(e)
+        }
     }
 
     updateEvents: func {
@@ -166,6 +185,7 @@ Level: class {
 
         updateLayers()
 
+        locked = true
         hero update()
         walls update()
 
@@ -173,9 +193,19 @@ Level: class {
         while (iter hasNext?()) {
             e := iter next()
             if (!e update()) {
+                removeCount += 1
+                logger debug("Destroying object %p (it's a %s) - add %d, remove %d",
+                    e, e class name, addCount, removeCount)
                 iter remove()
                 e destroy()
             }
+        }
+        locked = false
+
+        if (!addBuffer empty?()) {
+            logger debug("Adding %d objects", addBuffer size)
+            entities addAll(addBuffer)
+            addBuffer clear()
         }
     }
 
