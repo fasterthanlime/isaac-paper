@@ -110,8 +110,11 @@ Door: class extends Entity {
 
     dir: Direction
 
-    group, bgGroup, fgGroup: GlGroup
-    bgSprite, fgSprite: GlSprite
+    group: GlGroup
+
+    closedSprite: GlSprite
+    holeSprite: GlSprite
+    fgSprite: GlSprite
 
     shape: CpShape
     body: CpBody
@@ -120,6 +123,8 @@ Door: class extends Entity {
 
     walkthrough := false
     open := false
+
+    opacityIncr := 0.05
 
     init: func (=level, =dir) {
         match dir {
@@ -137,37 +142,27 @@ Door: class extends Entity {
         group = GlGroup new()
         level doorGroup add(group)
 
-        bgGroup = GlGroup new()
-        group add(bgGroup)
+        closedSprite = GlSprite new("assets/png/door-closed.png")
+        closedSprite angle = dir toAngle()
+        closedSprite pos set!(pos)
+        closedSprite opacity = 1.0
+        group add(closedSprite)
 
-        fgGroup = GlGroup new()
-        group add(fgGroup)
-
-        initBg("closed")
+        holeSprite = GlSprite new("assets/png/door-hole.png")
+        holeSprite angle = dir toAngle()
+        holeSprite pos set!(pos)
+        holeSprite opacity = 0.0
+        group add(holeSprite)
 
         fgSprite = GlSprite new("assets/png/door-regular.png")
         fgSprite angle = dir toAngle()
         fgSprite pos set!(pos)
-        fgGroup add(fgSprite)
+        group add(fgSprite)
 
         initPhysx()
     }
 
-    setOpen: func (=open) {
-        initBg(open ? "open" : "closed")
-    }
-
-    initBg: func (state: String) {
-        if (bgSprite) {
-            bgGroup remove(bgSprite)
-            bgSprite = null
-        }
-
-        bgSprite = GlSprite new("assets/png/door-%s.png" format(state))
-        bgSprite angle = dir toAngle()
-        bgSprite pos set!(pos)
-        bgGroup add(bgSprite)
-    }
+    setOpen: func (=open)
 
     initPhysx: func {
         body = CpBody new(INFINITY, INFINITY)
@@ -208,7 +203,12 @@ Door: class extends Entity {
 
         if (level cleared?()) {
             setOpen(true)
-            group remove(bgSprite)
+        }
+
+        if (open && holeSprite opacity < 1.0) {
+            holeSprite opacity += opacityIncr
+        } else if (!open && holeSprite opacity > 0.0) {
+            holeSprite opacity -= opacityIncr
         }
 
         true
