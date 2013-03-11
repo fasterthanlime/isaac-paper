@@ -14,7 +14,8 @@ import math/Random
 import structs/[HashMap, ArrayList]
 
 // our stuff
-import isaac/[logging, level, bomb, hero, rooms, collectible, health]
+import isaac/[logging, level, bomb, hero, rooms, collectible, health,
+    plan]
 
 /*
  * The game, duh.
@@ -34,9 +35,9 @@ Game: class {
 
     FONT := "assets/ttf/8-bit-wonder.ttf"
 
-    floor: String
-
     // map-related stuff
+    plan: Plan
+    floor: PlanFloor
     map: Map
     rooms: Rooms
 
@@ -83,12 +84,11 @@ Game: class {
         // re-initialize our stats
         initStats()
 
+        generatePlan()
         loadFloor()
     }
 
     loadFloor: func {
-        chooseFloor()
-
         if (map) {
             map destroy()
         }
@@ -125,10 +125,10 @@ Game: class {
         startGame()
     }
 
-    chooseFloor: func {
-        list := ArrayList<String> new()
-        list add("cellar"). add("basement")
-        floor = Random choice(list)
+    generatePlan: func {
+        plan = Plan generate()
+        logger info("Generated plan: %s", plan toString())
+        floor = plan floors first()
     }
 
     initStats: func {
@@ -335,28 +335,6 @@ Game: class {
         exit(0)
     }
 
-    // floor info
-    floorIndex: func -> Int {
-        match floor {
-            case "cellar" || "basement" => 0
-            case "caves" || "catacombs" => 1
-            case "the-depths" || "necropolis" => 2
-            case "the-womb" || "utero" => 3
-            case "sheol" || "cathedral" => 4
-            case "chest" => 5
-            case => 0 // unknown room? art thou testing, dev?
-        }
-    }
-
-    xlFloor?: func -> Bool {
-        // *no* idea how to really implement that
-        false
-    }
-
-    hardFloor?: func -> Bool {
-        floorIndex() >= 3 // from the womb / utero - it's a hard floor
-    }
-
 }
 
 /*
@@ -387,12 +365,12 @@ Map: class {
     }
 
     getRoomBudget: func -> Int {
-        value := match (game floor) {
-            case "cellar" || "basement" => 9
-            case => 2
+        value := match (game floor type) {
+            case FloorType BASEMENT || FloorType CELLAR => 9
+            case => 13
         }
 
-        if (game xlFloor?()) {
+        if (game floor xl) {
             // double it up, johnny!
             value += value
         }
@@ -401,11 +379,11 @@ Map: class {
     }
 
     treasureRoomCount: func -> Int {
-        if (game hardFloor?()) {
+        if (game floor hard?()) {
             return 0
         }
 
-        match (game xlFloor?()) {
+        match (game floor xl) {
             case true => 2
             case => 1
         }
@@ -414,6 +392,9 @@ Map: class {
     generate: func {
         roomBudget := getRoomBudget()
         maxLength := roomBudget / 3
+        if (maxLength < 1) {
+            maxLength = 1
+        }
 
         pos := vec2i(0, 0)
         currentTile = add(pos, RoomType FIRST)
@@ -546,11 +527,11 @@ Map: class {
             return null
         }
 
-        if (neighborCount(pos) > 3 && !game xlFloor?()) {
+        if (neighborCount(pos) > 3 && !game floor xl) {
             return null
         }
 
-        roomSet := game rooms sets get(game floor)
+        roomSet := game rooms sets get(game floor type identifier())
         room := Random choice(roomSet rooms)
         if (roomType == RoomType FIRST) {
             room = roomSet rooms first()

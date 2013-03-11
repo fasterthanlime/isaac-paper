@@ -257,7 +257,7 @@ HeroStats: class {
     }
 
     takeDamage: func (damage: Int) {
-        if (game hardFloor?()) {
+        if (game floor hard?()) {
             // takes a full heart of damage
             damage = 2
         }
