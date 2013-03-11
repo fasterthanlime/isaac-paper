@@ -172,6 +172,56 @@ CollectibleBomb: class extends Collectible {
 
 }
 
+CollectibleHeart: class extends Collectible {
+
+    type: HeartType
+    value: HeartValue
+
+    init: func (.level, .pos, =type, =value) {
+        super(level, pos)
+
+        match type {
+            case HeartType RED =>
+                sprite color set!(220, 0, 0)
+            case HeartType SPIRIT =>
+                sprite color set!(130, 130, 130)
+        }
+    }
+
+    getSpritePath: func -> String {
+        match value {
+            case HeartValue FULL =>
+                "assets\png\collectible-heart.png"
+            case =>
+                "assets\png\collectible-half-heart.png"
+        }
+    }
+
+    collect: func {
+        level game heroStats pickupHealth(this)
+    }
+
+}
+
+HeartType: enum {
+    RED
+    SPIRIT
+    ETERNAL
+}
+
+HeartValue: enum {
+    EMPTY
+    HALF
+    FULL
+
+    toInt: func -> Int {
+        match this {
+            case This FULL => 2
+            case This HALF => 1
+        }
+    }
+}
+
 CollectibleKey: class extends Collectible {
 
     init: func (.level, .pos) {

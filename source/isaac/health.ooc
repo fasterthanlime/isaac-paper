@@ -13,7 +13,7 @@ import gnaar/[grid, utils]
 import math/Random
 
 // our stuff
-import isaac/[game, level, hero]
+import isaac/[game, level, hero, collectible]
 
 Health: class extends GlGroup {
 
@@ -40,17 +40,50 @@ Health: class extends GlGroup {
         rest := game heroStats redLife
         index := 0
 
+        budget := 12
+
         for (i in 0..game heroStats containers) {
             if (rest >= 2) {
-                add(Heart new(getPos(index), HeartType FULL))
+                add(Heart new(getPos(index), HeartValue FULL, HeartType RED))
                 rest -= 2
             } else if (rest >= 1) {
-                add(Heart new(getPos(index), HeartType HALF))
+                add(Heart new(getPos(index), HeartValue HALF, HeartType RED))
                 rest -= 1
             } else {
-                add(Heart new(getPos(index), HeartType EMPTY))
+                add(Heart new(getPos(index), HeartValue EMPTY, HeartType RED))
             }
             index += 1
+            budget -= 1
+        }
+
+        rest = game heroStats eternalLife
+
+        while (rest > 0 && budget > 0) {
+            if (rest >= 2) {
+                add(Heart new(getPos(index), HeartValue FULL, HeartType ETERNAL))
+                rest -= 2
+            } else if (rest >= 1) {
+                add(Heart new(getPos(index), HeartValue HALF, HeartType ETERNAL))
+                rest -= 1
+            } else {
+                add(Heart new(getPos(index), HeartValue EMPTY, HeartType ETERNAL))
+            }
+            budget -= 1
+        }
+
+        rest = game heroStats spiritLife
+
+        while (rest > 0 && budgegt > 0) {
+            if (rest >= 2) {
+                add(Heart new(getPos(index), HeartValue FULL, HeartType SPIRIT))
+                rest -= 2
+            } else if (rest >= 1) {
+                add(Heart new(getPos(index), HeartValue HALF, HeartType SPIRIT))
+                rest -= 1
+            } else {
+                add(Heart new(getPos(index), HeartValue EMPTY, HeartType SPIRIT))
+            }
+            budget -= 1
         }
     }
 
@@ -69,29 +102,30 @@ Health: class extends GlGroup {
 
 Heart: class extends GlSprite {
 
-    type: HeartType
+    value: HeartValue
 
-    init: func (pos: Vec2, =type) {
+    init: func (pos: Vec2, =value, =type) {
         super(getSpritePath())
         this pos set!(pos)
+
+        match type {
+            case HeartType RED =>
+                sprite color set!(220, 0, 0)
+            case HeartType SPIRIT =>
+                sprite color set!(130, 130, 130)
+        }
     }
 
     getSpritePath: func -> String {
-        match type {
-            case HeartType FULL =>
+        match value {
+            case HeartValue FULL =>
                 "assets/png/heart-full.png"
-            case HeartType HALF =>
+            case HeartValue HALF =>
                 "assets/png/heart-half.png"
             case =>
                 "assets/png/heart-empty.png"
         }
     }
 
-}
-
-HeartType: enum {
-    EMPTY
-    HALF
-    FULL
 }
 

@@ -192,7 +192,11 @@ HeroStats: class {
     damage := 4.0
 
     containers := 3
-    redLife := 3
+
+    redLife := 6
+    spiritLife := 0
+    eternalLife := 0
+
     healthChanged := true
 
     coinCount := 0
@@ -205,7 +209,7 @@ HeroStats: class {
     }
 
     totalHealth: func -> Int {
-        redLife
+        redLife + spiritLife + eternalLife
     }
 
     hasWafer?: func -> Bool {
@@ -227,6 +231,23 @@ HeroStats: class {
         bombCount += bomb worth
     }
 
+    pickupHealth: func (heart: CollectibleHeart) {
+        value := heart value toInt()
+
+        match (heart type) {
+            case HeartType RED =>
+                redLife += value
+                if (redLife > containers * 2) {
+                    // you can't have more red life than containers
+                    redLife = containers * 2
+                }
+            case HeartType SPIRIT =>
+                spiritLife += value
+            case HeartType ETERNAL =>
+                eternalLife += value
+        }
+    }
+
     takeDamage: func (damage: Int) {
         if (game hardFloor?()) {
             // takes a full heart of damage
@@ -238,9 +259,30 @@ HeroStats: class {
             damage = 1
         }
 
-        // TODO: soul hearts, eternal hearts
+        // spirit hearts go first
+
+        if (spiritLife > 0) {
+            if (spiritLife < damage) {
+                damage -= spiritLife
+                spiritLife = 0
+                healthChanged = true
+            }
+        }
+
+        if (damage == 0) { return }
+
+        // then eternal, if any
+
+        if (eternalLife > 0) {
+            eternalLife = 0
+            damage -= 1
+        }
+
+        if (damage == 0) { return }
+
+        // then red life, finally
+
         redLife -= damage
-        healthChanged = true
     }
 
 }

@@ -117,7 +117,7 @@ Room: class {
             case '#' =>
                 level blockGrid put(x, y, Block new(level))
             case 'c' =>
-                spawnCollectible(x, y, level)
+                spawnCollectible(level gridPos(x, y), level)
             case 'p' =>
                 level blockGrid put(x, y, Poop new(level))
             case 's' =>
@@ -153,15 +153,36 @@ Room: class {
         }
     }
 
-    spawnCollectible: func (x, y: Int, level: Level) {
-        number := Random randInt(0, 8)
-        pos := level gridPos(x, y)
+    spawnCollectible: func (pos: Vec2, level: Level) {
+        number := Random randInt(0, 12)
         if (number < 4) {
             level add(CollectibleCoin new(level, pos))
         } else if (number < 6) {
             level add(CollectibleBomb new(level, pos))
+        } else if (number < 8) {
+            spawnHeart(pos, level) 
         } else {
             level add(CollectibleKey new(level, pos))
         }
+    }
+
+    spawnHeart: func (pos: Vec2, level: Level) {
+        number := Random randInt(0, 100)
+        type := HeartType RED
+        value := HeartValue FULL
+
+        if (number < 3) {
+            type = HeartType ETERNAL
+            value = HeartValue HALF
+        } else if(number < 20) {
+            type = HeartType SPIRIT
+        } else {
+            // 50/50 chance of half-heart
+            if (Random randInt(0, 100) < 50) {
+                value = HeartValue HALF
+            }
+        }
+
+        level add(CollectibleHeart new(level, pos, type, value))
     }
 }
