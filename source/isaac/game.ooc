@@ -140,6 +140,10 @@ Game: class {
             quit()
         )
 
+        scene input onExit(||
+            quit()
+        )
+
         scene input onKeyPress(KeyCode E, |kp|
             dropBomb()
         )
