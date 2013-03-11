@@ -167,7 +167,6 @@ BlockHopperHandler: class extends CollisionHandler {
 
     add: func (f: Func (Int, Int)) {
         f(CollisionTypes ENEMY, CollisionTypes BLOCK)
-        f(CollisionTypes ENEMY, CollisionTypes HERO)
     }
 
 }

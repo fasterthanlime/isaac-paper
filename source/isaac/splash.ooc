@@ -13,6 +13,9 @@ import dye/[core, sprite, primitives, math]
 use gnaar
 import gnaar/[utils]
 
+// sdk stuff
+import math/Random
+
 // our stuff
 import isaac/[level, hero]
 
@@ -27,19 +30,21 @@ Splash: class extends Entity {
     life := 1.0
     incr := -0.1
 
-    scaleA := 0.4
-    scaleB := 1.0
+    scaleA := 0.1
+    scaleB := 0.5
 
     init: func (.level, .pos) {
         super(level, pos)
 
         sprite = GlSprite new(getSpritePath())
         sprite pos set!(pos)
+        sprite scale set!(scaleA, scaleB)
+        sprite angle = Random randInt(1, 360) as Float
         level group add(sprite)
     }
 
     getSpritePath: func -> String {
-        "assets/png/tears-1.png"
+        "assets/png/splash-%d.png" format(Random randInt(1, 4))
     }
 
     update: func -> Bool {
@@ -50,7 +55,7 @@ Splash: class extends Entity {
 
         scale := scaleA * life + scaleB * (1.0 - life)
         sprite scale set!(scale, scale)
-        sprite opacity = life
+        sprite opacity = life * 0.6
 
         true
     }
