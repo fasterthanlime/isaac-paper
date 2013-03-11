@@ -3,6 +3,9 @@
 use deadlogger
 import deadlogger/[Log, Logger]
 
+use dye
+import dye/[math]
+
 // sdk stuff
 import structs/[ArrayList, List, HashMap]
 import io/[FileReader]

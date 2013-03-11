@@ -231,21 +231,29 @@ HeroStats: class {
         bombCount += bomb worth
     }
 
-    pickupHealth: func (heart: CollectibleHeart) {
+    pickupHealth: func (heart: CollectibleHeart) -> Bool {
         value := heart value toInt()
 
         match (heart type) {
             case HeartType RED =>
+                if (redLife == containers * 2) {
+                    return false // all good, mate
+                }
+
                 redLife += value
                 if (redLife > containers * 2) {
                     // you can't have more red life than containers
                     redLife = containers * 2
                 }
             case HeartType SPIRIT =>
+                // TODO: two spirit hearts = one new container
                 spiritLife += value
             case HeartType ETERNAL =>
                 eternalLife += value
         }
+
+        healthChanged = true
+        true
     }
 
     takeDamage: func (damage: Int) {
@@ -266,6 +274,10 @@ HeroStats: class {
                 damage -= spiritLife
                 spiritLife = 0
                 healthChanged = true
+            } else {
+                spiritLife -= damage
+                damage = 0
+                healthChanged = true
             }
         }
 
@@ -275,6 +287,7 @@ HeroStats: class {
 
         if (eternalLife > 0) {
             eternalLife = 0
+            healthChanged = true
             damage -= 1
         }
 
@@ -283,6 +296,7 @@ HeroStats: class {
         // then red life, finally
 
         redLife -= damage
+        healthChanged = true
     }
 
 }

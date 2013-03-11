@@ -191,14 +191,17 @@ CollectibleHeart: class extends Collectible {
     getSpritePath: func -> String {
         match value {
             case HeartValue FULL =>
-                "assets\png\collectible-heart.png"
+                "assets/png/collectible-heart.png"
             case =>
-                "assets\png\collectible-half-heart.png"
+                "assets/png/collectible-half-heart.png"
         }
     }
 
     collect: func {
-        level game heroStats pickupHealth(this)
+        if (!level game heroStats pickupHealth(this)) {
+            // we did not get picked up!
+            collected = false
+        }
     }
 
 }

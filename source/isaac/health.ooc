@@ -73,7 +73,7 @@ Health: class extends GlGroup {
 
         rest = game heroStats spiritLife
 
-        while (rest > 0 && budgegt > 0) {
+        while (rest > 0 && budget > 0) {
             if (rest >= 2) {
                 add(Heart new(getPos(index), HeartValue FULL, HeartType SPIRIT))
                 rest -= 2
@@ -103,6 +103,7 @@ Health: class extends GlGroup {
 Heart: class extends GlSprite {
 
     value: HeartValue
+    type: HeartType
 
     init: func (pos: Vec2, =value, =type) {
         super(getSpritePath())
@@ -110,9 +111,9 @@ Heart: class extends GlSprite {
 
         match type {
             case HeartType RED =>
-                sprite color set!(220, 0, 0)
+                color set!(220, 0, 0)
             case HeartType SPIRIT =>
-                sprite color set!(130, 130, 130)
+                color set!(130, 130, 130)
         }
     }
 
