@@ -45,7 +45,7 @@ Game: class {
     heroStats: HeroStats
 
     // resources
-    coinLabel, bombLabel, keyLabel, fpsLabel: GlText
+    coinLabel, bombLabel, keyLabel, fpsLabel, floorLabel: GlText
     health: Health
 
     // state stuff
@@ -89,6 +89,8 @@ Game: class {
     }
 
     loadFloor: func {
+        floorLabel value = floor toString()
+
         if (map) {
             map destroy()
         }
@@ -194,6 +196,11 @@ Game: class {
         fpsLabel pos set!(10, 40)
         fpsLabel color set!(Color new(30, 30, 30))
         uiGroup add(fpsLabel)
+
+        floorLabel = GlText new(FONT, "", labelFontSize)
+        floorLabel pos set!(10, 10)
+        floorLabel color set!(Color new(30, 30, 30))
+        uiGroup add(floorLabel)
 
         iconLeft := 325
         iconBottom := 528
