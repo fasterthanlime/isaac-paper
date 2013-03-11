@@ -17,7 +17,6 @@ import isaac/[level, game]
 
 Walls: class extends Entity {
 
-    doorState := DoorState new()
     shapes := ArrayList<CpShape> new()
 
     upDoor, downDoor, leftDoor, rightDoor: Door
@@ -111,9 +110,8 @@ Door: class extends Entity {
 
     dir: Direction
 
-    group: GlGroup
-    sprite: GlSprite
-    bgSprite: GlSprite
+    group, bgGroup, fgGroup: GlGroup
+    bgSprite, fgSprite: GlSprite
 
     shape: CpShape
     body: CpBody
@@ -139,17 +137,36 @@ Door: class extends Entity {
         group = GlGroup new()
         level doorGroup add(group)
 
-        bgSprite = GlSprite new("assets/png/door-closed.png")
-        bgSprite angle = dir toAngle()
-        bgSprite pos set!(pos)
-        group add(bgSprite)
+        bgGroup = GlGroup new()
+        group add(bgGroup)
 
-        sprite = GlSprite new("assets/png/door-regular.png")
-        sprite angle = dir toAngle()
-        sprite pos set!(pos)
-        group add(sprite)
+        fgGroup = GlGroup new()
+        group add(fgGroup)
+
+        initBg("closed")
+
+        fgSprite = GlSprite new("assets/png/door-regular.png")
+        fgSprite angle = dir toAngle()
+        fgSprite pos set!(pos)
+        fgGroup add(fgSprite)
 
         initPhysx()
+    }
+
+    setOpen: func (=open) {
+        initBg(open ? "open" : "closed")
+    }
+
+    initBg: func (state: String) {
+        if (bgSprite) {
+            bgGroup remove(bgSprite)
+            bgSprite = null
+        }
+
+        bgSprite = GlSprite new("assets/png/door-%s.png" format(state))
+        bgSprite angle = dir toAngle()
+        bgSprite pos set!(pos)
+        bgGroup add(bgSprite)
     }
 
     initPhysx: func {
@@ -163,7 +180,7 @@ Door: class extends Entity {
                 vec2(30, 100)
         }
 
-        shape = CpBoxShape new(body, 50, 50)
+        shape = CpBoxShape new(body, size x, size y)
         shape setUserData(this)
         shape setCollisionType(CollisionTypes WALL)
         level space addShape(shape)
@@ -180,13 +197,18 @@ Door: class extends Entity {
     
     setup: func (visible: Bool) {
         group visible = visible
-        open = visible
+        setOpen(false)
     }
 
     update: func -> Bool {
         if (walkthrough) {
             walkthrough = false
             level game changeRoom(dir)
+        }
+
+        if (level cleared?()) {
+            setOpen(true)
+            group remove(bgSprite)
         }
 
         true

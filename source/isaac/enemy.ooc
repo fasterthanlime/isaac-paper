@@ -113,6 +113,11 @@ Enemy: abstract class extends Entity {
         heroHandler ensure(level)
     }
 
+    blocksRoom?: func -> Bool {
+        // override to false for stuff like grimaces, slides and poky
+        true
+    }
+
 }
 
 Mob: class extends Enemy {

@@ -17,7 +17,7 @@ import structs/[List, ArrayList, HashMap]
 import math/Random
 
 // our stuff
-import isaac/[game, hero, walls, hopper, bomb, rooms]
+import isaac/[game, hero, walls, hopper, bomb, rooms, enemy]
 
 Level: class {
 
@@ -26,7 +26,7 @@ Level: class {
     game: Game
 
     space: CpSpace
-    physicSteps := 5
+    physicSteps := 10
 
     // when locked, some operations are buffered
     locked := false
@@ -68,7 +68,7 @@ Level: class {
     dye: DyeContext { get { game dye } }
     input: Input { get { game dye input } }
 
-    doorState := DoorState new()
+    cleared := false
 
     init: func (=game) {
         group = GlGroup new()
@@ -177,6 +177,29 @@ Level: class {
         } else if (input isPressed(KeyCode LEFT)) {
             hero shoot(Direction LEFT)
         }
+    }
+
+    cleared?: func -> Bool {
+        if (!cleared) {
+            cleared = (blockingEnemyCount() <= 0)
+        }
+
+        cleared
+    }
+
+    blockingEnemyCount: func -> Int {
+        count := 0
+
+        for (e in entities) {
+            match e {
+                case enemy: Enemy =>
+                    if (enemy blocksRoom?()) {
+                        count += 1
+                    }
+            }
+        }
+
+        count
     }
 
     update: func {
@@ -333,26 +356,6 @@ Direction: enum {
             case This RIGHT  => 270
             case => 45 // nonsensical value to make sure we notice it
         }
-    }
-}
-
-DoorState: class {
-    up: Bool
-    left: Bool
-    right: Bool
-    down: Bool
-
-    init: func
-
-    operator == (other: This) -> Bool {
-        up == other up && \
-        down == other down && \
-        left == other left && \
-        right == other right
-    }
-
-    operator != (other: This) -> Bool {
-        !(this == other)
     }
 }
 
