@@ -8,3 +8,9 @@ log.txt
 
 # OSX crap
 .DS_store
+
+# Windows crap
+*.dll
+
+# Boehm crap
+isaac.gc.log
