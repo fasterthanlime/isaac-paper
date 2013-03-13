@@ -13,7 +13,7 @@ import chipmunk
 import structs/[ArrayList, List, HashMap]
 
 // our stuff
-import isaac/[level, game]
+import isaac/[level, game, map]
 
 Walls: class extends Entity {
 
@@ -89,10 +89,10 @@ Walls: class extends Entity {
 
     setup: func {
         tile := level currentTile
-        upDoor setup(tile hasTop?())
-        downDoor setup(tile hasBottom?())
-        leftDoor setup(tile hasLeft?())
-        rightDoor setup(tile hasRight?())
+        upDoor    setup(tile, tile neighbor( 0,  1))
+        downDoor  setup(tile, tile neighbor( 0, -1))
+        leftDoor  setup(tile, tile neighbor(-1,  0))
+        rightDoor setup(tile, tile neighbor( 1,  0))
     }
 
     update: func -> Bool {
@@ -122,9 +122,13 @@ Door: class extends Entity {
     isaacHandler: static CollisionHandler
 
     walkthrough := false
+    tile, connection: MapTile
+    visible := false
     open := false
 
     opacityIncr := 0.05
+
+    scale := 0.9
 
     init: func (=level, =dir) {
         match dir {
@@ -146,20 +150,54 @@ Door: class extends Entity {
         closedSprite angle = dir toAngle()
         closedSprite pos set!(pos)
         closedSprite opacity = 1.0
+        closedSprite scale set!(scale, scale)
         group add(closedSprite)
 
         holeSprite = GlSprite new("assets/png/door-hole.png")
         holeSprite angle = dir toAngle()
         holeSprite pos set!(pos)
         holeSprite opacity = 0.0
+        holeSprite scale set!(scale, scale)
         group add(holeSprite)
 
-        fgSprite = GlSprite new("assets/png/door-regular.png")
+        fgSprite = GlSprite new(getFgSpritePath())
         fgSprite angle = dir toAngle()
         fgSprite pos set!(pos)
+        fgSprite scale set!(scale, scale)
         group add(fgSprite)
 
         initPhysx()
+    }
+
+    getFgSpritePath: func -> String {
+        test := func (tile: MapTile) -> String {
+            match tile {
+                case null =>
+                    "regular"
+                case =>
+                    match (tile type) {
+                        case RoomType BOSS =>
+                            "boss"
+                        case RoomType TREASURE =>
+                            "treasure"
+                        case RoomType CURSE =>
+                            "spikes"
+                        case =>
+                            "regular"
+                    }
+            }
+        }
+
+        name := test(connection)
+        if (name == "regular") {
+            name = test(tile)
+        }
+
+        "assets/png/door-%s.png" format(name)
+    }
+
+    updateFgSprite: func {
+        fgSprite setTexture(getFgSpritePath())
     }
 
     setOpen: func (=open)
@@ -168,12 +206,13 @@ Door: class extends Entity {
         body = CpBody new(INFINITY, INFINITY)
         body setPos(cpv(pos))
 
-        thickness := 65
+        length := 60
+        thickness := 60
         size := match dir {
             case Direction UP || Direction DOWN =>
-                vec2(100, thickness)
+                vec2(length, thickness)
             case =>
-                vec2(thickness, 100)
+                vec2(thickness, length)
         }
 
         shape = CpBoxShape new(body, size x, size y)
@@ -191,9 +230,11 @@ Door: class extends Entity {
         isaacHandler ensure(level)
     }
     
-    setup: func (visible: Bool) {
+    setup: func (=tile, =connection) {
+        visible = (connection != null)
         group visible = visible
         setOpen(false)
+        updateFgSprite()
     }
 
     update: func -> Bool {
@@ -202,7 +243,7 @@ Door: class extends Entity {
             level game changeRoom(dir)
         }
 
-        if (level cleared?()) {
+        if (level cleared?() && visible) {
             setOpen(true)
         }
 

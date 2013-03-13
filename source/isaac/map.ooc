@@ -346,6 +346,16 @@ MapTile: class {
         map group add(rect)
     }
 
+    neighbor: func (deltaCol, deltaRow: Int) -> This {
+        x := pos x + deltaCol
+        y := pos y + deltaRow
+        if (map grid contains?(x, y)) {
+            return map grid get(x, y)
+        }
+
+        null
+    }
+
     hasTop?: func -> Bool {
         hasNeighbor?(0, 1)
     }
