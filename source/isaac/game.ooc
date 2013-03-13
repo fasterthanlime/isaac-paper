@@ -9,6 +9,9 @@ import deadlogger/[Log, Logger]
 use gnaar
 import gnaar/[grid, utils]
 
+use bleep
+import bleep
+
 // sdk stuff
 import math/Random
 import structs/[HashMap, List, ArrayList]
@@ -23,6 +26,8 @@ Game: class {
 
     dye: DyeContext
     scene: Scene
+
+    bleep: Bleep
 
     loop: FixedLoop
 
@@ -70,6 +75,9 @@ Game: class {
         initGfx()
         initUI()
         map = Map new(this)
+
+        bleep = Bleep new()
+        bleep playMusic("assets/ogg/respite.ogg", -1)
 
         startGame()
 
