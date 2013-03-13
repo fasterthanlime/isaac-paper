@@ -107,6 +107,7 @@ Game: class {
     }
 
     loadRoom: func {
+        logger info("Entering a %s room", map currentTile type toString())
         map setup()
         initLevel()
     }

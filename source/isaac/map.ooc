@@ -48,6 +48,8 @@ RoomType: enum {
             case This LIBRARY      => "library"
             case This CURSE        => "curse"
             case This ARENA        => "arena"
+
+            case => "<unknown room type %d>" format(this)
         }
     }
 }
@@ -204,6 +206,16 @@ Map: class {
         }
 
         adjacencyMap := AdjacencyMap new(this)
+        lonelies := adjacencyMap getLonelies()
+
+        while (!lonelies empty?() && !specials empty?()) {
+            special := specials removeAt(0)
+            lonely := Random choice(lonelies)
+            add(lonely pos, special)
+
+            adjacencyMap update(lonely pos x, lonely pos y, false)
+            lonelies = adjacencyMap getLonelies()
+        }
 
         bounds := grid getBounds()
         mapSize = vec2i(bounds width, bounds height)
@@ -280,7 +292,7 @@ Map: class {
         count
     }
     
-    add: func (pos: Vec2i, roomType := RoomType NORMAL) -> MapTile {
+    add: func (pos: Vec2i, roomType: RoomType) -> MapTile {
         if (grid contains?(pos x, pos y)) {
             return null
         }
@@ -295,7 +307,7 @@ Map: class {
             room = roomSet rooms first()
         }
 
-        tile := MapTile new(this, pos, room)
+        tile := MapTile new(this, pos, room, roomType)
         grid put(pos x, pos y, tile)
         tile
     }
@@ -308,10 +320,11 @@ MapTile: class {
 
     pos: Vec2i
     room: Room
+    type: RoomType
 
     active := false
 
-    init: func (=map, .pos, =room) {
+    init: func (=map, .pos, =room, =type) {
         this pos = vec2i(pos)
     }
 
@@ -328,7 +341,7 @@ MapTile: class {
             (row - gridOffset y) * tileSize y + centerOffset y
         )
         offset := map offset add(diff)
-        rect = GlMapTile new(tileSize, active)
+        rect = GlMapTile new(tileSize, this, active)
         rect setPos(offset)
         map group add(rect)
     }
@@ -359,8 +372,9 @@ GlMapTile: class extends GlGroup {
 
     outline: GlRectangle
     fill: GlRectangle
+    tile: MapTile
 
-    init: func (size: Vec2, active: Bool) {
+    init: func (size: Vec2, =tile, active: Bool) {
         super()
 
         outline = GlRectangle new(size)
@@ -374,7 +388,26 @@ GlMapTile: class extends GlGroup {
         if (active) {
             fill color set!(Color new(255, 255, 255))
         } else {
-            fill color set!(Color new(120, 120, 120))
+            match (tile type) {
+                case RoomType BOSS =>
+                    fill color set!(Color new(255, 0, 0)) // red
+                case RoomType TREASURE =>
+                    fill color set!(Color new(255, 255, 0)) // yellow
+
+                case RoomType SHOP =>
+                    fill color set!(Color new(72, 60, 50)) // taupe
+                case RoomType MINIBOSS =>
+                    fill color set!(Color new(255, 128, 128)) // pink
+                case RoomType LIBRARY =>
+                    fill color set!(Color new(210, 180, 140)) // tan
+                case RoomType CURSE =>
+                    fill color set!(Color new(170, 0, 0)) // dark red
+                case RoomType ARENA =>
+                    fill color set!(Color new(255, 0, 255)) // magenta
+
+                case =>
+                    fill color set!(Color new(120, 120, 120)) // gray
+            }
         }
         fill center = false
         add(fill)
@@ -396,22 +429,39 @@ AdjacencyMap: class {
 
     init: func (=map) {
         map grid each(|col, row, tile|
-            add(col    , row + 1) // top
-            add(col + 1, row    ) // right
-            add(col    , row - 1) // bottom
-            add(col - 1, row    ) // left
+            update(col, row)
         ) 
 
         logger info("Finished computing adjacency map")
         dump()
     }
 
-    add: func (col, row: Int) {
-        if (!grid contains?(col, row) && !map grid contains?(col, row)) {
-            pos := vec2i(col, row)
-            count := map neighborCount(pos)
-            grid put(col, row, AdjacencyTile new(pos, count))
+    test: func (col, row: Int, addNew: Bool) {
+        if (map grid contains?(col, row)) {
+            if (grid contains?(col, row)) {
+                grid remove(col, row)
+            }
+            return
         }
+
+        pos := vec2i(col, row)
+        count := map neighborCount(pos)
+
+        if (grid contains?(col, row)) {
+            tile := grid get(col, row)
+            tile count = count
+        } else {
+            if (addNew) {
+                grid put(col, row, AdjacencyTile new(pos, count))
+            }
+        }
+    }
+
+    update: func (col, row: Int, addNew := true) {
+        test(col    , row + 1, addNew) // top
+        test(col + 1, row    , addNew) // right
+        test(col    , row - 1, addNew) // bottom
+        test(col - 1, row    , addNew) // left
     }
 
     dump: func {
@@ -435,6 +485,16 @@ AdjacencyMap: class {
             row -= 1
         }
         logger info("===================")
+    }
+
+    getLonelies: func -> ArrayList<AdjacencyTile> {
+        list := ArrayList<AdjacencyTile> new()
+        grid each(|col, row, tile|
+            if (tile count == 1) {
+                list add(tile)
+            }
+        )
+        list
     }
 
 }

@@ -168,11 +168,12 @@ Door: class extends Entity {
         body = CpBody new(INFINITY, INFINITY)
         body setPos(cpv(pos))
 
+        thickness := 65
         size := match dir {
             case Direction UP || Direction DOWN =>
-                vec2(100, 30)
+                vec2(100, thickness)
             case =>
-                vec2(30, 100)
+                vec2(thickness, 100)
         }
 
         shape = CpBoxShape new(body, size x, size y)
