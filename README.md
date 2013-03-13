@@ -16,6 +16,7 @@ A clone of Binding of Isaac for #1GAM March, roguelike month!
   * Ridvan Duzey: music
   * BMBGuitar: music
   * Nstens1117: music
+  * FamilyJules7x: music
   
 ### Links
 
