@@ -32,6 +32,7 @@ Game: class {
     loop: FixedLoop
 
     uiGroup, mapGroup, levelGroup: GlGroup
+    bgPic: GlSprite
 
     level: Level
 
@@ -108,8 +109,36 @@ Game: class {
 
     loadRoom: func {
         logger info("Entering a %s room", map currentTile type toString())
+        loadBg()
         map setup()
         initLevel()
+    }
+
+    loadBg: func {
+        // TODO: special bgs for some rooms
+
+        name := match (floor type) {
+            case FloorType BASEMENT =>
+                "basement"
+            case FloorType CELLAR =>
+                "cellar"
+            case FloorType CAVES || FloorType CATACOMBS =>
+                "caves"
+            case FloorType DEPTHS || FloorType NECROPOLIS =>
+                "depths"
+            case FloorType WOMB || FloorType UTERO =>
+                "womb"
+            case FloorType CATHEDRAL =>
+                "depths"
+            case FloorType SHEOL =>
+                "depths"
+            case FloorType CHEST =>
+                "basement"
+            case =>
+                "basement" // fallback
+        }
+        path := "assets/png/%s-bg.png" format(name)
+        bgPic setTexture(path)
     }
 
     initLevel: func {
@@ -262,7 +291,7 @@ Game: class {
         bgGroup := GlGroup new()
         levelGroup add(bgGroup)
        
-        bgPic := GlSprite new("assets/png/basement-bg.png")
+        bgPic = GlSprite new("assets/png/basement-bg.png")
         bgPic pos set!(0, 0)
         bgPic center = false
         bgGroup add(bgPic)
