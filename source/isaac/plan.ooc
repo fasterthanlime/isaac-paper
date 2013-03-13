@@ -161,5 +161,27 @@ FloorType: enum {
             case => -1
         }
     }
+
+    budget: func -> Int {
+        match this {
+            case This BASEMENT   => 9
+            case This CELLAR     => 9
+
+            case This CAVES      => 11
+            case This CATACOMBS  => 11
+
+            case This DEPTHS     => 13
+            case This NECROPOLIS => 13
+
+            case This WOMB       => 15
+            case This UTERO      => 15
+
+            case This SHEOL      => 17
+            case This CATHEDRAL  => 17
+
+            case This CHEST      => 19
+            case => 9
+        }
+    }
 }
 

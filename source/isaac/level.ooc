@@ -17,7 +17,7 @@ import structs/[List, ArrayList, HashMap]
 import math/Random
 
 // our stuff
-import isaac/[game, hero, walls, hopper, bomb, rooms, enemy]
+import isaac/[game, hero, walls, hopper, bomb, rooms, enemy, map]
 
 Level: class {
 
