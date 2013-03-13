@@ -183,7 +183,6 @@ Map: class {
                 case 2 => diff y = 1
                 case 3 => diff y = -1
             }
-            //"dir = %d, diff = %s, length = %d" printfln(dir, diff _, length)
 
             mypos := vec2i(pos)
             for (j in 0..length) {
@@ -204,10 +203,12 @@ Map: class {
             }
         }
 
+        adjacencyMap := AdjacencyMap new(this)
+
         bounds := grid getBounds()
         mapSize = vec2i(bounds width, bounds height)
-        "Generated a map with bounds %s. Size = %dx%d" printfln(bounds _,
-            bounds width, bounds height)
+        logger info("Generated a map with bounds %s. Size = %dx%d",
+            bounds _, bounds width, bounds height)
     }
 
     setup: func {
@@ -266,19 +267,15 @@ Map: class {
 
         /*  Order:
          ************
-         *  0  1  2
-         *  7  .  3
-         *  6  5  4
+         *     0   
+         *  3  .  1
+         *     2   
          ************
          */
-        test(pos x - 1, pos y - 1) // bottom left
-        test(pos x - 1, pos y    ) // center left
-        test(pos x - 1, pos y + 1) // top left
-        test(pos x    , pos y + 1) // top center 
-        test(pos x + 1, pos y + 1) // top right
-        test(pos x + 1, pos y    ) // center right
-        test(pos x + 1, pos y - 1) // bottom right
-        test(pos x    , pos y - 1) // bottom center
+        test(pos x    , pos y + 1) // top
+        test(pos x + 1, pos y    ) // right
+        test(pos x    , pos y - 1) // bottom
+        test(pos x - 1, pos y    ) // left
 
         count
     }
@@ -388,5 +385,66 @@ GlMapTile: class extends GlGroup {
         outline pos set!(pos)
     }
     
+}
+
+AdjacencyMap: class {
+
+    map: Map
+    grid := SparseGrid<AdjacencyTile> new()
+
+    logger := static Log getLogger(This name)
+
+    init: func (=map) {
+        map grid each(|col, row, tile|
+            add(col    , row + 1) // top
+            add(col + 1, row    ) // right
+            add(col    , row - 1) // bottom
+            add(col - 1, row    ) // left
+        ) 
+
+        logger info("Finished computing adjacency map")
+        dump()
+    }
+
+    add: func (col, row: Int) {
+        if (!grid contains?(col, row) && !map grid contains?(col, row)) {
+            pos := vec2i(col, row)
+            count := map neighborCount(pos)
+            grid put(col, row, AdjacencyTile new(pos, count))
+        }
+    }
+
+    dump: func {
+        bounds := grid getBounds()
+        logger info("Bounds = %s", bounds _)
+
+        logger info("===================")
+        row := bounds yMax
+        while (row >= bounds yMin) {
+            buffer := Buffer new()
+            for (col in (bounds xMin)..(bounds xMax + 1)) {
+                if (grid contains?(col, row)) {
+                    tile := grid get(col, row)
+                    buffer append("%d" format(tile count))
+                } else {
+                    buffer append(".")
+                }
+                buffer append(" ")
+            }
+            logger info(buffer toString())
+            row -= 1
+        }
+        logger info("===================")
+    }
+
+}
+
+AdjacencyTile: class {
+
+    pos: Vec2i
+    count: Int
+
+    init: func (=pos, =count)
+
 }
 
