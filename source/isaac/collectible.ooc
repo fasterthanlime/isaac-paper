@@ -12,8 +12,11 @@ import dye/[core, sprite, primitives, math]
 use gnaar
 import gnaar/[utils]
 
+// sdk stuff
+import math/Random
+
 // our stuff
-import isaac/[game, hero, level, bomb, freezer]
+import isaac/[game, hero, level, bomb, freezer, map]
 
 /**
  * All that can be picked up
@@ -169,7 +172,6 @@ CollectibleBomb: class extends Collectible {
     worth: Int
 
     init: func (.level, .pos, type := BombType ONE) {
-        radius = 20.0
         this type = type
         worth = match type {
             case BombType TWO => 2
@@ -326,6 +328,128 @@ CollectibleHeroHandler: class extends CollisionHandler {
 
     add: func (f: Func (Int, Int)) {
         f(CollisionTypes COLLECTIBLE, CollisionTypes HERO)
+    }
+
+}
+
+ChestType: enum {
+    REGULAR
+    GOLDEN
+    RED
+}
+
+CollectibleChest: class extends Collectible {
+
+    type: ChestType
+
+    init: func (.level, .pos, =type) {
+        super(level, pos)
+    }
+
+    getSpritePath: func -> String {
+        "assets/png/collectible-chest.png"
+    }
+
+    updateGfx: func {
+        // colors for different chest types
+    }
+
+    update: func -> Bool {
+        if (collected) {
+            spill()
+            return false
+        }
+
+        super()
+    }
+
+    collect: func {
+        // muffin!
+    }
+
+    spill: func {
+        // TODO: other types of drops
+
+        match type {
+            case => spillRegular()
+        }
+    }
+
+    spillRegular: func {
+        regularDrop := (Random randInt(0, 100) < 70)
+        // FIXME: no 
+
+        if (regularDrop) {
+            maxDrops := 3
+            drops := 0
+
+            if (Random randInt(0, 100) < 40) {
+                amount := Random randInt(1, 5)
+                spawnCoins(amount)
+                drops += 1
+            }
+
+            if (drops >= maxDrops) return
+
+            if (Random randInt(0, 100) < 30) {
+                spawnKey()
+                drops += 1
+            }
+
+            if (drops >= maxDrops) return
+
+            if (Random randInt(0, 100) < 40) {
+                spawnBomb()
+                drops += 1
+            }
+
+            if (drops >= maxDrops) return
+
+            if (Random randInt(0, 100) < 30) {
+                spawnHeart()
+            }
+        } else {
+            // TODO: cards, pills, trinkets, smaller chests
+        }
+    }
+
+    spawnCoins: func (count: Int) {
+        for (i in 0..count) {
+            x := Random randInt(-40, 40) as Float
+            y := Random randInt(-40, 40) as Float
+            coinPos := pos add(x, y)
+
+            // TODO: other types of coins
+            level add(CollectibleCoin new(level, coinPos))
+        }
+    }
+
+    spawnKey: func {
+        // maybe offset?
+        level add(CollectibleKey new(level, pos))
+    }
+
+    spawnBomb: func {
+        // 1+1 free
+        level add(CollectibleBomb new(level, pos))
+    }
+
+    spawnHeart: func {
+        // maybe offset?
+        level tile room spawnHeart(pos, level)
+    }
+
+    shouldFreeze: func -> Bool {
+        true
+    }
+
+    freeze: func (ent: FrozenEntity) {
+        ent put("type", type)
+    }
+
+    unfreeze: func (ent: FrozenEntity) {
+        type = ent attrs get("type", ChestType)
+        updateGfx()
     }
 
 }

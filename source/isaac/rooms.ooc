@@ -127,6 +127,8 @@ Room: class {
                     level tileGrid put(x, y, Block new(level, Random randInt(1, 3)))
                 case 'c' =>
                     spawnCollectible(level gridPos(x, y), level)
+                case 'C' =>
+                    spawnChest(level gridPos(x, y), level)
                 case 'p' =>
                     level tileGrid put(x, y, Poop new(level))
                 case 'f' =>
@@ -173,16 +175,23 @@ Room: class {
         }
     }
 
+    spawnChest: func (pos: Vec2, level: Level) {
+        // TODO: different chest types
+        level add(CollectibleChest new(level, pos, ChestType REGULAR))
+    }
+
     spawnCollectible: func (pos: Vec2, level: Level) {
-        number := Random randInt(0, 12)
+        number := Random randInt(0, 16)
         if (number < 4) {
             level add(CollectibleCoin new(level, pos))
         } else if (number < 6) {
             level add(CollectibleBomb new(level, pos))
         } else if (number < 8) {
             spawnHeart(pos, level) 
-        } else {
+        } else if (number < 12) {
             level add(CollectibleKey new(level, pos))
+        } else {
+            level add(CollectibleChest new(level, pos))
         }
     }
 
