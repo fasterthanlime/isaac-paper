@@ -31,6 +31,8 @@ TrapDoor: class extends Entity {
 
     trapDoorHeroHandler: static CollisionHandler
 
+    gracePeriod := 10
+
     init: func (.level, .pos) {
         super(level, pos)
 
@@ -42,6 +44,10 @@ TrapDoor: class extends Entity {
     }
 
     update: func -> Bool {
+        if (gracePeriod > 0) {
+            gracePeriod -= 1
+        }
+
         true
     }
 
@@ -87,9 +93,14 @@ TrapDoor: class extends Entity {
 
 TrapDoorHeroHandler: class extends CollisionHandler {
 
-    preSolve: func (arbiter: CpArbiter, space: CpSpace) -> Bool {
+    begin: func (arbiter: CpArbiter, space: CpSpace) -> Bool {
         shape1, shape2: CpShape
         arbiter getShapes(shape1&, shape2&)
+
+        trap := shape1 getUserData() as TrapDoor
+        if (trap gracePeriod > 0) {
+            return false
+        }
 
         hero := shape2 getUserData() as Hero
         hero level game changeFloor()
