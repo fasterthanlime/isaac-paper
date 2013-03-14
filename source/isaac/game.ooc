@@ -17,7 +17,8 @@ import math/Random
 import structs/[HashMap, List, ArrayList]
 
 // our stuff
-import isaac/[logging, level, bomb, hero, rooms, collectible, health, plan, map]
+import isaac/[logging, level, bomb, hero, rooms, collectible, health, plan, map,
+    music, options]
 
 /*
  * The game, duh.
@@ -27,7 +28,10 @@ Game: class {
     dye: DyeContext
     scene: Scene
 
+    options: Options
+
     bleep: Bleep
+    music: Music
 
     loop: FixedLoop
 
@@ -39,8 +43,6 @@ Game: class {
     logger := static Log getLogger(This name)
 
     FONT := "assets/ttf/8-bit-wonder.ttf"
-
-    currentMusic: String
 
     // map-related stuff
     plan: Plan
@@ -71,6 +73,8 @@ Game: class {
     init: func {
         Logging setup()
 
+        options = Options new()
+
         dye = DyeContext new(800, 600, "Paper Isaac")
         dye setClearColor(Color white())
 
@@ -84,6 +88,7 @@ Game: class {
         map = Map new(this)
 
         bleep = Bleep new()
+        music = Music new(this)
         startGame()
 
         loop = FixedLoop new(dye, 60.0)
@@ -122,9 +127,9 @@ Game: class {
         dumpRoomInfo()
 
         loadBg()
-        loadMusic()
         map setup()
         initLevel()
+        loadMusic()
     }
 
     dumpRoomInfo: func {
@@ -188,7 +193,10 @@ Game: class {
         name = match (map currentTile type) {
             case RoomType BOSS =>
                 // TODO: separate boss musics
-                "my-innermost-apocalypse" // backup
+                if (!level cleared) {
+                    name = "my-innermost-apocalypse" // backup
+                }
+                name
             case RoomType SECRET =>
                 "respite"
             case RoomType SUPERSECRET =>
@@ -201,13 +209,8 @@ Game: class {
                 name
         }
 
-        if (currentMusic == name) {
-            return
-        }
-
-        currentMusic = name
-        path := "assets/ogg/%s.ogg" format(name)
-        bleep playMusic(path, -1)
+        logger warn("Should set music to %s", name)
+        music setMusic(name)
     }
 
     initLevel: func {
