@@ -27,10 +27,15 @@ Shadow: class extends Entity {
 
     scale, baseScale: Float
 
+    opacity := 1.0
+    baseOpacity := 0.8
+
     init: func (.level, =width) {
         super(level, vec2(0, 0))
 
         sprite = GlSprite new("assets/png/shadow.png")
+        setOpacity(1.0)
+
         baseScale = width / sprite width as Float
         setScale(1.0)
 
@@ -44,6 +49,10 @@ Shadow: class extends Entity {
 
     setPos: func (pos: Vec2) {
         sprite pos set!(pos)
+    }
+
+    setOpacity: func (=opacity) {
+        sprite opacity = baseOpacity * opacity
     }
 
     destroy: func {

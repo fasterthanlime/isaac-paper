@@ -32,6 +32,7 @@ Hero: class extends Entity {
     shootCount := 0
 
     shadow: Shadow
+    shadowFactor := 0.8
 
     webCount := 0
 
@@ -49,7 +50,7 @@ Hero: class extends Entity {
         sprite = GlSprite new("assets/png/isaac-down.png")
         scale := 0.8
         sprite scale set!(scale, scale)
-        shadow = Shadow new(level, sprite width * scale)
+        shadow = Shadow new(level, sprite width * scale * shadowFactor)
 
         level charGroup add(sprite)
 
@@ -60,7 +61,7 @@ Hero: class extends Entity {
 
     setOpacity: func (opacity: Float) {
         sprite opacity = opacity
-        shadow sprite opacity = opacity
+        shadow setOpacity(opacity)
     }
 
     update: func -> Bool {
@@ -71,7 +72,7 @@ Hero: class extends Entity {
         bodyPos := body getPos()
         sprite pos set!(bodyPos x, bodyPos y + 20)
         pos set!(body getPos())
-        shadow setPos(pos)
+        shadow setPos(pos sub(0, 8))
 
         setOpacity(1.0)
         if (invicibilityCount > 0) {

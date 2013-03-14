@@ -83,8 +83,8 @@ Fire: class extends Entity {
         }
 
         bodyPos := body getPos()
-        spriteFlame pos set!(bodyPos x, bodyPos y - 4)
-        spriteWood pos set!(bodyPos x, bodyPos y)
+        spriteFlame pos set!(bodyPos x, bodyPos y + 4)
+        spriteWood pos set!(bodyPos x, bodyPos y + 8)
         pos set!(body getPos())
 
         spriteFlame opacity = life / (maxLife + 2.0)

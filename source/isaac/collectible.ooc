@@ -41,6 +41,8 @@ Collectible: abstract class extends Entity {
     collectibleHandler: static CollisionHandler
 
     shadow: Shadow
+    shadowYOffset := 10
+    shadowFactor := 0.5
 
     init: func (.level, .pos) {
         super(level, pos)
@@ -48,7 +50,7 @@ Collectible: abstract class extends Entity {
         sprite = GlSprite new(getSpritePath())
         level charGroup add(sprite)
 
-        shadow = Shadow new(level, sprite width * 0.5)
+        shadow = Shadow new(level, sprite width * shadowFactor)
         initPhysx()
     }
 
@@ -61,7 +63,7 @@ Collectible: abstract class extends Entity {
 
         pos set!(body getPos())
         sprite pos set!(pos x, pos y + yOffset)
-        shadow setPos(pos sub(0, 10))
+        shadow setPos(pos sub(0, shadowYOffset))
 
         // friction
         vel := body getVel()
@@ -129,6 +131,8 @@ CollectibleCoin: class extends Collectible {
     init: func (.level, .pos, type := CoinType PENNY) {
         this type = type
         super(level, pos)
+
+        shadowYOffset = 3
     }
 
     getWorth: func -> Int {
@@ -178,6 +182,7 @@ CollectibleBomb: class extends Collectible {
     worth: Int
 
     init: func (.level, .pos, type := BombType ONE) {
+        shadowFactor = 0.7
         this type = type
         worth = match type {
             case BombType TWO => 2
