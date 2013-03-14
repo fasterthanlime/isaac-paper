@@ -10,13 +10,14 @@ A clone of Binding of Isaac for #1GAM March, roguelike month!
 
 ### Credits
 
-  * Amos Wenger: code, art
+  * Amos Wenger (nddrylliog): code, art
   * Myriam Bechikh: art, floor layout
   * Einat Schlagmann: art
   * Ridvan Duzey: music
-  * BMBGuitar: music
+  * Benjamin Barrows (BMBGuitar): music
   * Nstens1117: music
   * FamilyJules7x: music
+  * Scise: music
   
 ### Links
 
