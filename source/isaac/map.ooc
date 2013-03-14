@@ -328,6 +328,16 @@ Map: class {
         identifier := match roomType {
             case RoomType TREASURE =>
                 "treasure"
+            case RoomType SHOP =>
+                "shop"
+            case RoomType LIBRARY =>
+                "library"
+            case RoomType ANGEL =>
+                "angel"
+            case RoomType DEVIL =>
+                "devil"
+            case RoomType CURSE =>
+                "curse"
             case RoomType BOSS =>
                 boss := pickBoss()
                 boss identifier()
@@ -337,7 +347,7 @@ Map: class {
 
         logger warn("Generating room with identifier %s", identifier)
 
-        roomSet := game rooms sets get(identifier)
+        roomSet := game rooms getSet(identifier)
         room := Random choice(roomSet rooms)
         if (roomType == RoomType FIRST) {
             room = roomSet rooms first()
