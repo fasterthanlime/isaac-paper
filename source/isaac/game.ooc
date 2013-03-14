@@ -65,6 +65,8 @@ Game: class {
     resetCount := 0
     resetCountThreshold := 40
 
+    cheats := true
+
     /* Initialization, duh */
     init: func {
         Logging setup()
@@ -252,6 +254,12 @@ Game: class {
         scene input onKeyPress(KeyCode E, |kp|
             dropBomb()
         )
+
+        scene input onKeyPress(KeyCode _1, |kp|
+            if (cheats) {
+                changeFloor()
+            }
+        )
     }
 
     dropBomb: func {
@@ -433,7 +441,6 @@ Game: class {
         floor = plan floors get(floorIndex)
 
         // don't re-init stats, they're carried over from the previous floor
-        generatePlan()
         loadFloor()
 
         state = GameState PLAY
