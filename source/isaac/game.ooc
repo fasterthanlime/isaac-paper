@@ -414,6 +414,10 @@ Game: class {
     }
 
     finalizeChangeRoom: func {
+        // furl old room
+        map currentTile furl(level)
+
+        // set up new room
         delta := changeRoomDelta()
         newPos := map currentTile pos add(delta)
         map currentTile = map grid get(newPos x, newPos y)

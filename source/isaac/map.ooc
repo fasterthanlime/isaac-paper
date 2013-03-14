@@ -374,6 +374,10 @@ MapTile: class {
         }
     }
 
+    furl: func (level: Level) {
+        freezedRoom = FreezedRoom new(level)
+    }
+
     reset: func {
         if (rect) {
             map group remove(rect)            
