@@ -110,28 +110,43 @@ Room: class {
 
     init: func
 
-    spawn: func (level: Level) {
+    spawn: func (level: Level, onlyCreeps := false) {
         y := 0
         for (row in rows) {
             x := 0
             for (c in row) {
-                spawn(x, height - 1 - y, c, level)
+                spawn(x, height - 1 - y, c, level, onlyCreeps)
                 x += 1
             }
             y += 1
         }
     }
 
-    spawn: func ~specific (x, y: Int, c: Char, level: Level) {
-        match c {
-            case '.' || ' ' =>
-                 // ignore
-            case '#' =>
-                level blockGrid put(x, y, Block new(level))
-            case 'c' =>
-                spawnCollectible(level gridPos(x, y), level)
-            case 'p' =>
-                level blockGrid put(x, y, Poop new(level))
+    spawn: func ~specific (x, y: Int, c: Char, level: Level, onlyCreeps: Bool) {
+        goodA := true
+        goodB := true
+
+        if (!onlyCreeps) {
+            match c {
+                case '.' || ' ' =>
+                    // ignore
+                case '#' =>
+                    level tileGrid put(x, y, Block new(level, Random randInt(1, 3)))
+                case 'c' =>
+                    spawnCollectible(level gridPos(x, y), level)
+                case 'p' =>
+                    level tileGrid put(x, y, Poop new(level))
+                case 'f' =>
+                    level add(Fire new(level, level gridPos(x, y), false))
+                case 'F' =>
+                    level add(Fire new(level, level gridPos(x, y), true))
+                case =>
+                    goodA = false
+            }
+        }
+
+        // now spawn all stuff enemy-like
+        match c { 
             case 's' =>
                 level add(Spider new(level, level gridPos(x, y)))
             case 'k' =>
@@ -156,12 +171,12 @@ Room: class {
                 level add(Trite new(level, level gridPos(x, y)))
             case 'w' =>
                 level add(Cobweb new(level, level gridPos(x, y)))
-            case 'f' =>
-                level add(Fire new(level, level gridPos(x, y), false))
-            case 'F' =>
-                level add(Fire new(level, level gridPos(x, y), true))
             case =>
-                logger warn("Unknown identifier: %c", c)
+                goodB = false
+        }
+
+        if (!goodA && !goodB) {
+            logger warn("Unknown identifier: %c", c)
         }
     }
 

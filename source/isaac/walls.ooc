@@ -88,7 +88,7 @@ Walls: class extends Entity {
     }
 
     setup: func {
-        tile := level currentTile
+        tile := level tile
         upDoor    setup(tile, tile neighbor( 0,  1))
         downDoor  setup(tile, tile neighbor( 0, -1))
         leftDoor  setup(tile, tile neighbor(-1,  0))

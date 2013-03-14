@@ -62,15 +62,16 @@ Level: class {
     groundLevel := 3.0
 
     // grids
-    holeGrid  := Grid<Hole> new()
-    blockGrid := Grid<Block> new()
+    tileGrid := Grid<Tile> new()
 
     dye: DyeContext { get { game dye } }
     input: Input { get { game dye input } }
 
     cleared := false
 
-    init: func (=game) {
+    tile: MapTile
+
+    init: func (=game, =tile) {
         group = GlGroup new()
 
         initGroups()
@@ -79,7 +80,8 @@ Level: class {
         hero = Hero new(this, getHeroStartPos(), game heroStats)
         walls = Walls new(this)
 
-        fillGrids()
+        tile unfurl(this)
+        walls setup()
     }
     
     gridPos: func (x, y: Int) -> Vec2 {
@@ -87,14 +89,8 @@ Level: class {
              paddedBottomLeft y + 50.0 * y)
     }
 
-    fillGrids: func {
-        currentTile room spawn(this)
-        walls setup()
-    }
-
     destroy: func {
-        holeGrid clear()
-        blockGrid clear()
+        tileGrid clear()
 
         iter := entities iterator()
         while (iter hasNext?()) {
@@ -233,8 +229,7 @@ Level: class {
     }
 
     updateLayers: func {
-        updateGrid(holeGrid)
-        updateGrid(blockGrid)
+        updateGrid(tileGrid)
     }
 
     updateGrid: func (grid: Grid) {
@@ -253,10 +248,6 @@ Level: class {
         }
     }
 
-    currentTile: MapTile { get {
-        game map currentTile
-    } }
-
     eachInRadius: func (pos: Vec2, radius: Float, f: Func (Entity)) {
         test := func (e: Entity) {
             eRadius := pos dist(e pos)
@@ -269,7 +260,7 @@ Level: class {
             test(e)
         }
 
-        blockGrid each(|col, row, e| test(e))
+        tileGrid each(|col, row, e| test(e))
         test(hero)
     }
 
@@ -503,14 +494,15 @@ Hole: class extends Tile {
 
 Block: class extends Tile {
 
-    init: func (.level) {
+    number: Int
+
+    init: func (.level, =number) {
         super(level)
         shape setCollisionType(CollisionTypes BLOCK)
     }
 
     getSprite: func -> String {
-        num := Random randInt(1, 3)
-        "assets/png/block-%d.png" format(num)
+        "assets/png/block-%d.png" format(number)
     }
 
     getLayer: func -> GlGroup {

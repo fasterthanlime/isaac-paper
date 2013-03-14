@@ -14,7 +14,7 @@ import math/Random
 import structs/[HashMap, List, ArrayList]
 
 // our stuff
-import isaac/[level, plan, rooms, game, boss]
+import isaac/[level, plan, rooms, game, boss, freezer]
 
 RoomType: enum {
     FIRST
@@ -358,10 +358,20 @@ MapTile: class {
     room: Room
     type: RoomType
 
+    freezedRoom: FreezedRoom
+
     active := false
 
     init: func (=map, .pos, =room, =type) {
         this pos = vec2i(pos)
+    }
+
+    unfurl: func (level: Level) {
+        if (freezedRoom) {
+            freezedRoom unfreeze(level)
+        } else {
+            room spawn(level)
+        }
     }
 
     reset: func {

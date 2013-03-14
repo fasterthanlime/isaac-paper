@@ -206,7 +206,7 @@ Game: class {
             level = null
         }
 
-        level = Level new(this)
+        level = Level new(this, map currentTile)
         levelGroup add(level group)
         
         heroPos := match (changeRoomDir) {
