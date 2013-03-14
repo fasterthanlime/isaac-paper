@@ -13,7 +13,7 @@ use gnaar
 import gnaar/[utils]
 
 // our stuff
-import isaac/[game, hero, level, bomb]
+import isaac/[game, hero, level, bomb, freezer]
 
 /**
  * All that can be picked up
@@ -115,25 +115,45 @@ CoinType: enum {
 CollectibleCoin: class extends Collectible {
 
     type: CoinType
-    worth: Int
+    worth: Int { get { getWorth() } } 
 
     init: func (.level, .pos, type := CoinType PENNY) {
         this type = type
-        worth = match type {
+        super(level, pos)
+    }
+
+    getWorth: func -> Int {
+        match type {
             case CoinType DIME   => 10
             case CoinType NICKEL => 5
             case => 1
         }
-
-        super(level, pos)
     }
 
     getSpritePath: func -> String {
+        // TODO: different colors for dime, nickel, etc.
         "assets/png/collectible-coin.png"
+    }
+
+    updateGfx: func {
+        sprite setTexture(getSpritePath())
     }
 
     collect: func {
         level game heroStats pickupCoin(this)
+    }
+
+    shouldFreeze: func -> Bool {
+        true
+    }
+
+    freeze: func (ent: FrozenEntity) {
+        ent put("type", type)
+    }
+
+    unfreeze: func (ent: FrozenEntity) {
+        type = ent attrs get("type", CoinType)
+        updateGfx()
     }
 
 }
@@ -163,12 +183,31 @@ CollectibleBomb: class extends Collectible {
     }
 
     getSpritePath: func -> String {
+        // TODO: 1+1 free (double bombs)
         "assets/png/collectible-bomb.png"
+    }
+
+    updateGfx: func {
+        sprite setTexture(getSpritePath())
     }
 
     collect: func {
         level game heroStats pickupBomb(this)
     }
+
+    shouldFreeze: func -> Bool {
+        true
+    }
+
+    freeze: func (ent: FrozenEntity) {
+        ent put("type", type)
+    }
+
+    unfreeze: func (ent: FrozenEntity) {
+        type = ent attrs get("type", BombType)
+        updateGfx()
+    }
+
 
 }
 
@@ -179,13 +218,7 @@ CollectibleHeart: class extends Collectible {
 
     init: func (.level, .pos, =type, =value) {
         super(level, pos)
-
-        match type {
-            case HeartType RED =>
-                sprite color set!(220, 0, 0)
-            case HeartType SPIRIT =>
-                sprite color set!(130, 130, 130)
-        }
+        updateGfx()
     }
 
     getSpritePath: func -> String {
@@ -197,12 +230,41 @@ CollectibleHeart: class extends Collectible {
         }
     }
 
+    updateGfx: func {
+        sprite setTexture(getSpritePath())
+
+        match type {
+            case HeartType RED =>
+                sprite color set!(220, 0, 0)
+            case HeartType SPIRIT =>
+                sprite color set!(130, 130, 130)
+            case HeartType ETERNAL =>
+                sprite color set!(255, 255, 255)
+        }
+    }
+
     collect: func {
         if (!level game heroStats pickupHealth(this)) {
             // we did not get picked up!
             collected = false
         }
     }
+
+    shouldFreeze: func -> Bool {
+        true
+    }
+
+    freeze: func (ent: FrozenEntity) {
+        ent put("type", type)
+        ent put("value", value)
+    }
+
+    unfreeze: func (ent: FrozenEntity) {
+        type = ent attrs get("type", HeartType)
+        value = ent attrs get("value", HeartValue)
+        updateGfx()
+    }
+
 
 }
 
@@ -237,6 +299,10 @@ CollectibleKey: class extends Collectible {
 
     collect: func {
         level game heroStats pickupKey(this)
+    }
+
+    shouldFreeze: func -> Bool {
+        true
     }
 
 }

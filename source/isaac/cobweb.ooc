@@ -16,7 +16,7 @@ import gnaar/[utils]
 import math, math/Random
 
 // our stuff
-import isaac/[level, hero, utils, bomb]
+import isaac/[level, hero, utils, bomb, freezer]
 
 /*
  * Slowww is the tempo
@@ -101,6 +101,10 @@ Cobweb: class extends Entity {
 
     bombHarm: func (bomb: Bomb) {
         alive = false
+    }
+
+    shouldFreeze: func -> Bool {
+        true
     }
 
 }

@@ -19,7 +19,7 @@ import math/Random
 
 // our stuff
 import isaac/[game, hero, walls, hopper, bomb, rooms, enemy, map, level,
-    tiles, fire]
+    tiles, fire, cobweb, collectible]
 
 FrozenRoom: class {
 
@@ -126,6 +126,16 @@ FrozenEntity: class {
                 Fire new(level, pos, false)
             case "Bomb" =>
                 Bomb new(level, pos)
+            case "Cobweb" =>
+                Cobweb new(level, pos)
+            case "CollectibleHeart" =>
+                CollectibleHeart new(level, pos, HeartType RED, HeartValue HALF)
+            case "CollectibleKey" =>
+                CollectibleKey new(level, pos)
+            case "CollectibleBomb" =>
+                CollectibleBomb new(level, pos, BombType ONE)
+            case "CollectibleCoin" =>
+                CollectibleCoin new(level, pos, CoinType PENNY)
             case =>
                 null
         }

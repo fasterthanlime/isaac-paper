@@ -86,6 +86,9 @@ Level: class {
 
         // bypass the onClear callback if just spawned
         updateClearedCondition()
+
+        // update once without drawing to set up everything correctly
+        updateEntities()
     }
     
     gridPos: func (x, y: Int) -> Vec2 {
@@ -220,6 +223,10 @@ Level: class {
         updatePhysics()
         updateEvents()
 
+        updateEntities()
+    }
+
+    updateEntities: func {
         updateLayers()
 
         locked = true
@@ -241,7 +248,12 @@ Level: class {
 
         if (!addBuffer empty?()) {
             logger debug("Adding %d objects", addBuffer size)
-            entities addAll(addBuffer)
+
+            for (entity in addBuffer) {
+                if (entity update()) {
+                    entities add(entity)
+                }
+            }
             addBuffer clear()
         }
     }
