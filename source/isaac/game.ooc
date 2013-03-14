@@ -432,6 +432,7 @@ Game: class {
         floorIndex += 1
         if (floorIndex >= plan floors size) {
             logger warn("Player won the game!")
+            state = GameState PLAY
 
             // you win!
             startGame()
