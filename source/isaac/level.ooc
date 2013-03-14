@@ -300,6 +300,11 @@ Level: class {
 
         tileGrid each(|col, row, e| test(e))
         test(hero)
+
+        test(walls upDoor)
+        test(walls downDoor)
+        test(walls leftDoor)
+        test(walls rightDoor)
     }
 
 }

@@ -13,7 +13,7 @@ import chipmunk
 import structs/[ArrayList, List, HashMap]
 
 // our stuff
-import isaac/[level, game, map]
+import isaac/[level, game, map, bomb, plan]
 
 Walls: class extends Entity {
 
@@ -126,7 +126,7 @@ Door: class extends Entity {
     visible := false
     open := false
 
-    opacityIncr := 0.05
+    opacityIncr := 0.075
 
     scale := 0.9
 
@@ -253,6 +253,33 @@ Door: class extends Entity {
             holeSprite opacity -= opacityIncr
         }
 
+        true
+    }
+
+    bombHarm: func (bomb: Bomb) {
+        if (!visible) {
+            // TODO: what about secret rooms?
+            return
+        }
+
+        if (blowable?()) {
+            // fuck yeah
+            setOpen(true)
+        }
+    }
+
+    blowable?: func -> Bool {
+        if (connection type == RoomType BOSS || tile type == RoomType BOSS) {
+            // either one is a boss room, you're fucked.
+            return false
+        }
+
+        if (level game floor type == FloorType CHEST) {
+            // HAHA. You can't bomb anything in the chest
+            return false
+        }
+
+        // TODO: what if it's locked?
         true
     }
 
