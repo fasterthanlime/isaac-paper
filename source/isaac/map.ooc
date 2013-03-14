@@ -401,7 +401,7 @@ MapTile: class {
             (row - gridOffset y) * tileSize y + centerOffset y
         )
         offset := map offset add(diff)
-        rect = GlMapTile new(tileSize, this, active)
+        rect = GlMapTile new(tileSize, this)
         rect setPos(offset)
         map group add(rect)
     }
@@ -435,6 +435,14 @@ MapTile: class {
     hasNeighbor?: func (col, row: Int) -> Bool {
         map grid contains?(pos x + col, pos y + row)
     }
+
+    cleared?: func -> Bool {
+        if (!frozenRoom) {
+            return false
+        }
+
+        frozenRoom cleared
+    }
     
 }
 
@@ -444,7 +452,7 @@ GlMapTile: class extends GlGroup {
     fill: GlRectangle
     tile: MapTile
 
-    init: func (size: Vec2, =tile, active: Bool) {
+    init: func (size: Vec2, =tile) {
         super()
 
         outline = GlRectangle new(size)
@@ -455,8 +463,10 @@ GlMapTile: class extends GlGroup {
 
         fill = GlRectangle new(size sub(2, 2))
         fill pos set!(1, 1)
-        if (active) {
+        if (tile active) {
             fill color set!(Color new(255, 255, 255))
+        } else if (tile cleared?()) {
+            fill color set!(Color new(160, 160, 160))
         } else {
             match (tile type) {
                 case RoomType BOSS =>
@@ -476,7 +486,7 @@ GlMapTile: class extends GlGroup {
                     fill color set!(Color new(255, 0, 255)) // magenta
 
                 case =>
-                    fill color set!(Color new(120, 120, 120)) // gray
+                    fill color set!(Color new(60, 60, 60)) // gray
             }
         }
         fill center = false
