@@ -14,8 +14,7 @@ use gnaar
 import gnaar/[utils]
 
 // our stuff
-import isaac/[level, hero, splash, enemy, fire]
-
+import isaac/[level, hero, splash, enemy, fire, tiles]
 
 Tear: class extends Entity {
 

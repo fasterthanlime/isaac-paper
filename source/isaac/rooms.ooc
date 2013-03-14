@@ -13,7 +13,7 @@ import math/Random
 
 // our stuff
 import isaac/[level, spider, sack, fly, hopper, trite, cobweb,
-    fire, collectible]
+    fire, collectible, tiles]
 
 Rooms: class {
     sets := HashMap<String, RoomSet> new()
