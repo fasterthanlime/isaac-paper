@@ -33,6 +33,8 @@ Spider: class extends Mob {
     scale := 0.8
 
     shadow: Shadow
+    shadowFactor := 0.7
+    shadowYOffset := 8
 
     mover: Mover
 
@@ -45,7 +47,7 @@ Spider: class extends Mob {
 
         sprite = GlSprite new("assets/png/spider.png")
         sprite scale set!(scale, scale)
-        shadow = Shadow new(level, sprite width * scale * 0.5)
+        shadow = Shadow new(level, sprite width * scale * shadowFactor)
 
         level charGroup add(sprite)
         sprite pos set!(pos)
@@ -78,7 +80,7 @@ Spider: class extends Mob {
         bodyPos := body getPos()
         sprite pos set!(bodyPos x, bodyPos y + 4 + z)
         pos set!(body getPos())
-        shadow setPos(pos)
+        shadow setPos(pos sub(0, shadowYOffset))
 
         super()
     }
