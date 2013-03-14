@@ -21,10 +21,19 @@ Rooms: class {
     logger := static Log getLogger(This name)
 
     init: func {
+        // floors
         load("basement")
         load("cellar")
         load("lust")
+
+        // specials
         load("treasure")
+
+        // bosses
+        load("duke-of-flies")
+        load("larry-jr")
+
+        // testing
         load("test")
     }
 

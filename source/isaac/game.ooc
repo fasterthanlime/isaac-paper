@@ -108,11 +108,17 @@ Game: class {
     }
 
     loadRoom: func {
-        logger info("Entering a %s room", map currentTile type toString())
+        dumpRoomInfo()
+
         loadBg()
         loadMusic()
         map setup()
         initLevel()
+    }
+
+    dumpRoomInfo: func {
+        roomType := map currentTile type
+        logger info("Entering a %s room", roomType toString())
     }
 
     loadBg: func {

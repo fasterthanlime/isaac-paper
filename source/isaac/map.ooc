@@ -14,7 +14,7 @@ import math/Random
 import structs/[HashMap, List, ArrayList]
 
 // our stuff
-import isaac/[level, plan, rooms, game]
+import isaac/[level, plan, rooms, game, boss]
 
 RoomType: enum {
     FIRST
@@ -78,6 +78,8 @@ Map: class {
     currentTile: MapTile
 
     mapSize: Vec2i
+
+    takenBosses := ArrayList<BossType> new()
 
     init: func (=game) {
         group = GlGroup new()
@@ -297,6 +299,22 @@ Map: class {
 
         count
     }
+
+    /*
+     * Pick a boss type out of the available ones for
+     * this floor.
+     */
+    pickBoss: func -> BossType {
+        bosses := BossType pool(game floor type)
+        type := bosses[Random randRange(0, bosses length)]
+        
+        if (takenBosses contains?(type)) {
+            return pickBoss()
+        }
+
+        takenBosses add(type)
+        type
+    }
     
     add: func (pos: Vec2i, roomType: RoomType) -> MapTile {
         if (grid contains?(pos x, pos y)) {
@@ -307,7 +325,19 @@ Map: class {
             return null
         }
 
-        roomSet := game rooms sets get(game floor type identifier())
+        identifier := match roomType {
+            case RoomType TREASURE =>
+                "treasure"
+            case RoomType BOSS =>
+                boss := pickBoss()
+                boss identifier()
+            case =>
+                game floor type identifier()
+        }
+
+        logger warn("Generating room with identifier %s", identifier)
+
+        roomSet := game rooms sets get(identifier)
         room := Random choice(roomSet rooms)
         if (roomType == RoomType FIRST) {
             room = roomSet rooms first()
