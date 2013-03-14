@@ -16,7 +16,7 @@ import gnaar/[utils]
 import math/Random
 
 // our stuff
-import isaac/[game, hero, level, bomb, freezer, map]
+import isaac/[game, hero, level, bomb, freezer, map, shadow]
 
 /**
  * All that can be picked up
@@ -40,12 +40,15 @@ Collectible: abstract class extends Entity {
 
     collectibleHandler: static CollisionHandler
 
+    shadow: Shadow
+
     init: func (.level, .pos) {
         super(level, pos)
 
         sprite = GlSprite new(getSpritePath())
         level charGroup add(sprite)
 
+        shadow = Shadow new(level, sprite width * 0.5)
         initPhysx()
     }
 
@@ -58,6 +61,7 @@ Collectible: abstract class extends Entity {
 
         pos set!(body getPos())
         sprite pos set!(pos x, pos y + yOffset)
+        shadow setPos(pos sub(0, 10))
 
         // friction
         vel := body getVel()
@@ -91,6 +95,8 @@ Collectible: abstract class extends Entity {
     }
 
     destroy: func {
+        shadow destroy()
+        
         level space removeShape(shape)
         shape free()
         level space removeBody(body)
