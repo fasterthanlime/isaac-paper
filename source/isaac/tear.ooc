@@ -258,6 +258,8 @@ IgnoreTearHandler: class extends CollisionHandler {
 
     add: func (f: Func (Int, Int)) {
         f(CollisionTypes TEAR, CollisionTypes COLLECTIBLE)
+        f(CollisionTypes TEAR, CollisionTypes TRAP_DOOR)
+        f(CollisionTypes TEAR, CollisionTypes HOLE)
     }
 
 }

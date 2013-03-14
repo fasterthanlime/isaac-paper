@@ -46,7 +46,7 @@ TrapDoor: class extends Entity {
     }
 
     initPhysx: func {
-        (width, height) := (30, 30)
+        (width, height) := (10, 10)
 
         body = CpBody new(INFINITY, INFINITY)
         bodyPos := cpv(pos)

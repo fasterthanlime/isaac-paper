@@ -209,7 +209,6 @@ Game: class {
                 name
         }
 
-        logger warn("Should set music to %s", name)
         music setMusic(name)
     }
 
