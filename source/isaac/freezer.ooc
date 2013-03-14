@@ -124,6 +124,8 @@ FrozenEntity: class {
         entity := match type {
             case "Fire" =>
                 Fire new(level, pos, false)
+            case "Bomb" =>
+                Bomb new(level, pos)
             case =>
                 null
         }

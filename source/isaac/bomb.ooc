@@ -14,7 +14,7 @@ use gnaar
 import gnaar/[utils]
 
 // our stuff
-import isaac/[level, tear, shadow, explosion]
+import isaac/[level, tear, shadow, explosion, freezer]
 
 
 Bomb: class extends Entity {
@@ -130,6 +130,10 @@ Bomb: class extends Entity {
 
     initHandlers: func {
         // TODO: ignore collisions with some stuff?
+    }
+
+    shouldFreeze: func -> Bool {
+        true
     }
 
 }
