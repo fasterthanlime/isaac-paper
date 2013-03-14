@@ -16,7 +16,7 @@ import gnaar/[utils]
 import math, math/Random
 
 // our stuff
-import isaac/[level, hero, utils, bomb, tear, freezer]
+import isaac/[level, hero, utils, bomb, tear, freezer, map]
 
 /*
  * The fire! It burns!
@@ -66,8 +66,15 @@ Fire: class extends Entity {
         initPhysx()
     }
 
+    onDeath: func {
+        if (Random randInt(0, 100) < 20) {
+            level tile room spawnCollectible(pos, level)
+        }
+    }
+
     update: func -> Bool {
         if (!alive || life <= 2.0) {
+            onDeath()
             return false
         }
 

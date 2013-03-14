@@ -148,10 +148,17 @@ Poop: class extends Tile {
         }
 
         if (life <= 0.0) {
+            onDeath()
             return false
         }
 
         super()
+    }
+
+    onDeath: func {
+        if (Random randInt(0, 100) < 20) {
+            level tile room spawnCollectible(pos, level)
+        }
     }
 
     harm: func (damage: Int) {
