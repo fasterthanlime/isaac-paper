@@ -38,6 +38,9 @@ Hero: class extends Entity {
     invicibilityCount := 0
     invicibilityCountMax := 40
 
+    hitBackCount := 0
+    hitBackCountMax := 3
+
     stats: HeroStats
 
     init: func (.level, .pos, =stats) {
@@ -61,6 +64,10 @@ Hero: class extends Entity {
     }
 
     update: func -> Bool {
+        if (hitBackCount > 0) {
+            hitBackCount -= 1
+        }
+
         bodyPos := body getPos()
         sprite pos set!(bodyPos x, bodyPos y + 20)
         pos set!(body getPos())
@@ -115,9 +122,13 @@ Hero: class extends Entity {
     }
 
     move: func (dir: Vec2) {
+        if (hitBackCount > 0) {
+            return // can't move yet!
+        }
+
         vel := dir mul(getSpeed())
         currVel := vec2(body getVel())
-        currVel interpolate!(vel, 0.95)
+        currVel interpolate!(vel, 1 - 0.8)
         body setVel(cpv(currVel))
     }
 
@@ -162,18 +173,27 @@ Hero: class extends Entity {
     /*
      * Harm the hero. Damage is counted in half-hearts
      */
-    harmHero: func (damage: Int) {
+    harmHero: func (damage: Int) -> Bool {
         if (invicibilityCount > 0) {
-            return // invincible, biatch!
+            return false // invincible, biatch!
         }
         invicibilityCount = invicibilityCountMax
 
         // ouch
         stats takeDamage(damage)
+        true
     }
 
     bombHarm: func (bomb: Bomb) {
         harmHero(2)
+    }
+
+    hitBack: func (hitPos: Vec2) {
+        hitBackCount = hitBackCountMax
+        dir := pos sub(hitPos) normalized()
+        hitbackSpeed := 150
+        vel := dir mul(hitbackSpeed)
+        body setVel(cpv(vel))
     }
 
 }

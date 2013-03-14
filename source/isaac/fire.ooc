@@ -194,8 +194,12 @@ FireHeroHandler: class extends CollisionHandler {
         shape1, shape2: CpShape
         arbiter getShapes(shape1&, shape2&)
 
+        fire := shape1 getUserData() as Fire
         hero := shape2 getUserData() as Hero
-        hero harmHero(1)
+
+        if (hero harmHero(1)) {
+            hero hitBack(fire pos)
+        }
 
         true
     }

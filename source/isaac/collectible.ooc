@@ -364,7 +364,7 @@ CollectibleChest: class extends Collectible {
     }
 
     collect: func {
-        // muffin!
+        level hero hitBack(pos)
     }
 
     spill: func {
