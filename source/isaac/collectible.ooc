@@ -253,7 +253,9 @@ CollectibleHeroHandler: class extends CollisionHandler {
             collectible collect()
         }
 
-        false
+        // if we've been collected, ignore the collision
+        // otherwise, move around
+        !(collectible collected)
     }
 
     add: func (f: Func (Int, Int)) {
