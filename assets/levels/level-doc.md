@@ -21,12 +21,6 @@ Each possible level is separated by a blank line
   * `C` - chest
   * `f` - fire
   * `F` - orange fire (evil)
-  * `I` - treasure item
-
-### Mini-bosses
-
-  * `L` - lust
-  * `H` - sloth
 
 ### Basement
 
@@ -55,6 +49,20 @@ Each possible level is separated by a blank line
   * `k` - sack
 
 ### Cave
+
+  * `H` - hive
+  * `b` - globin
+  * `B` - glazing globin
+  * `3` - boom fly
+  * `4` - red boom fly
+  * `j` - clotty
+  * `J` - clot
+  * `i` - i. blob
+  * `|` - maggot
+  * `!` - charger
+  * `$` - spitty
+  * `@` - host
+  * `a` - red host
 
 ### Catacombs
 
