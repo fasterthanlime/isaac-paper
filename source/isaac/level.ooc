@@ -17,7 +17,8 @@ import structs/[List, ArrayList, HashMap]
 import math/Random
 
 // our stuff
-import isaac/[game, hero, walls, hopper, bomb, rooms, enemy, map, tiles]
+import isaac/[game, hero, walls, hopper, bomb, rooms, enemy, map, tiles,
+    freezer]
 
 Level: class {
 
@@ -284,6 +285,19 @@ Entity: class {
 
     bombHarm: func (bomb: Bomb) {
         // override here
+    }
+
+    shouldFreeze: func -> Bool {
+        // override if it should freeze!
+        false
+    }
+
+    freeze: func (ent: FrozenEntity) {
+        // override if you need to set up additional attributes
+    }
+
+    unfreeze: func (ent: FrozenEntity) {
+        // override if you need to set up additional attributes
     }
 
 }

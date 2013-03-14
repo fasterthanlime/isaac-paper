@@ -16,7 +16,7 @@ import gnaar/[utils]
 import math, math/Random
 
 // our stuff
-import isaac/[level, hero, utils, bomb, tear]
+import isaac/[level, hero, utils, bomb, tear, freezer]
 
 /*
  * The fire! It burns!
@@ -161,6 +161,22 @@ Fire: class extends Entity {
 
     bombHarm: func (bomb: Bomb) {
         alive = false
+    }
+
+    shouldFreeze: func -> Bool {
+        true
+    }
+
+    freeze: func (ent: FrozenEntity) {
+        ent put("evil", evil)
+        ent put("life", life)
+        ent put("maxLife", maxLife)
+    }
+
+    unfreeze: func (ent: FrozenEntity) {
+        ent getBool("evil", evil&)
+        ent getFloat("life", life&)
+        ent getFloat("maxLife", maxLife&)
     }
 
 }

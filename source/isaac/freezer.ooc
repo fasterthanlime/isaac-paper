@@ -14,32 +14,48 @@ import deadlogger/[Log, Logger]
 
 
 // sdk stuff
-import structs/[List, ArrayList, HashMap]
+import structs/[List, ArrayList, HashMap, HashBag]
 import math/Random
 
 // our stuff
 import isaac/[game, hero, walls, hopper, bomb, rooms, enemy, map, level,
-    tiles]
+    tiles, fire]
 
-FreezedRoom: class {
+FrozenRoom: class {
 
     mapTile: MapTile
     cleared: Bool
 
-    tiles := ArrayList<FreezedTile> new()
+    tiles := ArrayList<FrozenTile> new()
+    entities := ArrayList<FrozenEntity> new()
 
     init: func (level: Level) {
         mapTile = level tile
         cleared = level cleared
 
         level tileGrid each(|col, row, e|
-            tiles add(FreezedTile new(vec2i(col, row), e))
+            tiles add(FrozenTile new(vec2i(col, row), e))
         )
+
+        for (entity in level entities) {
+            if (entity shouldFreeze()) {
+                entities add(FrozenEntity new(entity))
+            }
+        }
     }
 
     unfreeze: func (level: Level) {
+        if (cleared) {
+            // bypass the 'cleared' hook - no drop when you just re-enter the room
+            level cleared = true
+        }
+
         for (tile in tiles) {
-            res := tile unfreeze(level)
+            tile unfreeze(level)
+        }
+
+        for (entity in entities) {
+            entity unfreeze(level)
         }
 
         if (!cleared) {
@@ -50,7 +66,7 @@ FreezedRoom: class {
 
 }
 
-FreezedTile: class {
+FrozenTile: class {
 
     pos: Vec2i
     type: String
@@ -88,6 +104,50 @@ FreezedTile: class {
         }
 
         result
+    }
+
+}
+
+FrozenEntity: class {
+
+    attrs := HashBag new()
+    type: String
+    pos: Vec2
+
+    init: func (entity: Entity) {
+        type = entity class name
+        pos = vec2(entity pos)
+        entity freeze(this)
+    }
+
+    unfreeze: func (level: Level) {
+        entity := match type {
+            case "Fire" =>
+                Fire new(level, pos, false)
+            case =>
+                null
+        }
+
+        if (entity) {
+            entity unfreeze(this)
+            level add(entity)
+        }
+    }
+
+    put: func <T> (key: String, value: T) {
+        attrs put(key, value)
+    }
+
+    getBool: func (key: String, res: Bool*) {
+        res@ = attrs get(key, Bool)
+    }
+
+    getFloat: func (key: String, res: Float*) {
+        res@ = attrs get(key, Float)
+    }
+
+    getInt: func (key: String, res: Int*) {
+        res@ = attrs get(key, Int)
     }
 
 }

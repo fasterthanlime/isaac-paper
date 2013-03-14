@@ -358,7 +358,7 @@ MapTile: class {
     room: Room
     type: RoomType
 
-    freezedRoom: FreezedRoom
+    frozenRoom: FrozenRoom
 
     active := false
 
@@ -367,15 +367,15 @@ MapTile: class {
     }
 
     unfurl: func (level: Level) {
-        if (freezedRoom) {
-            freezedRoom unfreeze(level)
+        if (frozenRoom) {
+            frozenRoom unfreeze(level)
         } else {
             room spawn(level)
         }
     }
 
     furl: func (level: Level) {
-        freezedRoom = FreezedRoom new(level)
+        frozenRoom = FrozenRoom new(level)
     }
 
     reset: func {
