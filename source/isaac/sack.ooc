@@ -81,6 +81,7 @@ Sack: class extends Mob {
 
         scale := 0.8 * life / maxLife
         sprite scale set!(scale, scale)
+        shadow setScale(scale)
 
         if (life <= 8.0) {
             return false

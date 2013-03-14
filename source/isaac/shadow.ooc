@@ -25,14 +25,21 @@ Shadow: class extends Entity {
 
     width: Float
 
+    scale, baseScale: Float
+
     init: func (.level, =width) {
         super(level, vec2(0, 0))
 
         sprite = GlSprite new("assets/png/shadow.png")
-        scale := width / sprite width as Float
-        sprite scale set!(scale, scale)
+        baseScale = width / sprite width as Float
+        setScale(1.0)
 
         level shadowGroup add(sprite)
+    }
+
+    setScale: func (=scale) {
+        finalScale := baseScale * scale
+        sprite scale set!(finalScale, finalScale)
     }
 
     setPos: func (pos: Vec2) {
