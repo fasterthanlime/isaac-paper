@@ -198,10 +198,17 @@ Level: class {
     }
 
     onClear: func {
-        // spawn at the center of the room
-        // TODO: algorithm to not spawn on top of rocks?
-        pos := gridPos(6, 3)
-        tile room spawnCollectible(pos, this)
+        if (tile roomDrop?()) {
+            // spawn at the center of the room
+            // TODO: algorithm to not spawn on top of rocks?
+            pos := gridPos(6, 3)
+            tile room spawnCollectible(pos, this)
+        }
+
+        if (tile trapDrop?()) {
+            pos := gridPos(6, 5)
+            tile room spawnTrapDoor(pos, this)
+        }
     }
 
     blockingEnemyCount: func -> Int {
@@ -334,13 +341,18 @@ Entity: class {
 CollisionTypes: enum from Int {
     HERO
     ENEMY
+
     BLOCK
     HOLE
     WALL
+
     TEAR
     BOMB
+
     COBWEB
     FIRE
+    TRAP_DOOR
+
     COLLECTIBLE
 }
 

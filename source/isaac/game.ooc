@@ -45,6 +45,8 @@ Game: class {
     // map-related stuff
     plan: Plan
     floor: PlanFloor
+    floorIndex := 0
+
     map: Map
     rooms: Rooms
 
@@ -92,7 +94,14 @@ Game: class {
         // re-initialize our stats
         initStats()
 
+        // generate plan
         generatePlan()
+
+        // choose floor
+        floorIndex = 0
+        floor = plan floors first()
+        
+        // load the actual floor
         loadFloor()
     }
 
@@ -225,7 +234,6 @@ Game: class {
     generatePlan: func {
         plan = Plan generate()
         logger info("Generated plan: %s", plan toString())
-        floor = plan floors first()
     }
 
     initStats: func {
@@ -255,6 +263,13 @@ Game: class {
 
     changeRoom: func (=changeRoomDir) {
         state = GameState CHANGEROOM
+    }
+
+    changeFloor: func {
+        if (state != GameState PLAY) {
+            return // already doing something, sweetie
+        }
+        state = GameState CHANGEFLOOR
     }
 
     initUI: func {
@@ -376,6 +391,9 @@ Game: class {
 
             case GameState CHANGEROOM =>
                 updateChangeRoom()
+
+            case GameState CHANGEFLOOR =>
+                updateChangeFloor()
         }
     }
 
@@ -400,6 +418,25 @@ Game: class {
         if (finished) {
             finalizeChangeRoom()
         }
+    }
+
+    updateChangeFloor: func {
+        floorIndex += 1
+        if (floorIndex >= plan floors size) {
+            logger warn("Player won the game!")
+
+            // you win!
+            startGame()
+            return
+        }
+
+        floor = plan floors get(floorIndex)
+
+        // don't re-init stats, they're carried over from the previous floor
+        generatePlan()
+        loadFloor()
+
+        state = GameState PLAY
     }
 
     changeRoomDelta: func -> Vec2i {
@@ -447,5 +484,6 @@ Game: class {
 GameState: enum {
     PLAY
     CHANGEROOM
+    CHANGEFLOOR
 }
 

@@ -19,6 +19,8 @@ import structs/[ArrayList, List, HashMap]
 import isaac/[game, level, bomb, tear, hero, map, plan, rooms, enemy]
 
 BossType: enum {
+    NONE
+
     // basement
     DUKE_OF_FLIES
     LARRY_JR

@@ -13,7 +13,7 @@ import math/Random
 
 // our stuff
 import isaac/[level, spider, sack, fly, hopper, trite, cobweb,
-    fire, collectible, tiles]
+    fire, collectible, tiles, trapdoor]
 
 Rooms: class {
     sets := HashMap<String, RoomSet> new()
@@ -184,6 +184,10 @@ Room: class {
         } else {
             level add(CollectibleKey new(level, pos))
         }
+    }
+
+    spawnTrapDoor: func (pos: Vec2, level: Level) {
+        level add(TrapDoor new(level, pos))
     }
 
     spawnHeart: func (pos: Vec2, level: Level) {

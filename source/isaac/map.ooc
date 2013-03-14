@@ -14,7 +14,7 @@ import math/Random
 import structs/[HashMap, List, ArrayList]
 
 // our stuff
-import isaac/[level, plan, rooms, game, boss, freezer]
+import isaac/[level, plan, rooms, game, boss, freezer, spider]
 
 RoomType: enum {
     FIRST
@@ -325,6 +325,8 @@ Map: class {
             return null
         }
 
+        bossType := BossType NONE
+
         identifier := match roomType {
             case RoomType TREASURE =>
                 "treasure"
@@ -339,8 +341,8 @@ Map: class {
             case RoomType CURSE =>
                 "curse"
             case RoomType BOSS =>
-                boss := pickBoss()
-                boss identifier()
+                bossType = pickBoss()
+                bossType identifier()
             case =>
                 game floor type identifier()
         }
@@ -355,6 +357,11 @@ Map: class {
 
         tile := MapTile new(this, pos, room, roomType)
         grid put(pos x, pos y, tile)
+
+        if (bossType != BossType NONE) {
+            tile bossType = bossType
+        }
+
         tile
     }
 }
@@ -369,6 +376,7 @@ MapTile: class {
     type: RoomType
 
     frozenRoom: FrozenRoom
+    bossType := BossType NONE
 
     active := false
 
@@ -381,6 +389,14 @@ MapTile: class {
             frozenRoom unfreeze(level)
         } else {
             room spawn(level)
+            spawnBoss(level)
+        }
+    }
+
+    spawnBoss: func (level: Level) {
+        if (bossType != BossType NONE) {
+            // spawn a spider for now :D
+            level add(Spider new(level, level gridPos(6, 3)))
         }
     }
 
@@ -442,6 +458,23 @@ MapTile: class {
         }
 
         frozenRoom cleared
+    }
+
+    roomDrop?: func -> Bool {
+        normal?()
+    }
+
+    trapDrop?: func -> Bool {
+        type == RoomType BOSS
+    }
+
+    normal?: func -> Bool {
+        match type {
+            case RoomType NORMAL || RoomType FIRST =>
+                true
+            case =>
+                false
+        }
     }
     
 }
