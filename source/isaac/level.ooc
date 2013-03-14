@@ -83,6 +83,9 @@ Level: class {
 
         tile unfurl(this)
         walls setup()
+
+        // bypass the onClear callback if just spawned
+        updateClearedCondition()
     }
     
     gridPos: func (x, y: Int) -> Vec2 {
@@ -178,10 +181,24 @@ Level: class {
 
     cleared?: func -> Bool {
         if (!cleared) {
-            cleared = (blockingEnemyCount() <= 0)
+            updateClearedCondition()
+            if (cleared) {
+                onClear()
+            }
         }
 
         cleared
+    }
+
+    updateClearedCondition: func {
+        cleared = (blockingEnemyCount() <= 0)
+    }
+
+    onClear: func {
+        // spawn at the center of the room
+        // TODO: algorithm to not spawn on top of rocks?
+        pos := gridPos(6, 3)
+        tile room spawnCollectible(pos, this)
     }
 
     blockingEnemyCount: func -> Int {
