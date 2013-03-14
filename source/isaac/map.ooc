@@ -32,6 +32,9 @@ RoomType: enum {
     CURSE
     ARENA
 
+    ANGEL
+    DEVIL
+
     toString: func -> String {
         match this {
             case This FIRST        => "first"
@@ -48,6 +51,9 @@ RoomType: enum {
             case This LIBRARY      => "library"
             case This CURSE        => "curse"
             case This ARENA        => "arena"
+            
+            case This ANGEL        => "angel"
+            case This DEVIL        => "devil"
 
             case => "<unknown room type %d>" format(this)
         }

@@ -40,6 +40,8 @@ Game: class {
 
     FONT := "assets/ttf/8-bit-wonder.ttf"
 
+    currentMusic: String
+
     // map-related stuff
     plan: Plan
     floor: PlanFloor
@@ -78,8 +80,6 @@ Game: class {
         map = Map new(this)
 
         bleep = Bleep new()
-        bleep playMusic("assets/ogg/respite.ogg", -1)
-
         startGame()
 
         loop = FixedLoop new(dye, 60.0)
@@ -110,6 +110,7 @@ Game: class {
     loadRoom: func {
         logger info("Entering a %s room", map currentTile type toString())
         loadBg()
+        loadMusic()
         map setup()
         initLevel()
     }
@@ -139,6 +140,57 @@ Game: class {
         }
         path := "assets/png/%s-bg.png" format(name)
         bgPic setTexture(path)
+    }
+
+    loadMusic: func {
+        // TODO: special music for some rooms
+
+        name := match (floor type) {
+            case FloorType BASEMENT =>
+                "sacrificial"
+            case FloorType CELLAR =>
+                "sacrificial" // filler
+            case FloorType CAVES =>
+                "atonement" // filler
+            case FloorType CATACOMBS =>
+                "atonement"
+            case FloorType DEPTHS || FloorType NECROPOLIS =>
+                "dreadful-latter-days"
+            case FloorType WOMB || FloorType UTERO =>
+                "apostate"
+            case FloorType CATHEDRAL =>
+                "lament-of-the-angel"
+            case FloorType SHEOL =>
+                "lament-of-the-angel" // backup
+            case FloorType CHEST =>
+                "lament-of-the-angel" // backup
+            case =>
+                "basement" // fallback
+        }
+
+        name = match (map currentTile type) {
+            case RoomType BOSS =>
+                // TODO: separate boss musics
+                "my-innermost-apocalypse" // backup
+            case RoomType SECRET =>
+                "respite"
+            case RoomType SUPERSECRET =>
+                "respite" // filler
+            case RoomType LIBRARY =>
+                "respite" // filler
+            case RoomType SHOP =>
+                "sacrificial" // filler
+            case =>
+                name
+        }
+
+        if (currentMusic == name) {
+            return
+        }
+
+        currentMusic = name
+        path := "assets/ogg/%s.ogg" format(name)
+        bleep playMusic(path, -1)
     }
 
     initLevel: func {
