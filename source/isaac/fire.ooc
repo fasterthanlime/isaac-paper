@@ -50,7 +50,7 @@ Fire: class extends Entity {
     init: func (.level, .pos, =evil) {
         super(level, pos)
 
-        life = 20.0 + Random randInt(-5, 5) as Float
+        life = 10.0 + Random randInt(-2, 2) as Float
         maxLife = life
 
         spriteWood = GlSprite new("assets/png/fire-wood.png")
