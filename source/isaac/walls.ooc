@@ -54,12 +54,12 @@ Walls: class extends Entity {
         ur  := vec2(725, 425)
 
         // upper center
-        ulk := vec2(75, 280)
-        urk := vec2(725, 280)
+        ulk := vec2(75, 300)
+        urk := vec2(725, 300)
 
         // bottom center
-        blk := vec2(75, 220)
-        brk := vec2(725, 220)
+        blk := vec2(75, 200)
+        brk := vec2(725, 200)
 
         // bottom <--->
         bl  := vec2(75, 75)
@@ -206,7 +206,7 @@ Door: class extends Entity {
         body = CpBody new(INFINITY, INFINITY)
         body setPos(cpv(pos))
 
-        length := 60
+        length := 100
         thickness := 60
         size := match dir {
             case Direction UP || Direction DOWN =>
