@@ -201,11 +201,10 @@ Hero: class extends Entity {
 
 HeroStats: class {
 
-    speed := 200.0
+    speed := 250.0
 
     shotSpeed := 400.0
 
-    //shootRate := 2
     shootRate := 6 // testing
 
     shootRateInv: Int { get { 60 / shootRate } }
