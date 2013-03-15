@@ -79,27 +79,6 @@ Tile: abstract class extends Entity {
 
 }
 
-Hole: class extends Tile {
-
-    init: func (.level) {
-        super(level)
-        shape setCollisionType(CollisionTypes HOLE)
-    }
-
-    getSprite: func -> String {
-        "assets/png/hole.png"
-    }
-
-    getLayer: func -> GlGroup {
-        level holeGroup
-    }
-
-    bombHarm: func (bomb: Bomb) {
-        // holes don't get destroyed by bombs
-    }
-
-}
-
 Block: class extends Tile {
 
     number: Int

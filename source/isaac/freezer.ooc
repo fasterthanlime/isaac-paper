@@ -19,7 +19,7 @@ import math/Random
 
 // our stuff
 import isaac/[game, hero, walls, hopper, bomb, rooms, enemy, map, level,
-    tiles, fire, cobweb, collectible, trapdoor]
+    tiles, fire, cobweb, collectible, trapdoor, hole]
 
 FrozenRoom: class {
 
@@ -91,6 +91,8 @@ FrozenTile: class {
                 Hole new(level)
             case "Block" =>
                 Block new(level, blockNumber)
+            case "Hole" =>
+                Hole new(level)
             case "Poop" =>
                 poop := Poop new(level)
                 poop life = poopLife
