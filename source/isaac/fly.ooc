@@ -29,8 +29,8 @@ Fly: class extends Mob {
     moveCount := 0
     moveCountMax := 30
 
-    radius := 180.0
-    speedyRadius := 120.0
+    radius := 350.0
+    speedyRadius := 180.0
 
     scale := 0.8
 
@@ -42,7 +42,7 @@ Fly: class extends Mob {
 
     type: FlyType
 
-    fireRadius := 300.0
+    fireRadius := 350.0
     fireSpeed := 240.0
 
     fireCount := 40
@@ -242,7 +242,7 @@ Fly: class extends Mob {
 
             dist := level hero pos dist(pos)
             if (dist < speedyRadius) {
-                mover speed = Random randInt(90, 110) as Float
+                mover speed = Random randInt(100, 130) as Float
                 moveCount = Random randInt(20, 40)
             } else {
                 resetSpeedAndCount()
