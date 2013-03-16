@@ -13,7 +13,7 @@ import math/Random
 
 // our stuff
 import isaac/[level, spider, sack, fly, hopper, trite, cobweb,
-    fire, collectible, tiles, trapdoor, hole, tnt, spikes]
+    fire, collectible, tiles, trapdoor, hole, tnt, spikes, mulli]
 
 Rooms: class {
     sets := HashMap<String, RoomSet> new()
@@ -157,6 +157,19 @@ Room: class {
                     level add(Fire new(level, level gridPos(x, y), true))
                 case 'x' =>
                     level add(Spikes new(level, level gridPos(x, y)))
+                case 'M' =>
+                    chance := Random randInt(0, 100)
+                    type := match {
+                        case chance < 75 =>
+                            MulliType MULLIGAN
+                        case =>
+                            MulliType MULLIGOON
+                    }
+                    level add(Mulli new(level, level gridPos(x, y), type))
+                case 'm' =>
+                    level add(Mulli new(level, level gridPos(x, y), MulliType MULLIBOOM))
+                case 'H' =>
+                    level add(Mulli new(level, level gridPos(x, y), MulliType HIVE))
                 case =>
                     goodA = false
             }
