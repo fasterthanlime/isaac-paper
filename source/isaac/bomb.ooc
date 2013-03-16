@@ -32,6 +32,10 @@ Bomb: class extends Entity {
 
     damage := 20
 
+    bombHeroHandler: static CollisionHandler
+
+    gracePeriod := 10
+
     init: func (.level, .pos) {
         super(level, pos)
 
@@ -46,6 +50,10 @@ Bomb: class extends Entity {
     update: func -> Bool {
         sprite sync(body)
         pos set!(body getPos())
+
+        if (gracePeriod > 0) {
+            gracePeriod -= 1
+        }
 
         countdown -= 1
         if (countdown <= 0) {
@@ -129,7 +137,10 @@ Bomb: class extends Entity {
     }
 
     initHandlers: func {
-        // TODO: ignore collisions with some stuff?
+        if (!bombHeroHandler) {
+            bombHeroHandler = BombHeroHandler new()
+        }
+        bombHeroHandler ensure(level)
     }
 
     shouldFreeze: func -> Bool {
@@ -137,3 +148,26 @@ Bomb: class extends Entity {
     }
 
 }
+
+BombHeroHandler: class extends CollisionHandler {
+
+    begin: func (arbiter: CpArbiter, space: CpSpace) -> Bool {
+        shape1, shape2: CpShape
+        arbiter getShapes(shape1&, shape2&)
+
+        bomb := shape1 getUserData() as Bomb
+        if (bomb gracePeriod > 0) {
+            return false
+        }
+
+        true
+    }
+
+    add: func (f: Func(Int, Int)) {
+        f(CollisionTypes BOMB, CollisionTypes HERO)
+    }
+
+}
+
+
+

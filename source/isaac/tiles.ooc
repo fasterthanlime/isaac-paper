@@ -17,7 +17,8 @@ import structs/[List, ArrayList, HashMap]
 import math/Random
 
 // our stuff
-import isaac/[game, hero, walls, hopper, bomb, rooms, enemy, map, level]
+import isaac/[game, hero, walls, hopper, bomb, rooms, enemy, map, level,
+    hole]
 
 Tile: abstract class extends Entity {
 
@@ -95,6 +96,45 @@ Block: class extends Tile {
 
     getLayer: func -> GlGroup {
         level blockGroup
+    }
+
+    bombHarm: func (bomb: Bomb) {
+        super()
+
+        maxRadius := 80.0
+        dist := bomb pos dist(pos)
+        if (dist > maxRadius) {
+            "Bomb too far to impact block: %.2f" printfln(dist)
+            return
+        }
+
+        angle := pos sub(bomb pos) angle() toDegrees()
+        "Angle in degrees = %.2f" printfln(angle)
+
+        dir := match {
+            case (angle > 45.0 && angle <= 135.0) =>
+                Direction UP
+            case (angle > 135.0 && angle <= 225.0) =>
+                Direction LEFT
+            case (angle > 225.0 && angle <= 315.0) =>
+                Direction DOWN
+            case (angle < 45.0 || angle > 315.0) =>
+                Direction RIGHT
+            case =>
+                return // dafuk
+                Direction LEFT
+        }
+
+        "Might obliterate the hole in direction %s" printfln(dir toString())
+        holePos := dir toDelta() add(posi)
+        if (level tileGrid contains?(holePos x, holePos y)) {
+            tile := level tileGrid get(holePos x, holePos y)
+            match tile {
+                case hole: Hole =>
+                    // He's dead, jim
+                    hole alive = false
+            }
+        }
     }
 
 }

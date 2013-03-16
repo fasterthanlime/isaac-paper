@@ -61,6 +61,10 @@ Hole: class extends Tile {
         level holeGroup
     }
 
+    reneighborize: func {
+        neighbored = false
+    }
+
     update: func -> Bool {
         if (!neighbored) {
             neighbored = true
@@ -84,6 +88,21 @@ Hole: class extends Tile {
 
     bombHarm: func (bomb: Bomb) {
         // holes don't get destroyed by bombs
+    }
+
+    destroy: func {
+        super()
+        getLayer() remove(top)
+        getLayer() remove(bottom)
+        getLayer() remove(left)
+        getLayer() remove(right)
+
+        level tileGrid eachNeighbor(posi x, posi y, |neighbor|
+            match neighbor {
+                case hole: Hole =>
+                    hole reneighborize()
+            }
+        )
     }
 
 }

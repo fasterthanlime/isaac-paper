@@ -409,6 +409,16 @@ Direction: enum {
             case => 45 // nonsensical value to make sure we notice it
         }
     }
+
+    toDelta: func -> Vec2i {
+        match this {
+            case This UP     => vec2i(0,  1)
+            case This DOWN   => vec2i(0, -1)
+            case This LEFT   => vec2i(-1, 0)
+            case This RIGHT  => vec2i( 1, 0)
+            case => vec2i(1, 1) // nonsensical value to make sure we notice it
+        }
+    }
 }
 
 Grid: class {
@@ -459,8 +469,8 @@ Grid: class {
             }
         }
     }
-    
-    hasNeighborOfType?: func (col, row: Int, type: Class) -> Bool {
+
+    validCoords?: func (col, row: Int) -> Bool {
         if (col < 0 || col >= width) {
             return false     
         }
@@ -469,7 +479,39 @@ Grid: class {
             return false
         }
 
-        get(col, row) instanceOf?(type)
+        true
+    }
+    
+    hasNeighborOfType?: func (col, row: Int, type: Class) -> Bool {
+        if (!validCoords?(col, row)) {
+            return false
+        }
+
+        tile := get(col, row)
+        (tile != null && tile instanceOf?(type))
+    }
+
+    contains?: func (col, row: Int) -> Bool {
+        if (!validCoords?(col, row)) {
+            return false
+        }
+
+        tile := get(col, row)
+        (tile != null)
+    }
+
+    eachNeighbor: func (col, row: Int, f: Func (Tile)) -> Bool {
+        test := func (col, row: Int) {
+            tile := get(col, row)
+            if (tile) {
+                f(tile)
+            }
+        }
+
+        test(col + 1, row)
+        test(col - 1, row)
+        test(col, row + 1)
+        test(col, row - 1)
     }
 
     clear: func {

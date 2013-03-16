@@ -115,4 +115,3 @@ TrapDoorHeroHandler: class extends CollisionHandler {
 }
 
 
-
