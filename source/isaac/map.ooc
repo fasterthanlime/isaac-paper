@@ -14,7 +14,7 @@ import math/Random
 import structs/[HashMap, List, ArrayList]
 
 // our stuff
-import isaac/[level, plan, rooms, game, boss, freezer, spider]
+import isaac/[level, plan, rooms, game, boss, freezer, spider, options]
 
 RoomType: enum {
     FIRST
@@ -345,6 +345,10 @@ Map: class {
                 bossType identifier()
             case =>
                 game floor type identifier()
+        }
+
+        if (game options testLevel) {
+            identifier = "test" // huhu
         }
 
         logger warn("Generating room with identifier %s", identifier)

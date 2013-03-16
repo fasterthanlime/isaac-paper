@@ -10,6 +10,7 @@ Options: class {
 
     music := true
     mute := false
+    testLevel := false
 
     init: func {
         load()
@@ -25,8 +26,16 @@ Options: class {
         } 
 
         map := doc toMap()
-        music = map get("music") toBool()
-        mute = map get("mute") toBool()
+        map each(|key, value|
+            match key {
+                case "music" =>
+                    music = value toBool()
+                case "mute" =>
+                    mute = value toBool()
+                case "testLevel" =>
+                    testLevel = value toBool()
+            }
+        )
     }
 
 }

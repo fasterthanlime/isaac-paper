@@ -14,7 +14,7 @@ use gnaar
 import gnaar/[utils]
 
 // our stuff
-import isaac/[game, level, tear, shadow, bomb, collectible]
+import isaac/[game, level, tear, shadow, bomb, collectible, options]
 
 /*
  * Dat Isaac...
@@ -226,6 +226,11 @@ HeroStats: class {
     game: Game
 
     init: func (=game) {
+        if (game options testLevel) {
+            bombCount = 99
+            keyCount = 99
+            coinCount = 99
+        }
     }
 
     totalHealth: func -> Int {
