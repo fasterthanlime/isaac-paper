@@ -435,7 +435,7 @@ Grid: class {
 
     put: func (col, row: Int, obj: Tile) {
         list[_index(col, row)] = obj
-        obj setPos(origin add(vec2(col, row) mul(blockSide)))
+        obj setPos(vec2i(col, row), origin add(vec2(col, row) mul(blockSide)))
     }
 
     get: func (col, row: Int) -> Tile {
@@ -458,6 +458,18 @@ Grid: class {
                 }
             }
         }
+    }
+    
+    hasNeighborOfType?: func (col, row: Int, type: Class) -> Bool {
+        if (col < 0 || col >= width) {
+            return false     
+        }
+
+        if (row < 0 || row >= height) {
+            return false
+        }
+
+        get(col, row) instanceOf?(type)
     }
 
     clear: func {

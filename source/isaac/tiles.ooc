@@ -21,6 +21,7 @@ import isaac/[game, hero, walls, hopper, bomb, rooms, enemy, map, level]
 
 Tile: abstract class extends Entity {
 
+    posi: Vec2i
     sprite: GlSprite
     body: CpBody
     shape: CpShape
@@ -63,7 +64,7 @@ Tile: abstract class extends Entity {
         body free()
     }
 
-    setPos: func (.pos) {
+    setPos: func (=posi, .pos) {
         this pos set!(pos)
         sprite pos set!(pos)
         body setPos(cpv(pos))
