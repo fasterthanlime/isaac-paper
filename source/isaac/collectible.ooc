@@ -16,7 +16,8 @@ import gnaar/[utils]
 import math/Random
 
 // our stuff
-import isaac/[game, hero, level, bomb, freezer, map, shadow, explosion]
+import isaac/[game, hero, level, bomb, freezer, map, shadow, explosion,
+    paths]
 
 /**
  * All that can be picked up
@@ -44,6 +45,9 @@ Collectible: abstract class extends Entity {
     shadowYOffset := 10
     shadowFactor := 0.5
 
+    parabola: Parabola
+    z := 0
+
     init: func (.level, .pos) {
         super(level, pos)
 
@@ -54,6 +58,16 @@ Collectible: abstract class extends Entity {
         initPhysx()
     }
 
+    catapult: func {
+        parabola = Parabola new(30.0, 2.0, 0)
+
+        speed := 150
+        body setVel(cpv(
+            Random randInt(-speed, speed),
+            Random randInt(-speed, speed)
+        ))
+    }
+
     getSpritePath: abstract func -> String
 
     update: func -> Bool {
@@ -61,8 +75,17 @@ Collectible: abstract class extends Entity {
             return false
         }
 
+        if (parabola) {
+            // handle height
+            z = parabola eval()
+            if (parabola done?()) {
+                z = parabola bottom
+                parabola = null
+            }
+        }
+
         pos set!(body getPos())
-        sprite pos set!(pos x, pos y + yOffset)
+        sprite pos set!(pos x, pos y + yOffset + z)
         shadow setPos(pos sub(0, shadowYOffset))
 
         // friction

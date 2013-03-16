@@ -162,8 +162,10 @@ Block: class extends Tile {
                 pickups += 1
                 spawnKey()
             } else if (num < 71 && i == 0) {
+                pickups += 1
                 spawnChest(ChestType REGULAR)
             } else if (num < 72 && i == 0) {
+                pickups += 1
                 spawnChest(ChestType GOLDEN)
             } else {
                 spawnBomb()

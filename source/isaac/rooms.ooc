@@ -223,7 +223,7 @@ Room: class {
         level add(TrapDoor new(level, pos))
     }
 
-    spawnHeart: func (pos: Vec2, level: Level) {
+    spawnHeart: func (pos: Vec2, level: Level) -> CollectibleHeart {
         number := Random randInt(0, 100)
         type := HeartType RED
         value := HeartValue FULL
@@ -240,6 +240,8 @@ Room: class {
             }
         }
 
-        level add(CollectibleHeart new(level, pos, type, value))
+        heart := CollectibleHeart new(level, pos, type, value)
+        level add(heart)
+        heart
     }
 }

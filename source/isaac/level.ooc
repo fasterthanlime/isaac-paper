@@ -349,28 +349,34 @@ Entity: class {
             coinPos := pos add(x, y)
 
             // TODO: other types of coins
-            level add(CollectibleCoin new(level, coinPos))
+            coin := CollectibleCoin new(level, coinPos)
+            coin catapult()
+            level add(coin)
         }
     }
 
     spawnChest: func (type: ChestType) {
-        // maybe offset?
-        level add(CollectibleChest new(level, pos, type))
+        chest := CollectibleChest new(level, pos, type)
+        chest catapult()
+        level add(chest)
     }
 
     spawnKey: func {
-        // maybe offset?
-        level add(CollectibleKey new(level, pos))
+        key := CollectibleKey new(level, pos)
+        key catapult()
+        level add(key)
     }
 
     spawnBomb: func {
         // 1+1 free
-        level add(CollectibleBomb new(level, pos))
+        bomb := CollectibleBomb new(level, pos)
+        bomb catapult()
+        level add(bomb)
     }
 
     spawnHeart: func {
-        // maybe offset?
-        level tile room spawnHeart(pos, level)
+        heart := level tile room spawnHeart(pos, level)
+        heart catapult()
     }
 
 }
