@@ -62,8 +62,6 @@ Spikes: class extends Entity {
     }
 
     initPhysx: func {
-        (width, height) := (20, 20)
-
         body = CpBody new(INFINITY, INFINITY)
         bodyPos := cpv(pos)
         body setPos(bodyPos)
@@ -72,7 +70,8 @@ Spikes: class extends Entity {
         rotateConstraint = CpRotaryLimitJoint new(body, level space getStaticBody(), 0, 0)
         level space addConstraint(rotateConstraint)
 
-        shape = CpBoxShape new(body, width, height)
+        radius := 2
+        shape = CpCircleShape new(body, radius, cpv(0, 0))
         shape setUserData(this)
         shape setCollisionType(CollisionTypes SPIKES)
         level space addShape(shape)
