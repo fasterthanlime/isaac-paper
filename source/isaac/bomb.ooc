@@ -119,8 +119,8 @@ Bomb: class extends Entity {
     }
 
     initPhysx: func {
-        mass := 20.0
-        radius := 8.0
+        mass := 4.0
+        radius := 23.0
 
         moment := cpMomentForCircle(mass, 0, radius, cpv(radius, radius))
 
@@ -131,6 +131,7 @@ Bomb: class extends Entity {
         shape = CpCircleShape new(body, radius, cpv(0, 0))
         shape setUserData(this)
         shape setCollisionType(CollisionTypes BOMB)
+        shape setElasticity(0.6)
         level space addShape(shape)
 
         initHandlers()

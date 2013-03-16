@@ -212,7 +212,7 @@ BlockTearHandler: class extends CollisionHandler {
                 poop harm(tear damage)
         }
 
-        false
+        true
     }
 
     add: func (f: Func (Int, Int)) {

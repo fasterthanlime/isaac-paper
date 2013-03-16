@@ -104,13 +104,10 @@ Block: class extends Tile {
         maxRadius := 80.0
         dist := bomb pos dist(pos)
         if (dist > maxRadius) {
-            "Bomb too far to impact block: %.2f" printfln(dist)
             return
         }
 
         angle := pos sub(bomb pos) angle() toDegrees()
-        "Angle in degrees = %.2f" printfln(angle)
-
         dir := match {
             case (angle > 45.0 && angle <= 135.0) =>
                 Direction UP
@@ -125,7 +122,6 @@ Block: class extends Tile {
                 Direction LEFT
         }
 
-        "Might obliterate the hole in direction %s" printfln(dir toString())
         holePos := dir toDelta() add(posi)
         if (level tileGrid contains?(holePos x, holePos y)) {
             tile := level tileGrid get(holePos x, holePos y)
