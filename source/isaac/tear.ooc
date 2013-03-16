@@ -262,6 +262,7 @@ IgnoreTearHandler: class extends CollisionHandler {
         f(CollisionTypes TEAR, CollisionTypes COLLECTIBLE)
         f(CollisionTypes TEAR, CollisionTypes TRAP_DOOR)
         f(CollisionTypes TEAR, CollisionTypes HOLE)
+        f(CollisionTypes TEAR, CollisionTypes SPIKES)
     }
 
 }

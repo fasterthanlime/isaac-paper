@@ -395,6 +395,7 @@ CollisionTypes: enum from Int {
     COBWEB
     FIRE
     TRAP_DOOR
+    SPIKES
 
     COLLECTIBLE
 }

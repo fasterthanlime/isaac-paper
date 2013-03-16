@@ -19,7 +19,7 @@ import math/Random
 
 // our stuff
 import isaac/[game, hero, walls, hopper, bomb, rooms, enemy, map, level,
-    tiles, fire, cobweb, collectible, trapdoor, hole, tnt]
+    tiles, fire, cobweb, collectible, trapdoor, hole, tnt, spikes]
 
 FrozenRoom: class {
 
@@ -148,6 +148,8 @@ FrozenEntity: class {
                 CollectibleChest new(level, pos, ChestType REGULAR)
             case "TrapDoor" =>
                 TrapDoor new(level, pos)
+            case "Spikes" =>
+                Spikes new(level, pos)
             case =>
                 null
         }

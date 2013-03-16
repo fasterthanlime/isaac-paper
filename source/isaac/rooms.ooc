@@ -13,7 +13,7 @@ import math/Random
 
 // our stuff
 import isaac/[level, spider, sack, fly, hopper, trite, cobweb,
-    fire, collectible, tiles, trapdoor, hole, tnt]
+    fire, collectible, tiles, trapdoor, hole, tnt, spikes]
 
 Rooms: class {
     sets := HashMap<String, RoomSet> new()
@@ -155,6 +155,8 @@ Room: class {
                     level add(Fire new(level, level gridPos(x, y), false))
                 case 'F' =>
                     level add(Fire new(level, level gridPos(x, y), true))
+                case 'x' =>
+                    level add(Spikes new(level, level gridPos(x, y)))
                 case =>
                     goodA = false
             }
