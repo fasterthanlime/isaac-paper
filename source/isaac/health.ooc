@@ -68,6 +68,7 @@ Health: class extends GlGroup {
             } else {
                 add(Heart new(getPos(index), HeartValue EMPTY, HeartType ETERNAL))
             }
+            index += 1
             budget -= 1
         }
 
@@ -83,6 +84,7 @@ Health: class extends GlGroup {
             } else {
                 add(Heart new(getPos(index), HeartValue EMPTY, HeartType SPIRIT))
             }
+            index += 1
             budget -= 1
         }
     }
