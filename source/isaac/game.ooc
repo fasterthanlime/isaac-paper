@@ -444,6 +444,9 @@ Game: class {
         floor = plan floors get(floorIndex)
 
         // don't re-init stats, they're carried over from the previous floor
+        // however we want to do stuff about eternal hearts
+        heroStats onFloorEnd()
+
         loadFloor()
 
         state = GameState PLAY

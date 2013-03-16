@@ -287,7 +287,8 @@ HeroStats: class {
                 // TODO: two spirit hearts = one new container
                 spiritLife += value
             case HeartType ETERNAL =>
-                eternalLife += value
+                eternalLife += 1
+                handleEternalLife()
         }
 
         healthChanged = true
@@ -335,6 +336,22 @@ HeroStats: class {
 
         redLife -= damage
         healthChanged = true
+    }
+
+    onFloorEnd: func {
+        if (eternalLife > 0) {
+            eternalLife += 1
+            handleEternalLife()
+        }
+    }
+
+    handleEternalLife: func {
+        if (eternalLife >= 2) {
+            containers += 1
+            eternalLife = 0
+            redLife += 2
+            healthChanged = true
+        }
     }
 
 }
