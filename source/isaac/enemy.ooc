@@ -65,7 +65,7 @@ Enemy: abstract class extends Entity {
         }
 
         if (life <= 0.0) {
-            die()
+            onDeath()
             return false
         }
 
@@ -95,7 +95,7 @@ Enemy: abstract class extends Entity {
         body setVel(cpv(vel))
     }
 
-    die: func {
+    onDeath: func {
         // normally, die in peace
     }
 

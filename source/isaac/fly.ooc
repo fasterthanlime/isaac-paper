@@ -120,12 +120,19 @@ Fly: class extends Mob {
         level add(fly)
     }
 
-    die: func {
-        if (type == FlyType MOTER) {
-            // spawn two of our children!
-            spread := 5.0
-            spawnAttackFly(pos add(-spread, 0.0))
-            spawnAttackFly(pos add( spread, 0.0))
+    onDeath: func {
+        match type {
+            case FlyType MOTER =>
+                // spawn two of our children!
+                spread := 5.0
+                spawnAttackFly(pos add(-spread, 0.0))
+                spawnAttackFly(pos add( spread, 0.0))
+            case FlyType SUCKER =>
+                // spawn tears in the shape of a '+'
+                spawnTear(pos, vec2(-1, 0)) 
+                spawnTear(pos, vec2(1, 0))
+                spawnTear(pos, vec2(0, 1))
+                spawnTear(pos, vec2(0, -1))
         }
     }
 
