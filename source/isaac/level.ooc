@@ -449,6 +449,7 @@ Grid: class {
     }
 
     get: func (col, row: Int) -> Tile {
+        if (!validCoords?(col, row)) return null
         list[_index(col, row)]
     }
 
