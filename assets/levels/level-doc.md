@@ -21,7 +21,8 @@ Each possible level is separated by a blank line
   * `C` - chest
   * `f` - fire
   * `F` - orange fire (evil)
-
+  * `x` - spikes
+ 
 ### Basement
 
   * `e` - embryo (little blastocyst)
@@ -38,7 +39,7 @@ Each possible level is separated by a blank line
   * '8' - moter
   * `h` - horf
 
-### Cellar
+### Cellar`
 
   * `s` - spider
   * `S` - big spider
@@ -48,6 +49,7 @@ Each possible level is separated by a blank line
   * `M` - mulligan or mulligoon
   * `k` - sack
 
+  
 ### Cave
 
   * `H` - hive
@@ -60,11 +62,11 @@ Each possible level is separated by a blank line
   * `i` - i. blob
   * `|` - maggot
   * `!` - charger
-  * `$` - spitty
-  * `@` - host
-  * `a` - red host
-  * `0` - (zero) Maw and Red Maw
+  * `$` - spity
+  * `@` - host and red host
+  * `0` - (zero) Maw and Red Maw and Psychic Maw
   * `K` - Knight and Selfless Knight
+  * `W` - Mr. Maw
   
   
   
