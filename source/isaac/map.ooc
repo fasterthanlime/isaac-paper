@@ -383,9 +383,20 @@ MapTile: class {
     bossType := BossType NONE
 
     active := false
+    locked := false
 
     init: func (=map, .pos, =room, =type) {
         this pos = vec2i(pos)
+
+        match type {
+            case RoomType LIBRARY || RoomType SHOP =>
+                locked = true
+            case RoomType TREASURE =>
+                if (map game floorIndex > 0) {
+                    // past Basement 1/Cellar 1, all item rooms are locked
+                    locked = true 
+                }
+        }
     }
 
     unfurl: func (level: Level) {

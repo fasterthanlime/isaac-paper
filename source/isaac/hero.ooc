@@ -295,6 +295,11 @@ HeroStats: class {
         true
     }
 
+    useKey: func {
+        // shall we check for < 0 ? Or trust the rest of the code?
+        keyCount -= 1
+    }
+
     takeDamage: func (damage: Int) {
         if (game floor hard?()) {
             // takes a full heart of damage

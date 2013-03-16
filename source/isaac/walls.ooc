@@ -13,7 +13,7 @@ import chipmunk
 import structs/[ArrayList, List, HashMap]
 
 // our stuff
-import isaac/[level, game, map, bomb, plan, explosion]
+import isaac/[level, game, map, bomb, plan, explosion, hero]
 
 Walls: class extends Entity {
 
@@ -146,7 +146,7 @@ Door: class extends Entity {
         group = GlGroup new()
         level doorGroup add(group)
 
-        closedSprite = GlSprite new("assets/png/door-closed.png")
+        closedSprite = GlSprite new(getClosedSpritePath())
         closedSprite angle = dir toAngle()
         closedSprite pos set!(pos)
         closedSprite opacity = 1.0
@@ -167,6 +167,40 @@ Door: class extends Entity {
         group add(fgSprite)
 
         initPhysx()
+    }
+
+    updateGfx: func {
+        fgSprite setTexture(getFgSpritePath())
+        closedSprite setTexture(getClosedSpritePath())
+    }
+
+    holeVisible?: func -> Bool {
+        open && (!connection || !connection locked)
+    }
+
+    walkable?: func -> Bool {
+        if (!open) {
+            // closed? (ie. in combat) - no good
+            return false
+        }
+
+        if (connection && connection locked) {
+            if (level game heroStats keyCount <= 0) {
+                // if locked & no key, no good
+                return false
+            }
+        }
+
+        // all good
+        true
+    }
+
+    getClosedSpritePath: func -> String {
+        if (connection && connection locked) {
+            "assets/png/door-locked.png"
+        } else {
+            "assets/png/door-closed.png"
+        }
     }
 
     getFgSpritePath: func -> String {
@@ -194,10 +228,6 @@ Door: class extends Entity {
         }
 
         "assets/png/door-%s.png" format(name)
-    }
-
-    updateFgSprite: func {
-        fgSprite setTexture(getFgSpritePath())
     }
 
     setOpen: func (=open)
@@ -234,12 +264,16 @@ Door: class extends Entity {
         visible = (connection != null)
         group visible = visible
         setOpen(false)
-        updateFgSprite()
+        updateGfx()
     }
 
     update: func -> Bool {
         if (walkthrough) {
             walkthrough = false
+            if (connection locked) {
+                level game heroStats useKey()
+                connection locked = false
+            }
             level game changeRoom(dir)
         }
 
@@ -247,9 +281,10 @@ Door: class extends Entity {
             setOpen(true)
         }
 
-        if (open && holeSprite opacity < 1.0) {
+        holeVisible := holeVisible?()
+        if (holeVisible && holeSprite opacity < 1.0) {
             holeSprite opacity += opacityIncr
-        } else if (!open && holeSprite opacity > 0.0) {
+        } else if (!holeVisible && holeSprite opacity > 0.0) {
             holeSprite opacity -= opacityIncr
         }
 
@@ -294,7 +329,7 @@ IsaacDoorHandler: class extends CollisionHandler {
         ent := shape2 getUserData() as Entity
         match ent {
             case door: Door =>
-                if (door open) {
+                if (door walkable?()) {
                     door walkthrough = true
                     return false
                 } else {
