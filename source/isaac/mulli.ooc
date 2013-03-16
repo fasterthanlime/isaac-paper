@@ -62,7 +62,7 @@ Mulli: class extends Mob {
         sprite pos set!(pos)
 
         initPhysx()
-        mover = Mover new(body, 280.0)
+        mover = Mover new(body, 140.0)
         mover alpha = 0.8
     }
 
@@ -111,8 +111,10 @@ Mulli: class extends Mob {
     }
 
     updateTarget: func {
-        mover setTarget(Target choose(pos, level, radius))
-        moveCount = moveCountMax + Random randInt(-10, 40)
+        if (type == MulliType MULLIBOOM) {
+            mover setTarget(level hero pos)
+            moveCount = 5
+        }
     }
 
     initPhysx: func {

@@ -146,7 +146,7 @@ Mob: class extends Enemy {
 
 EnemyHeroHandler: class extends CollisionHandler {
 
-    begin: func (arbiter: CpArbiter, space: CpSpace) -> Bool {
+    preSolve: func (arbiter: CpArbiter, space: CpSpace) -> Bool {
         shape1, shape2: CpShape
         arbiter getShapes(shape1&, shape2&)
 
