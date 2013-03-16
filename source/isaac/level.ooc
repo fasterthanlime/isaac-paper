@@ -18,7 +18,7 @@ import math/Random
 
 // our stuff
 import isaac/[game, hero, walls, hopper, bomb, rooms, enemy, map, tiles,
-    freezer, explosion]
+    freezer, explosion, collectible]
 
 Level: class {
 
@@ -340,6 +340,37 @@ Entity: class {
 
     unfreeze: func (ent: FrozenEntity) {
         // override if you need to set up additional attributes
+    }
+
+    spawnCoins: func (count: Int) {
+        for (i in 0..count) {
+            x := Random randInt(-40, 40) as Float
+            y := Random randInt(-40, 40) as Float
+            coinPos := pos add(x, y)
+
+            // TODO: other types of coins
+            level add(CollectibleCoin new(level, coinPos))
+        }
+    }
+
+    spawnChest: func (type: ChestType) {
+        // maybe offset?
+        level add(CollectibleChest new(level, pos, type))
+    }
+
+    spawnKey: func {
+        // maybe offset?
+        level add(CollectibleKey new(level, pos))
+    }
+
+    spawnBomb: func {
+        // 1+1 free
+        level add(CollectibleBomb new(level, pos))
+    }
+
+    spawnHeart: func {
+        // maybe offset?
+        level tile room spawnHeart(pos, level)
     }
 
 }

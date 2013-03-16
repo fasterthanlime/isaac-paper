@@ -18,7 +18,7 @@ import math/Random
 
 // our stuff
 import isaac/[game, hero, walls, hopper, bomb, rooms, enemy, map, level,
-    hole, explosion]
+    hole, explosion, collectible]
 
 /**
  * Anything in the tile grid of level - useful for
@@ -54,12 +54,17 @@ Tile: abstract class extends Entity {
 
     update: func -> Bool {
         if (!alive) {
+            onDeath()
             return false
         }
 
         sprite sync(body)
 
         true
+    }
+
+    onDeath: func {
+        // overload if to do something interesting here
     }
 
     destroy: func {
@@ -95,14 +100,75 @@ Block: class extends Tile {
     init: func (.level, =number) {
         super(level)
         shape setCollisionType(CollisionTypes BLOCK)
+        updateColor()
+    }
+
+    updateGfx: func {
+        sprite setTexture(getSprite())
+        updateColor()
+    }
+
+    itemRock?: func -> Bool {
+        number > 3
+    }
+
+    updateColor: func {
+        if (itemRock?()) {
+            sprite color set!(230, 230, 255)
+        } else {
+            sprite color set!(255, 255, 255)
+        }
     }
 
     getSprite: func -> String {
-        "assets/png/block-%d.png" format(number)
+        match {
+            case (itemRock?()) =>
+                "assets/png/block-blue.png" 
+            case =>
+                "assets/png/block-%d.png" format(number)
+        }
     }
 
     getLayer: func -> GlGroup {
         level blockGroup
+    }
+
+    onDeath: func {
+        if (itemRock?()) {
+            spawnPickups()
+        }
+    }
+
+    spawnPickups: func {
+        numDrops := Random randInt(2, 4)
+
+        pickups := 0
+
+        for (i in 0..10) {
+            if (pickups >= numDrops) break
+
+            num := Random randInt(0, 100)
+            if (num < 35) {
+                // drop 1-3 coins
+                pickups += 1
+                numCoins := Random randInt(1, 3)
+                spawnCoins(numCoins)
+            } else if (num < 55) {
+                if (Random randInt(0, 100) < 50) {
+                    // 0.5 chance to get -1 pickup
+                    pickups += 1
+                }
+            } else if (num < 70) {
+                pickups += 1
+                spawnKey()
+            } else if (num < 71 && i == 0) {
+                spawnChest(ChestType REGULAR)
+            } else if (num < 72 && i == 0) {
+                spawnChest(ChestType GOLDEN)
+            } else {
+                spawnBomb()
+            }
+        }
     }
 
     bombHarm: func (explosion: Explosion) {
@@ -171,8 +237,7 @@ Poop: class extends Tile {
         }
 
         if (life <= 0.0) {
-            onDeath()
-            return false
+            alive = false
         }
 
         super()

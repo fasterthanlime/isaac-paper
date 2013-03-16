@@ -424,32 +424,6 @@ CollectibleChest: class extends Collectible {
         }
     }
 
-    spawnCoins: func (count: Int) {
-        for (i in 0..count) {
-            x := Random randInt(-40, 40) as Float
-            y := Random randInt(-40, 40) as Float
-            coinPos := pos add(x, y)
-
-            // TODO: other types of coins
-            level add(CollectibleCoin new(level, coinPos))
-        }
-    }
-
-    spawnKey: func {
-        // maybe offset?
-        level add(CollectibleKey new(level, pos))
-    }
-
-    spawnBomb: func {
-        // 1+1 free
-        level add(CollectibleBomb new(level, pos))
-    }
-
-    spawnHeart: func {
-        // maybe offset?
-        level tile room spawnHeart(pos, level)
-    }
-
     shouldFreeze: func -> Bool {
         true
     }

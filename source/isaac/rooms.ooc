@@ -113,6 +113,26 @@ Room: class {
             }
             y += 1
         }
+        
+        turnItemRocks(level)
+    }
+
+    turnItemRocks: func (level: Level) {
+        col := Random randRange(0, width)
+        row := Random randRange(0, height)
+        logger info("Trying item rock at %d, %d", col, row)
+
+        tile := level tileGrid get(col, row)
+        if (tile) {
+            logger info("It's a %s!", tile class name)
+            match tile {
+                case block: Block =>
+                    block number = 4
+                    block updateGfx()
+            }
+        } else {
+            logger info("Nothing there")
+        }
     }
 
     spawn: func ~specific (x, y: Int, c: Char, level: Level, onlyCreeps: Bool) {
