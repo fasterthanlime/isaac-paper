@@ -63,7 +63,11 @@ Each possible level is separated by a blank line
   * `$` - spitty
   * `@` - host
   * `a` - red host
-
+  * `0` - (zero) Maw and Red Maw
+  * `K` - Knight and Selfless Knight
+  
+  
+  
 ### Catacombs
 
 ### Necropolis
