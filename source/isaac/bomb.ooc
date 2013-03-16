@@ -110,6 +110,14 @@ Bomb: class extends Entity {
         )
     }
 
+    bombHarm: func (bomb: Bomb) {
+        if (bomb == this) return // well that's just silly
+
+        if (countdown > 5) {
+            countdown = 5
+        }
+    }
+
     destroy: func {
         level space removeShape(shape)
         shape free()
