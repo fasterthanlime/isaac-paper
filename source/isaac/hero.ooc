@@ -247,14 +247,26 @@ HeroStats: class {
     pickupCoin: func (coin: CollectibleCoin) {
         // TODO: lotsa modifiers (e.g. most of the trinkets)
         coinCount += coin worth
+
+        if (coinCount > 99) {
+            coinCount = 99
+        }
     }
 
     pickupKey: func (key: CollectibleKey) {
         keyCount += 1
+
+        if (keyCount > 99) {
+            keyCount = 99
+        }
     }
 
     pickupBomb: func (bomb: CollectibleBomb) {
         bombCount += bomb worth
+
+        if (bombCount > 99) {
+            bombCount = 99
+        }
     }
 
     pickupHealth: func (heart: CollectibleHeart) -> Bool {
