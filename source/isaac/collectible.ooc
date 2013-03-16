@@ -345,12 +345,12 @@ CollectibleKey: class extends Collectible {
 
 CollectibleHeroHandler: class extends CollisionHandler {
 
-    begin: func (arbiter: CpArbiter, space: CpSpace) -> Bool {
+    preSolve: func (arbiter: CpArbiter, space: CpSpace) -> Bool {
         shape1, shape2: CpShape
         arbiter getShapes(shape1&, shape2&)
 
         collectible := shape1 getUserData() as Collectible
-        if (!collectible collected) {
+        if (!collectible collected && collectible z <= 1.0) {
             collectible collected = true
             collectible collect()
         }
@@ -410,40 +410,37 @@ CollectibleChest: class extends Collectible {
     }
 
     spillRegular: func {
-        regularDrop := (Random randInt(0, 100) < 70)
-        // FIXME: no 
+        numDrops := Random randInt(1, 2)
 
-        if (regularDrop) {
-            maxDrops := 3
-            drops := 0
+        pickups := 0
 
-            if (Random randInt(0, 100) < 40) {
-                amount := Random randInt(1, 5)
-                spawnCoins(amount)
-                drops += 1
-            }
+        for (i in 0..100) {
+            if (pickups >= numDrops) break
 
-            if (drops >= maxDrops) return
-
-            if (Random randInt(0, 100) < 30) {
+            num := Random randInt(0, 100)
+            if (num < 35) {
+                // drop 1-3 coins
+                pickups += 1
+                numCoins := Random randInt(1, 3)
+                spawnCoins(numCoins)
+            } else if (num < 55) {
+                if (Random randInt(0, 100) < 50) {
+                    // 0.5 chance to get -1 pickup
+                    pickups += 1
+                }
+            } else if (num < 70) {
+                pickups += 1
                 spawnKey()
-                drops += 1
-            }
-
-            if (drops >= maxDrops) return
-
-            if (Random randInt(0, 100) < 40) {
+            } else if (num < 71 && i == 0) {
+                pickups += 1
+                spawnChest(ChestType REGULAR)
+            } else if (num < 72 && i == 0) {
+                pickups += 1
+                spawnChest(ChestType GOLDEN)
+            } else {
+                pickups += 1
                 spawnBomb()
-                drops += 1
             }
-
-            if (drops >= maxDrops) return
-
-            if (Random randInt(0, 100) < 30) {
-                spawnHeart()
-            }
-        } else {
-            // TODO: cards, pills, trinkets, smaller chests
         }
     }
 

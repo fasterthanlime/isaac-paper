@@ -144,16 +144,11 @@ Block: class extends Tile {
 
         pickups := 0
 
-        for (i in 0..10) {
+        for (i in 0..100) {
             if (pickups >= numDrops) break
 
             num := Random randInt(0, 100)
-            if (num < 35) {
-                // drop 1-3 coins
-                pickups += 1
-                numCoins := Random randInt(1, 3)
-                spawnCoins(numCoins)
-            } else if (num < 55) {
+            if (num < 60) {
                 if (Random randInt(0, 100) < 50) {
                     // 0.5 chance to get -1 pickup
                     pickups += 1
@@ -161,13 +156,15 @@ Block: class extends Tile {
             } else if (num < 70) {
                 pickups += 1
                 spawnKey()
+                break
             } else if (num < 71 && i == 0) {
                 pickups += 1
                 spawnChest(ChestType REGULAR)
-            } else if (num < 72 && i == 0) {
+            } else if (num < 90 && i == 0) {
                 pickups += 1
                 spawnChest(ChestType GOLDEN)
             } else {
+                pickups += 1
                 spawnBomb()
             }
         }
