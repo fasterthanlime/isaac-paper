@@ -27,11 +27,6 @@ Bomb: class extends Entity {
     countdown: Int
     maxCountdown := 120
 
-    radius := 40
-    explosionRadius := 105.0
-
-    damage := 20
-
     bombHeroHandler: static CollisionHandler
 
     gracePeriod := 10
@@ -103,16 +98,9 @@ Bomb: class extends Entity {
 
     explode: func {
         level add(Explosion new(level, sprite pos))
-
-        // explode here
-        level eachInRadius(pos, explosionRadius, |ent|
-            ent bombHarm(this)
-        )
     }
 
-    bombHarm: func (bomb: Bomb) {
-        if (bomb == this) return // well that's just silly
-
+    bombHarm: func (explosion: Explosion) {
         if (countdown > 5) {
             countdown = 5
         }

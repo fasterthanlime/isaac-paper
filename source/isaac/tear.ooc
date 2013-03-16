@@ -14,7 +14,7 @@ use gnaar
 import gnaar/[utils]
 
 // our stuff
-import isaac/[level, hero, splash, enemy, fire, tiles]
+import isaac/[level, hero, splash, enemy, fire, tiles, tnt]
 
 Tear: class extends Entity {
 
@@ -210,6 +210,8 @@ BlockTearHandler: class extends CollisionHandler {
         match tile {
             case poop: Poop =>
                 poop harm(tear damage)
+            case tnt: TNT =>
+                tnt harm(tear damage)
         }
 
         true

@@ -13,7 +13,7 @@ import math/Random
 
 // our stuff
 import isaac/[level, spider, sack, fly, hopper, trite, cobweb,
-    fire, collectible, tiles, trapdoor, hole]
+    fire, collectible, tiles, trapdoor, hole, tnt]
 
 Rooms: class {
     sets := HashMap<String, RoomSet> new()
@@ -127,6 +127,8 @@ Room: class {
                     level tileGrid put(x, y, Block new(level, Random randInt(1, 3)))
                 case '"' =>
                     level tileGrid put(x, y, Hole new(level))
+                case 'T' =>
+                    level tileGrid put(x, y, TNT new(level))
                 case 'c' =>
                     spawnCollectible(level gridPos(x, y), level)
                 case 'C' =>

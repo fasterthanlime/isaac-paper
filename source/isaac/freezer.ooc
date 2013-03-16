@@ -19,7 +19,7 @@ import math/Random
 
 // our stuff
 import isaac/[game, hero, walls, hopper, bomb, rooms, enemy, map, level,
-    tiles, fire, cobweb, collectible, trapdoor, hole]
+    tiles, fire, cobweb, collectible, trapdoor, hole, tnt]
 
 FrozenRoom: class {
 
@@ -71,7 +71,7 @@ FrozenTile: class {
     pos: Vec2i
     type: String
 
-    poopLife := 0.0
+    life := 0.0
     blockNumber := 0
 
     init: func (=pos, tile: Tile) {
@@ -79,7 +79,9 @@ FrozenTile: class {
 
         match tile {
             case poop: Poop =>
-                poopLife = poop life
+                life = poop life
+            case tnt: TNT =>
+                life = tnt life
             case block: Block =>
                 blockNumber = block number
         }
@@ -95,8 +97,12 @@ FrozenTile: class {
                 Hole new(level)
             case "Poop" =>
                 poop := Poop new(level)
-                poop life = poopLife
+                poop life = life
                 poop
+            case "TNT" =>
+                tnt := TNT new(level)
+                tnt life = life
+                tnt
             case =>
                 null
         }

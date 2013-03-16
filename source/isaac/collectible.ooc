@@ -16,7 +16,7 @@ import gnaar/[utils]
 import math/Random
 
 // our stuff
-import isaac/[game, hero, level, bomb, freezer, map, shadow]
+import isaac/[game, hero, level, bomb, freezer, map, shadow, explosion]
 
 /**
  * All that can be picked up
@@ -106,8 +106,8 @@ Collectible: abstract class extends Entity {
         level charGroup remove(sprite)
     }
 
-    bombHarm: func (bomb: Bomb) {
-        dir := pos sub(bomb pos) normalized()
+    bombHarm: func (explosion: Explosion) {
+        dir := pos sub(explosion pos) normalized()
         explosionSpeed := 400
         vel := dir mul(explosionSpeed)
         body setVel(cpv(vel))

@@ -17,7 +17,8 @@ import structs/[List, ArrayList, HashMap]
 import math/Random
 
 // our stuff
-import isaac/[game, hero, walls, hopper, bomb, rooms, enemy, map, level, tiles]
+import isaac/[game, hero, walls, hopper, bomb, rooms, enemy, map, level, tiles,
+    explosion]
 
 Hole: class extends Tile {
 
@@ -86,7 +87,7 @@ Hole: class extends Tile {
         right pos set!(pos)
     }
 
-    bombHarm: func (bomb: Bomb) {
+    bombHarm: func (explosion: Explosion) {
         // holes don't get destroyed by bombs
     }
 

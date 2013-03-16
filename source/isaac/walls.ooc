@@ -13,7 +13,7 @@ import chipmunk
 import structs/[ArrayList, List, HashMap]
 
 // our stuff
-import isaac/[level, game, map, bomb, plan]
+import isaac/[level, game, map, bomb, plan, explosion]
 
 Walls: class extends Entity {
 
@@ -256,7 +256,7 @@ Door: class extends Entity {
         true
     }
 
-    bombHarm: func (bomb: Bomb) {
+    bombHarm: func (explosion: Explosion) {
         if (!visible) {
             // TODO: what about secret rooms?
             return

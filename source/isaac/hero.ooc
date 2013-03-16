@@ -14,7 +14,8 @@ use gnaar
 import gnaar/[utils]
 
 // our stuff
-import isaac/[game, level, tear, shadow, bomb, collectible, options]
+import isaac/[game, level, tear, shadow, bomb, collectible, options,
+    explosion]
 
 /*
  * Dat Isaac...
@@ -185,7 +186,7 @@ Hero: class extends Entity {
         true
     }
 
-    bombHarm: func (bomb: Bomb) {
+    bombHarm: func (explosion: Explosion) {
         harmHero(2)
     }
 

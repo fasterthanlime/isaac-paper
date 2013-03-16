@@ -18,7 +18,7 @@ import math/Random
 
 // our stuff
 import isaac/[game, hero, walls, hopper, bomb, rooms, enemy, map, tiles,
-    freezer]
+    freezer, explosion]
 
 Level: class {
 
@@ -325,7 +325,7 @@ Entity: class {
     destroy: func {
     }
 
-    bombHarm: func (bomb: Bomb) {
+    bombHarm: func (explosion: Explosion) {
         // override here
     }
 

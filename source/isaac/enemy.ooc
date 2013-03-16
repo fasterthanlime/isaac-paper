@@ -13,7 +13,7 @@ use gnaar
 import gnaar/[utils]
 
 // our stuff
-import isaac/[level, bomb, tear, hero]
+import isaac/[level, explosion, tear, hero]
 
 /*
  * Any type of enemy
@@ -47,8 +47,8 @@ Enemy: abstract class extends Entity {
         }
     }
 
-    bombHarm: func (bomb: Bomb) {
-        harm(bomb damage)            
+    bombHarm: func (explosion: Explosion) {
+        harm(explosion damage)            
     }
 
     update: func -> Bool {

@@ -18,8 +18,12 @@ import math/Random
 
 // our stuff
 import isaac/[game, hero, walls, hopper, bomb, rooms, enemy, map, level,
-    hole]
+    hole, explosion]
 
+/**
+ * Anything in the tile grid of level - useful for
+ * pathfinding for example
+ */
 Tile: abstract class extends Entity {
 
     posi: Vec2i
@@ -71,7 +75,7 @@ Tile: abstract class extends Entity {
         body setPos(cpv(pos))
     }
 
-    bombHarm: func (bomb: Bomb) {
+    bombHarm: func (explosion: Explosion) {
         alive = false
     }
 
@@ -81,6 +85,9 @@ Tile: abstract class extends Entity {
 
 }
 
+/**
+ * A regular or item rock
+ */
 Block: class extends Tile {
 
     number: Int
@@ -98,16 +105,16 @@ Block: class extends Tile {
         level blockGroup
     }
 
-    bombHarm: func (bomb: Bomb) {
+    bombHarm: func (explosion: Explosion) {
         super()
 
         maxRadius := 80.0
-        dist := bomb pos dist(pos)
+        dist := explosion pos dist(pos)
         if (dist > maxRadius) {
             return
         }
 
-        angle := pos sub(bomb pos) angle() toDegrees()
+        angle := pos sub(explosion pos) angle() toDegrees()
         dir := match {
             case (angle > 45.0 && angle <= 135.0) =>
                 Direction UP
