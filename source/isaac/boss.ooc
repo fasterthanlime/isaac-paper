@@ -139,5 +139,13 @@ Boss: abstract class extends Entity {
         parts empty?()
     }
 
+    update: func -> Bool {
+        if (dead?()) {
+            return false
+        }
+
+        true
+    }
+
 }
 

@@ -14,7 +14,8 @@ import math/Random
 import structs/[HashMap, List, ArrayList]
 
 // our stuff
-import isaac/[level, plan, rooms, game, boss, freezer, spider, options]
+import isaac/[level, plan, rooms, game, boss, freezer, spider, options, boss,
+    duke]
 
 RoomType: enum {
     FIRST
@@ -411,7 +412,9 @@ MapTile: class {
     spawnBoss: func (level: Level) {
         if (bossType != BossType NONE) {
             // spawn a spider for now :D
-            level add(Spider new(level, level gridPos(6, 3)))
+            //level add(Spider new(level, level gridPos(6, 3)))
+
+            level add(DukeOfFlies new(level, level gridPos(6, 3)))
         }
     }
 
