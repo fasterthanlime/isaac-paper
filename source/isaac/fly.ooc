@@ -84,7 +84,7 @@ Fly: class extends Mob {
         sprite pos set!(pos)
 
         initPhysx()
-        mover = Mover new(body, 70.0)
+        mover = Mover new(level, body, 70.0)
     }
 
     getSpritePath: func -> String {

@@ -15,9 +15,10 @@ import gnaar/[utils]
 
 // sdk stuff
 import math, math/Random
+import structs/[ArrayList, List, HashMap]
 
 // our stuff
-import isaac/[level, shadow, enemy, hero, utils, paths]
+import isaac/[level, shadow, enemy, hero, utils, paths, pathfinding]
 
 MulliType: enum {
     MULLIGAN
@@ -35,7 +36,6 @@ Mulli: class extends Mob {
 
     moveCount := 60
     moveCountMax := 80
-    radius := 180
 
     scale := 0.8
 
@@ -62,8 +62,8 @@ Mulli: class extends Mob {
         sprite pos set!(pos)
 
         initPhysx()
-        mover = Mover new(body, 140.0)
-        mover alpha = 0.8
+        mover = Mover new(level, body, 180.0)
+        mover alpha = 0.9
     }
 
     getSpritePath: func -> String {
@@ -112,13 +112,24 @@ Mulli: class extends Mob {
 
     updateTarget: func {
         if (type == MulliType MULLIBOOM) {
-            mover setTarget(level hero pos)
-            moveCount = 5
+            a := level snappedPos(pos)
+            b := level snappedPos(level hero pos)
+            finder := PathFinder new(level, a, b)
+
+            // remove first component in path, it's a snapped version of ourselves
+            finder path removeAt(0)
+            
+            if (finder path) {
+                mover setCellPath(finder path)
+                moveCount = 60
+            } else {
+                moveCount = 30
+            }
         }
     }
 
     initPhysx: func {
-        (width, height) := (40, 40)
+        (width, height) := (30, 30)
         mass := 15.0
         moment := cpMomentForBox(mass, width, height)
 

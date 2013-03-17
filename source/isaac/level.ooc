@@ -96,6 +96,11 @@ Level: class {
              paddedBottomLeft y + 50.0 * y)
     }
 
+    snappedPos: func (v: Vec2) -> Vec2i {
+        snapped := v sub(paddedBottomLeft) snap(50.0)
+        vec2i(snapped x / 50.0, snapped y / 50.0)
+    }
+
     destroy: func {
         tileGrid clear()
 

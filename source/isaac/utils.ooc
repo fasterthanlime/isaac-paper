@@ -1,7 +1,7 @@
 
 // third-party stuff
 use dye
-import dye/math
+import dye/[math]
 
 use chipmunk
 import chipmunk
@@ -11,9 +11,10 @@ import gnaar/[utils]
 
 // sdk stuff
 import math/Random
+import structs/[ArrayList]
 
 // our stuff
-import isaac/[level, hero]
+import isaac/[level, hero, level]
 
 Target: class {
 
@@ -51,6 +52,10 @@ Target: class {
 
 Mover: class {
 
+    level: Level
+
+    radius := 20.0
+
     target: Vec2
     body: CpBody
     speed: Float
@@ -58,26 +63,50 @@ Mover: class {
 
     moving := false
 
-    init: func (=body, =speed) {
+    cellPath: ArrayList<Vec2i>
+
+    init: func (=level, =body, =speed) {
         target = vec2(body getPos())
     }
 
     update: func (pos: Vec2) {
         dist := pos dist(target)
-        if (moving && dist > 20.0) {
+        if (moving && dist > radius) {
             vel := vec2(body getVel())
             idealVel := target sub(pos) normalized() mul(speed)
             vel interpolate!(idealVel, 1 - alpha)
             body setVel(cpv(vel))
         } else {
-            moving = false
-            // friction
-            friction := 0.8
-            vel := body getVel()
-            vel x *= friction
-            vel y *= friction
-            body setVel(vel)
+            if (cellPath) {
+                popPath()
+            } else {
+                stop()
+            }
         }
+    }
+
+    setCellPath: func (=cellPath) {
+        popPath()
+    }
+
+    popPath: func {
+        if (cellPath empty?()) {
+            cellPath = null
+        } else {
+            posi := cellPath removeAt(0)
+            //"Next stop: %s" printfln(posi _)
+            setTarget(level gridPos(posi x, posi y))
+        }
+    }
+
+    stop: func {
+        moving = false
+        // friction
+        friction := 0.8
+        vel := body getVel()
+        vel x *= friction
+        vel y *= friction
+        body setVel(vel)
     }
 
     setTarget: func (=target) {

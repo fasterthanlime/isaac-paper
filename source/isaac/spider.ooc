@@ -53,7 +53,7 @@ Spider: class extends Mob {
         sprite pos set!(pos)
 
         initPhysx()
-        mover = Mover new(body, 280.0)
+        mover = Mover new(level, body, 280.0)
         mover alpha = 0.8
     }
 
