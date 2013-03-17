@@ -20,10 +20,11 @@ PathFinder: class {
     closed := ArrayList<PathCell> new()
 
     path: ArrayList<Vec2i>
+    level: Level
 
-    init: func (level: Level, a, b: Vec2i) {
+    init: func (=level, a, b: Vec2i) {
         // 1) Add the starting square (or node) to the open list.
-        startNode := PathCell new(null, a, 0, arrivalCost(a, b))
+        startNode := PathCell new(null, a x, a y, 0, arrivalCost(a x, a y, b))
         open add(startNode)
 
         lastNode: PathCell
@@ -39,47 +40,50 @@ PathFinder: class {
             // b) Switch it to the closed list.
             closed add(lowest)
 
-            if (lowest pos equals(b)) {
+            if (lowest col == b x && lowest row == b y) {
                 // we added the end node to the closed list, it's done
                 lastNode = lowest
                 break
             }
 
             // c) For each of the 8 squares adjacent to this current square …
+            x := lowest col
+            y := lowest row
 
-            testNeighbor := func (col, row: Int, g: Float) {
+            testNeighbor := func (dx, dy: Int, g: Float) {
+                col := x + dx
+                row := y + dy
+
                 // If it is not walkable or if it is on the closed list, ignore it.
                 // Otherwise do the following.           
                 for (c in closed) {
-                    if (c pos x == col && c pos y == row) {
+                    if (c col == col && c row == row) {
                         return // ignore
                     }
                 }
-
-                if (!level tileGrid validCoords?(col, row)) {
+            
+                if (!walkable?(col, row)) {
                     return // ignore
                 }
+                
+                // handle impossible diagonals
+                // ie. something like that:
+                //
+                //   #b    you can't walk straight from a to b
+                //   a#    but the previous version of the algorithm allowed it.
+                //
+                if (dx != 0 && dy != 0) { // diagonal?
+                    (cola, rowa) := (x + dx, y)
+                    (colb, rowb) := (x, y + dy)
+                    if (!walkable?(cola, rowa) && !walkable?(colb, rowb)) {
+                        // if both are not walkable, it means we can't go through
+                        return // ignore
+                    }
 
-                walkable := true
-
-                tile := level tileGrid get(col, row)
-                match tile {
-                    case null =>
-                        // walkable alright!
-                    case block: Block =>
-                        walkable = false
-                    case poop: Poop =>
-                        walkable = false
-                    case hole: Hole =>
-                        walkable = false
-                }
-
-                if (!walkable) {
-                    return // ignore
                 }
 
                 for (o in open) {
-                    if (o pos x == col && o pos y == row) {
+                    if (o col == col && o row == row) {
                         // If it is on the open list already, check to see if
                         // this path to that square is better, using G cost as
                         // the measure. A lower G cost means that this is a
@@ -99,21 +103,18 @@ PathFinder: class {
                 // If it isn’t on the open list, add it to the open list. Make the current
                 // square the parent of this square. Record the F, G, and H costs of the
                 // square. 
-                pos := vec2i(col, row)
-                node := PathCell new(lowest, pos, lowest g + g, arrivalCost(pos, b))
+                node := PathCell new(lowest, col, row, lowest g + g, arrivalCost(col, row, b))
                 open add(node)
             }
 
-            x := lowest pos x
-            y := lowest pos y
-            testNeighbor(x - 1, y - 1, 14)
-            testNeighbor(x - 1, y, 10)
-            testNeighbor(x - 1, y + 1, 14)
-            testNeighbor(x, y + 1, 10)
-            testNeighbor(x + 1, y + 1, 14)
-            testNeighbor(x + 1, y, 10)
-            testNeighbor(x + 1, y - 1, 14)
-            testNeighbor(x, y - 1, 10)
+            testNeighbor(-1, -1, 14)
+            testNeighbor(-1, 0, 10)
+            testNeighbor(-1, 1, 14)
+            testNeighbor(0, 1, 10)
+            testNeighbor(0 + 1, 1, 14)
+            testNeighbor(0 + 1, 0, 10)
+            testNeighbor(0 + 1, -1, 14)
+            testNeighbor(0, -1, 10)
 
             // d) Stop when you:
 
@@ -130,12 +131,34 @@ PathFinder: class {
         }
 
         path = ArrayList<Vec2i> new()
-        path add(lastNode pos)
+        path add(vec2i(lastNode col, lastNode row))
 
         while (lastNode parent) {
             lastNode = lastNode parent
-            path add(0, lastNode pos)
+            path add(0, vec2i(lastNode col, lastNode row))
         }
+    }
+
+    walkable?: func (col, row: Int) -> Bool {
+        if (!level tileGrid validCoords?(col, row)) {
+            return false // ignore
+        }
+
+        walkable := true
+
+        tile := level tileGrid get(col, row)
+        match tile {
+            case null =>
+                // walkable alright!
+            case block: Block =>
+                walkable = false
+            case poop: Poop =>
+                walkable = false
+            case hole: Hole =>
+                walkable = false
+        }
+
+        walkable
     }
 
     /**
@@ -149,9 +172,9 @@ PathFinder: class {
      * Using the 'diagonal shortcut' method outlined here:
      * http://www.policyalmanac.org/games/heuristics.htm
      */
-    arrivalCost: func (a, b: Vec2i) -> Float {
-        xDistance := ((a x - b x) as Float) abs()
-        yDistance := ((a y - b y) as Float) abs()
+    arrivalCost: func (col, row: Int, b: Vec2i) -> Float {
+        xDistance := ((col - b x) as Float) abs()
+        yDistance := ((row - b y) as Float) abs()
 
         if (xDistance > yDistance) {
             return 14.0 * yDistance + 10.0 * (xDistance - yDistance)
@@ -165,13 +188,13 @@ PathFinder: class {
 PathCell: class {
 
     parent: This
-    pos: Vec2i
+    col, row: Int
 
     f: Float // g + h
     g: Float // movement cost from starting point (computed)
     h: Float // movement cost to arrival (guesstimated)
 
-    init: func (=parent, =pos, =g, =h) {
+    init: func (=parent, =col, =row, =g, =h) {
         f = g + h
     }
 
