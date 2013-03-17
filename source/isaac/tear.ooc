@@ -220,7 +220,6 @@ BlockTearHandler: class extends CollisionHandler {
     add: func (f: Func (Int, Int)) {
         f(CollisionTypes TEAR, CollisionTypes BLOCK)
         f(CollisionTypes TEAR, CollisionTypes WALL)
-        f(CollisionTypes TEAR, CollisionTypes BOMB)
     }
 
 }
@@ -234,12 +233,15 @@ FireTearHandler: class extends CollisionHandler {
         bounce := true
         
         tear := shape1 getUserData() as Tear
+        entity := shape2 getUserData() as Entity
 
         match (tear type) {
             case TearType HERO =>
                 tear hit = true
-                fire := shape2 getUserData() as Fire
-                fire harm(tear damage)
+                match entity {
+                    case fire: Fire =>
+                        fire harm(tear damage)
+                }
                 true
             case TearType ENEMY =>
                 false
@@ -248,6 +250,7 @@ FireTearHandler: class extends CollisionHandler {
 
     add: func (f: Func (Int, Int)) {
         f(CollisionTypes TEAR, CollisionTypes FIRE)
+        f(CollisionTypes TEAR, CollisionTypes BOMB)
     }
 
 }

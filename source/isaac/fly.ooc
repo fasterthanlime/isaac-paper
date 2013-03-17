@@ -43,7 +43,7 @@ Fly: class extends Mob {
     type: FlyType
 
     fireRadius := 350.0
-    fireSpeed := 240.0
+    fireSpeed := 280.0
 
     fireCount := 40
     maxFireCount := 60

@@ -91,11 +91,8 @@ Sack: class extends Mob {
     }
 
     spawn: func {
-        spider := Spider new(level, pos)
-        spawnVel := 160.0
-        spider parabola = Parabola new(50, 40)
-        spider shape setSensor(true)
-        spider body setVel(cpv(Target direction() mul(spawnVel)))
+        spider := Spider new(level, pos, SpiderType SMALL)
+        spider catapult()
         level add(spider)
         resetSpawnCount()
     }

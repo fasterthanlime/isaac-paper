@@ -19,7 +19,7 @@ import structs/[ArrayList, List, HashMap]
 
 // our stuff
 import isaac/[level, shadow, enemy, hero, utils, paths, pathfinding,
-    explosion]
+    explosion, bomb, fly, tear]
 
 MulliType: enum {
     MULLIGAN
@@ -33,6 +33,8 @@ MulliType: enum {
  */
 Mulli: class extends Mob {
 
+    fireSpeed := 280.0
+
     rotateConstraint: CpConstraint
 
     moveCount := 60
@@ -41,8 +43,8 @@ Mulli: class extends Mob {
     scale := 0.8
 
     shadow: Shadow
-    shadowFactor := 0.7
-    shadowYOffset := 8
+    shadowFactor := 0.4
+    shadowYOffset := 25
 
     fleeRadius := 400
 
@@ -98,7 +100,47 @@ Mulli: class extends Mob {
         match type {
             case MulliType MULLIBOOM =>
                 level add(Explosion new(level, pos))
+            case MulliType MULLIGAN || MulliType HIVE =>
+                spawnFlies()
+            case MulliType MULLIGOON =>
+                spawnBombAndTears()
         }
+    }
+
+    spawnFlies: func {
+        numFlies := Random randInt(3, 5)
+        for (i in 0..numFlies) {
+            number := Random randInt(0, 100)
+            type := match {
+                case number < 20 =>
+                    FlyType POOTER
+                case number < 60 =>
+                    FlyType ATTACK_FLY
+                case =>
+                    FlyType BLACK_FLY
+            }
+
+            vel := Vec2 random(100)
+            diff := Vec2 random(40)
+
+            fly := Fly new(level, pos add(diff), type)
+            fly body setVel(cpv(vel))
+            level add(fly)
+        }
+    }
+
+    spawnBombAndTears: func {
+        level add(Bomb new(level, pos))
+        spawnTear(pos, vec2(-1, 0))
+        spawnTear(pos, vec2(1, 0))
+        spawnTear(pos, vec2(0, -1))
+        spawnTear(pos, vec2(0, 1))
+    }
+
+    spawnTear: func (pos, dir: Vec2) {
+        vel := dir mul(fireSpeed)
+        tear := Tear new(level, pos, vel, TearType ENEMY, 1)
+        level add(tear)
     }
 
     touchHero: func (hero: Hero) -> Bool {
@@ -127,6 +169,9 @@ Mulli: class extends Mob {
 
         if (moveCount > 0) {
             moveCount -= 1
+            if (type == MulliType MULLIBOOM && !mover moving) {
+                moveCount = 0
+            }
         } else {
             updateTarget()
         }
@@ -184,6 +229,7 @@ Mulli: class extends Mob {
                 }
                 moveCount = 40 + Random randInt(-10, 20)
             } else {
+                mover setTarget(pos add(Vec2 random(40)))
                 moveCount = 20
             }
         }

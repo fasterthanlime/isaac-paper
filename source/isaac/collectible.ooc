@@ -62,10 +62,7 @@ Collectible: abstract class extends Entity {
         parabola = Parabola new(30.0, 2.0, 0)
 
         speed := 150
-        body setVel(cpv(
-            Random randInt(-speed, speed),
-            Random randInt(-speed, speed)
-        ))
+        body setVel(cpv(Vec2 random(speed)))
     }
 
     getSpritePath: abstract func -> String

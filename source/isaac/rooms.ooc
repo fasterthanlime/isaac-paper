@@ -160,7 +160,7 @@ Room: class {
                 case 'M' =>
                     chance := Random randInt(0, 100)
                     type := match {
-                        case chance < 75 =>
+                        case chance < 60 =>
                             MulliType MULLIGAN
                         case =>
                             MulliType MULLIGOON
@@ -178,7 +178,9 @@ Room: class {
         // now spawn all stuff enemy-like
         match c { 
             case 's' =>
-                level add(Spider new(level, level gridPos(x, y)))
+                level add(Spider new(level, level gridPos(x, y), SpiderType SMALL))
+            case 'S' =>
+                level add(Spider new(level, level gridPos(x, y), SpiderType BIG))
             case 'k' =>
                 level add(Sack new(level, level gridPos(x, y)))
             case 'o' =>

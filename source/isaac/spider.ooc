@@ -19,6 +19,11 @@ import math, math/Random
 // our stuff
 import isaac/[level, shadow, enemy, hero, utils, paths]
 
+SpiderType: enum {
+    SMALL
+    BIG
+}
+
 /*
  * Spidery... yum
  */
@@ -40,12 +45,15 @@ Spider: class extends Mob {
 
     parabola: Parabola
 
-    init: func (.level, .pos) {
+    type: SpiderType
+
+    init: func (.level, .pos, type := SpiderType SMALL) {
+        this type = type
         super(level, pos)
 
         life = 8.0
 
-        sprite = GlSprite new("assets/png/spider.png")
+        sprite = GlSprite new(getSpritePath())
         sprite scale set!(scale, scale)
         shadow = Shadow new(level, sprite width * scale * shadowFactor)
 
@@ -57,10 +65,40 @@ Spider: class extends Mob {
         mover alpha = 0.8
     }
 
+    getSpritePath: func -> String {
+        match type {
+            case SpiderType SMALL =>
+                "assets/png/spider.png"
+            case =>
+                "assets/png/big-spider.png"
+        }
+    }
+
+    onDeath: func {
+        if (type == SpiderType BIG) {
+            // spawn two children!
+            spawnChild()
+            spawnChild()
+        }
+    }
+
+    spawnChild: func {
+        s := Spider new(level, pos, SpiderType SMALL)
+        s catapult()
+        level add(s)
+    }
+
+    catapult: func {
+        parabola = Parabola new(30.0, 2.0, 0)
+
+        speed := 150
+        body setVel(cpv(Vec2 random(speed)))
+    }
+
     update: func -> Bool {
         if (parabola) {
             // handle height
-            z = parabola eval(moveCountMax - moveCount)
+            z = parabola eval()
             if (parabola done?()) {
                 z = parabola bottom
                 parabola = null
