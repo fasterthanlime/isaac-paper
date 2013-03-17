@@ -255,12 +255,14 @@ FireTearHandler: class extends CollisionHandler {
 IgnoreTearHandler: class extends CollisionHandler {
 
     begin: func (arbiter: CpArbiter, space: CpSpace) -> Bool {
+        logger warn("begin called in IgnoreTearHandler")
         false
     }
 
     add: func (f: Func (Int, Int)) {
         f(CollisionTypes TEAR, CollisionTypes COLLECTIBLE)
         f(CollisionTypes TEAR, CollisionTypes TRAP_DOOR)
+        logger warn("adding for hole")
         f(CollisionTypes TEAR, CollisionTypes HOLE)
         f(CollisionTypes TEAR, CollisionTypes SPIKES)
     }

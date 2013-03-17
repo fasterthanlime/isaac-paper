@@ -412,12 +412,15 @@ CollisionGroups: enum from Int {
 
 CollisionHandler: abstract class extends CpCollisionHandler {
 
+    logger := static Log getLogger(This name)
+
     cachedLevel: Level
 
     ensure: func (level: Level) {
         if (level != cachedLevel) {
             cachedLevel = level
             add(|a, b|
+                logger warn("adding between %d and %d", a, b)
                 level space addCollisionHandler(a, b, this)
             )
         }

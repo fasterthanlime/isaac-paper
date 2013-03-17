@@ -33,6 +33,7 @@ Logging: class {
                 logFile remove()
             }
             file := FileHandler new("log.txt")
+            file setFilter(LevelFilter new(Level info..Level critical))
             file setFormatter(NiceFormatter new())
             Log root attachHandler(file)
         }

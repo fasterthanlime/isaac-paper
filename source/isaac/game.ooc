@@ -18,7 +18,10 @@ import structs/[HashMap, List, ArrayList]
 
 // our stuff
 import isaac/[logging, level, bomb, hero, rooms, collectible, health, plan, map,
-    music, options]
+    music, options, trapdoor, spikes]
+
+// debugging for fun
+import isaac/[tear, enemy]
 
 /*
  * The game, duh.
@@ -69,8 +72,29 @@ Game: class {
 
     cheats := true
 
+    classes: List<Class>
+
     /* Initialization, duh */
     init: func {
+        // Just testing for fun
+        {
+            classes = ArrayList<Class> new()
+            t := Tear
+            classes add(t)
+            e := Enemy
+            classes add(e)
+            m := Mob
+            classes add(m)
+            cl := Collectible
+            classes add(cl)
+            bo := Bomb
+            classes add(bo)
+            td := TrapDoor
+            classes add(td)
+            sp := Spikes
+            classes add(sp)
+        }
+
         Logging setup()
 
         options = Options new()
