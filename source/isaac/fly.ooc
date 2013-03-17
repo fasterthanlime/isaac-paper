@@ -19,6 +19,16 @@ import math, math/Random
 // our stuff
 import isaac/[game, level, paths, shadow, enemy, hero, utils, tear]
 
+FlyType: enum {
+    ATTACK_FLY
+    BLACK_FLY
+    MOTER
+    POOTER 
+    FAT_FLY
+    SUCKER
+    SPIT
+}
+
 /*
  * Bzzzzzz
  */
@@ -37,8 +47,6 @@ Fly: class extends Mob {
     shadow: Shadow
 
     mover: Mover
-
-    parabola: Parabola
 
     type: FlyType
 
@@ -311,15 +319,5 @@ Fly: class extends Mob {
         super(hero)
     }
 
-}
-
-FlyType: enum {
-    ATTACK_FLY
-    BLACK_FLY
-    MOTER
-    POOTER 
-    FAT_FLY
-    SUCKER
-    SPIT
 }
 
