@@ -44,6 +44,8 @@ Mulli: class extends Mob {
     shadowFactor := 0.7
     shadowYOffset := 8
 
+    fleeRadius := 400
+
     mover: Mover
 
     parabola: Parabola
@@ -63,8 +65,17 @@ Mulli: class extends Mob {
         sprite pos set!(pos)
 
         initPhysx()
-        mover = Mover new(level, body, 180.0)
+        mover = Mover new(level, body, getSpeed())
         mover alpha = 0.9
+    }
+
+    getSpeed: func -> Float {
+        match type {
+            case MulliType MULLIBOOM =>
+                180.0
+            case =>
+                120.0
+        }
     }
 
     getSpritePath: func -> String {
@@ -145,6 +156,35 @@ Mulli: class extends Mob {
                 moveCount = 60
             } else {
                 moveCount = 30
+            }
+        } else {
+            diff := pos sub(level hero pos)
+            if (diff norm() < fleeRadius) {
+                dist := 80.0
+
+                fleeDiff := diff normalized() mul(dist)
+                target := pos add(fleeDiff)
+                if (!target inside?(level paddedBottomLeft, level paddedTopRight)) {
+                    // we're trapped! Let's rush on him 
+                    target = pos sub(fleeDiff)
+                }
+
+                a := level snappedPos(pos)
+                b := level snappedPos(target)
+                b = b clamp(level gridBottomLeft, level gridTopRight)
+
+                //"Trying to go from %s to %s!" printfln(a _, b _)
+                finder := PathFinder new(level, a, b)
+
+                if (finder path) {
+                    mover setCellPath(finder path)
+                } else {
+                    //"No path to flee from %s to %s!" printfln(a _, b _)
+                    moveCount = 60
+                }
+                moveCount = 40 + Random randInt(-10, 20)
+            } else {
+                moveCount = 20
             }
         }
     }

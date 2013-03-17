@@ -3,6 +3,9 @@
 use dye
 import dye/[math]
 
+use deadlogger
+import deadlogger/[Log, Logger]
+
 // sdk stuff
 import structs/[ArrayList, List]
 
@@ -22,6 +25,8 @@ PathFinder: class {
     path: ArrayList<Vec2i>
     level: Level
 
+    logger := static Log getLogger(This name)
+
     init: func (=level, a, b: Vec2i) {
         // 1) Add the starting square (or node) to the open list.
         startNode := PathCell new(null, a x, a y, 0, arrivalCost(a x, a y, b))
@@ -36,6 +41,9 @@ PathFinder: class {
             // a) Look for the lowest F cost square on the open list. We refer to this
             // as the current square.
             lowest := open removeAt(0)
+
+            //logger info("open = %d, closed = %d", open size, closed size)
+            //logger info("Testing lowest %d, %d, F/G/H costs = %.2f/%.2f/%.2f", lowest col, lowest row, lowest f, lowest g, lowest h)
 
             // b) Switch it to the closed list.
             closed add(lowest)
@@ -82,8 +90,11 @@ PathFinder: class {
 
                 }
 
+                alreadyAdded := false
                 for (o in open) {
                     if (o col == col && o row == row) {
+                        alreadyAdded = true
+
                         // If it is on the open list already, check to see if
                         // this path to that square is better, using G cost as
                         // the measure. A lower G cost means that this is a
@@ -100,11 +111,13 @@ PathFinder: class {
                     }
                 }
 
-                // If it isn’t on the open list, add it to the open list. Make the current
-                // square the parent of this square. Record the F, G, and H costs of the
-                // square. 
-                node := PathCell new(lowest, col, row, lowest g + g, arrivalCost(col, row, b))
-                open add(node)
+                if (!alreadyAdded) {
+                    // If it isn’t on the open list, add it to the open list. Make the current
+                    // square the parent of this square. Record the F, G, and H costs of the
+                    // square. 
+                    node := PathCell new(lowest, col, row, lowest g + g, arrivalCost(col, row, b))
+                    open add(node)
+                }
             }
 
             testNeighbor(-1, -1, 14)

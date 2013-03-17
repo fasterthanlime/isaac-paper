@@ -60,6 +60,9 @@ Level: class {
     paddedBottomLeft := vec2(100, 100)
     paddedTopRight := vec2(700, 400)
 
+    gridBottomLeft := vec2i(0, 0)
+    gridTopRight := vec2i(12, 6)
+
     groundLevel := 3.0
 
     // grids
@@ -97,8 +100,7 @@ Level: class {
     }
 
     snappedPos: func (v: Vec2) -> Vec2i {
-        snapped := v sub(paddedBottomLeft) snap(50.0)
-        vec2i(snapped x / 50.0, snapped y / 50.0)
+        v sub(paddedBottomLeft) getColRow(50.0)
     }
 
     destroy: func {
