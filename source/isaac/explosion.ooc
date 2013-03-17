@@ -24,6 +24,11 @@ Explosion: class extends Splash {
 
     init: func (.level, .pos) {
         super(level, pos)
+
+        incr := -0.05
+        scaleB = 1.5
+        sprite color set!(80, 80, 80)
+        alphaFactor = 1.0
     }
 
     getSpritePath: func -> String {

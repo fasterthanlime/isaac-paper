@@ -140,7 +140,7 @@ PathFinder: class {
         // each square to its parent square until you reach the starting
         // square. That is your path.
         if (!lastNode) {
-            return null // no path
+            return // no path
         }
 
         path = ArrayList<Vec2i> new()

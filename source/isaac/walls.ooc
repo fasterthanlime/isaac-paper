@@ -67,21 +67,22 @@ Walls: class extends Entity {
         brc := vec2(430, 75)
         br  := vec2(725, 75)
 
-        createSegment(ul, ulc)
-        createSegment(urc, ur)
-        createSegment(ur, urk)
-        createSegment(brk, br)
+        createSegment(ul, ulc, upDoor)
+        createSegment(urc, ur, upDoor)
+        createSegment(ur, urk, rightDoor)
+        createSegment(brk, br, rightDoor)
 
-        createSegment(br, brc)
-        createSegment(blc, bl)
-        createSegment(bl, blk)
-        createSegment(ulk, ul)
+        createSegment(br, brc, downDoor)
+        createSegment(blc, bl, downDoor)
+        createSegment(bl, blk, leftDoor)
+        createSegment(ulk, ul, leftDoor)
     }
 
-    createSegment: func (p1, p2: Vec2) {
+    createSegment: func (p1, p2: Vec2, door: Door) {
         shape := CpSegmentShape new(level space getStaticBody(), cpv(p1), cpv(p2), 1.0)
         shape setFriction(0.9)
         shape setElasticity(0.9)
+        shape setUserData(door)
         shape setCollisionType(CollisionTypes WALL)
         level space addShape(shape)
         shapes add(shape)

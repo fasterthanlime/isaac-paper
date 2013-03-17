@@ -33,6 +33,8 @@ Splash: class extends Entity {
     scaleA := 0.1
     scaleB := 0.5
 
+    alphaFactor := 0.6
+
     init: func (.level, .pos) {
         super(level, pos)
 
@@ -55,7 +57,7 @@ Splash: class extends Entity {
 
         scale := scaleA * life + scaleB * (1.0 - life)
         sprite scale set!(scale, scale)
-        sprite opacity = life * 0.6
+        sprite opacity = life * alphaFactor
 
         true
     }

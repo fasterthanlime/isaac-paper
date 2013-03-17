@@ -17,7 +17,7 @@ import math, math/Random
 
 // our stuff
 import isaac/[game, level, paths, shadow, enemy, hero, utils, tear,
-    explosion]
+    explosion, walls]
 
 RoundFlyType: enum {
     BOOM
@@ -38,11 +38,14 @@ RoundFly: class extends Mob {
 
     shadow: Shadow
 
-    mover: Mover
-
     type: RoundFlyType
 
     fireSpeed := 280.0
+
+    speed := 120.0
+
+    dir: Vec2
+    baseColor: Color
 
     init: func (.level, .pos, =type) {
         super(level, pos)
@@ -51,6 +54,12 @@ RoundFly: class extends Mob {
 
         sprite = GlSprite new(getSpritePath())
         sprite scale set!(scale, scale)
+        baseColor = match type {
+            case RoundFlyType RED =>
+                Color new(255, 140, 140)
+            case =>
+                Color white()
+        }
 
         factor := 0.2
         shadow = Shadow new(level, sprite width * scale * factor)
@@ -59,7 +68,12 @@ RoundFly: class extends Mob {
         sprite pos set!(pos)
 
         initPhysx()
-        mover = Mover new(level, body, 70.0)
+
+        dir = vec2(oneOrMinusOne(), oneOrMinusOne()) 
+    }
+
+    oneOrMinusOne: func -> Int {
+        Random randInt(0, 1) * 2 - 1
     }
 
     getSpritePath: func -> String {
@@ -87,14 +101,19 @@ RoundFly: class extends Mob {
     }
 
     update: func -> Bool {
-        mover update(pos)
+        vel := dir mul(speed)
+        body setVel(cpv(vel))
 
         bodyPos := body getPos()
         sprite pos set!(bodyPos x, bodyPos y + 8 + z)
         pos set!(body getPos())
         shadow setPos(pos sub(0.0, 3.0))
 
-        super()
+        retVal := super()
+        if (!redish) {
+            sprite color set!(baseColor)
+        }
+        retVal
     }
 
     grounded?: func -> Bool {
@@ -106,16 +125,6 @@ RoundFly: class extends Mob {
         vel := dir mul(fireSpeed)
         tear := Tear new(level, pos, vel, TearType ENEMY, 1)
         level add(tear)
-    }
-
-    updateTarget: func {
-        // don't track hero, we're just moving around
-        mover setTarget(Target choose(pos, level, radius, false))
-        resetSpeedAndCount()
-    }
-    
-    resetSpeedAndCount: func {
-        mover speed = Random randInt(80, 90) as Float
     }
 
     initPhysx: func {
@@ -151,6 +160,21 @@ RoundFly: class extends Mob {
         level space removeBody(body)
         body free()
         level charGroup remove(sprite)
+    }
+
+    touchWalls: func (door: Door) -> Bool {
+        match (door dir) {
+            case Direction UP =>
+                dir y = -1
+            case Direction DOWN =>
+                dir y = 1
+            case Direction LEFT =>
+                dir x = 1
+            case Direction RIGHT =>
+                dir x = -1
+        }
+
+        true
     }
 
 }

@@ -13,7 +13,7 @@ use gnaar
 import gnaar/[utils]
 
 // our stuff
-import isaac/[level, explosion, tear, hero]
+import isaac/[level, explosion, tear, hero, walls]
 
 /*
  * Any type of enemy
@@ -32,7 +32,7 @@ Enemy: abstract class extends Entity {
     
     redish: Bool
 
-    heroHandler: static CollisionHandler
+    heroHandler, wallsHandler: static CollisionHandler
 
     init: func (.level, .pos) {
         super(level, pos)
@@ -106,11 +106,22 @@ Enemy: abstract class extends Entity {
         true
     }
 
+    touchWalls: func (door: Door) -> Bool {
+        // most enemies stay within the wall & don't
+        // do anything special there
+        true
+    }
+
     initHandlers: func {
         if (!heroHandler) {
             heroHandler = EnemyHeroHandler new()
         }
         heroHandler ensure(level)
+
+        if (!wallsHandler) {
+            wallsHandler = EnemyWallsHandler new()
+        }
+        wallsHandler ensure(level)
     }
 
     blocksRoom?: func -> Bool {
@@ -158,6 +169,24 @@ EnemyHeroHandler: class extends CollisionHandler {
 
     add: func (f: Func (Int, Int)) {
         f(CollisionTypes ENEMY, CollisionTypes HERO)
+    }
+
+}
+
+EnemyWallsHandler: class extends CollisionHandler {
+
+    begin: func (arbiter: CpArbiter, space: CpSpace) -> Bool {
+        shape1, shape2: CpShape
+        arbiter getShapes(shape1&, shape2&)
+
+        enemy := shape1 getUserData() as Enemy
+        door := shape2 getUserData() as Door
+
+        enemy touchWalls(door)
+    }
+
+    add: func (f: Func (Int, Int)) {
+        f(CollisionTypes ENEMY, CollisionTypes WALL)
     }
 
 }
