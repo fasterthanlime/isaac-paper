@@ -197,7 +197,7 @@ Game: class {
             case FloorType CELLAR =>
                 "sacrificial" // filler
             case FloorType CAVES =>
-                "atonement" // filler
+                "repentant"
             case FloorType CATACOMBS =>
                 "atonement"
             case FloorType DEPTHS || FloorType NECROPOLIS =>
@@ -224,11 +224,11 @@ Game: class {
             case RoomType SECRET =>
                 "respite"
             case RoomType SUPERSECRET =>
-                "respite" // filler
+                "respite"
             case RoomType LIBRARY =>
-                "respite" // filler
+                "tomes" // filler
             case RoomType SHOP =>
-                "sacrificial" // filler
+                "tomes" // filler
             case =>
                 name
         }
