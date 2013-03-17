@@ -308,10 +308,11 @@ Map: class {
     pickBoss: func -> BossType {
         bosses := BossType pool(game floor type)
         type := bosses[Random randRange(0, bosses length)]
-        
-        if (takenBosses contains?(type)) {
-            return pickBoss()
-        }
+            
+        // TODO: Well, we only have one boss so far... 
+        //if (takenBosses contains?(type)) {
+        //    return pickBoss()
+        //}
 
         takenBosses add(type)
         type
@@ -412,8 +413,6 @@ MapTile: class {
     spawnBoss: func (level: Level) {
         if (bossType != BossType NONE) {
             // spawn a spider for now :D
-            //level add(Spider new(level, level gridPos(6, 3)))
-
             level add(DukeOfFlies new(level, level gridPos(6, 3)))
         }
     }

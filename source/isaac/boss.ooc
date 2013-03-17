@@ -105,15 +105,13 @@ BossType: enum {
 
     basement: static func -> This[] {
         return [
-            This DUKE_OF_FLIES,
-            This LARRY_JR
+            This DUKE_OF_FLIES
         ]
     }
 
     cellar: static func -> This[] {
         return [
-            This DUKE_OF_FLIES,
-            This LARRY_JR
+            This DUKE_OF_FLIES
         ]
     }
 }
