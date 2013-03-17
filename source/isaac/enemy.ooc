@@ -64,7 +64,7 @@ Enemy: abstract class extends Entity {
             redish = false
         }
 
-        if (life <= 0.0) {
+        if (life <= 0.1) {
             onDeath()
             return false
         }

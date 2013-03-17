@@ -18,7 +18,8 @@ import math, math/Random
 import structs/[ArrayList, List, HashMap]
 
 // our stuff
-import isaac/[level, shadow, enemy, hero, utils, paths, pathfinding]
+import isaac/[level, shadow, enemy, hero, utils, paths, pathfinding,
+    explosion]
 
 MulliType: enum {
     MULLIGAN
@@ -80,6 +81,26 @@ Mulli: class extends Mob {
                 raise("Invalid mulli type: %d" format(type))
                 ""
         }
+    }
+
+    onDeath: func {
+        match type {
+            case MulliType MULLIBOOM =>
+                level add(Explosion new(level, pos))
+        }
+    }
+
+    touchHero: func (hero: Hero) -> Bool {
+        match type {
+            case MulliType MULLIBOOM =>
+                life = 0.0
+                // return so we don't hurt him yet for half a heart..
+                // we'll let the explosion hurt him for a full heart.
+                // MWUHAHAHA
+                return true
+        }
+
+        super(hero)
     }
 
     update: func -> Bool {
