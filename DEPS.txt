@@ -1,5 +1,4 @@
 [isaac:master]
- > ?? DEPS.txt
 [dye:gles] (<= isaac)
 [bleep:master] (<= isaac)
 [gnaar:gles] (<= isaac)
