@@ -1,0 +1,11 @@
+[isaac:master]
+ > ?? DEPS.txt
+[dye:gles] (<= isaac)
+[bleep:master] (<= isaac)
+[gnaar:gles] (<= isaac)
+[sdl2:master] (<= dye)
+[stb-image:master] (<= dye)
+[freetype2:master] (<= dye)
+[deadlogger:master] (<= bleep)
+[chipmunk:master] (<= gnaar)
+[yaml:master] (<= gnaar)
