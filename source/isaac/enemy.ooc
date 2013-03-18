@@ -13,7 +13,7 @@ use gnaar
 import gnaar/[utils]
 
 // our stuff
-import isaac/[level, explosion, tear, hero, walls]
+import isaac/[level, explosion, tear, hero, walls, tiles]
 
 /*
  * Any type of enemy
@@ -29,10 +29,12 @@ Enemy: abstract class extends Entity {
 
     shape: CpShape
     body: CpBody
+
+    hitbackSpeed := 200
     
     redish: Bool
 
-    heroHandler, wallsHandler: static CollisionHandler
+    heroHandler, wallsHandler, blockHandler: static CollisionHandler
 
     init: func (.level, .pos) {
         super(level, pos)
@@ -89,10 +91,13 @@ Enemy: abstract class extends Entity {
         }
 
         // TODO: make blast dependant on tear damage
+        bodyVel := body getVel()
         dir := pos sub(tear pos) normalized()
-        hitbackSpeed := 200
         vel := dir mul(hitbackSpeed)
-        body setVel(cpv(vel))
+
+        bodyVel x += vel x
+        bodyVel y += vel y
+        body setVel(bodyVel)
     }
 
     onDeath: func {
@@ -112,6 +117,11 @@ Enemy: abstract class extends Entity {
         true
     }
 
+    touchBlock: func (tile: Tile) -> Bool {
+        // most enemies are constrained by blocks
+        true
+    }
+
     initHandlers: func {
         if (!heroHandler) {
             heroHandler = EnemyHeroHandler new()
@@ -122,6 +132,11 @@ Enemy: abstract class extends Entity {
             wallsHandler = EnemyWallsHandler new()
         }
         wallsHandler ensure(level)
+
+        if (!blockHandler) {
+            blockHandler = EnemyBlockHandler new()
+        }
+        blockHandler ensure(level)
     }
 
     blocksRoom?: func -> Bool {
@@ -183,6 +198,24 @@ EnemyWallsHandler: class extends CollisionHandler {
         door := shape2 getUserData() as Door
 
         enemy touchWalls(door)
+    }
+
+    add: func (f: Func (Int, Int)) {
+        f(CollisionTypes ENEMY, CollisionTypes WALL)
+    }
+
+}
+
+EnemyBlockHandler: class extends CollisionHandler {
+
+    begin: func (arbiter: CpArbiter, space: CpSpace) -> Bool {
+        shape1, shape2: CpShape
+        arbiter getShapes(shape1&, shape2&)
+
+        enemy := shape1 getUserData() as Enemy
+        tile := shape2 getUserData() as Tile
+
+        enemy touchBlock(tile)
     }
 
     add: func (f: Func (Int, Int)) {

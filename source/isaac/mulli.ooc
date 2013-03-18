@@ -40,7 +40,7 @@ Mulli: class extends Mob {
     moveCount := 60
     moveCountMax := 80
 
-    scale := 0.8
+    scale := 0.9
 
     shadow: Shadow
     shadowFactor := 0.4
@@ -236,7 +236,7 @@ Mulli: class extends Mob {
     }
 
     initPhysx: func {
-        (width, height) := (30, 30)
+        (width, height) := (35, 35)
         mass := 15.0
         moment := cpMomentForBox(mass, width, height)
 

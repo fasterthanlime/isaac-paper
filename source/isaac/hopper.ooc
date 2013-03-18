@@ -17,7 +17,7 @@ import gnaar/[utils]
 import math, math/Random
 
 // our stuff
-import isaac/[level, game, paths, shadow, enemy, hero, utils]
+import isaac/[level, game, paths, shadow, enemy, hero, utils, tiles]
 
 /*
  * JUMP JUMP JUMP JUMP JUMP - Jump around!
@@ -41,8 +41,6 @@ Hopper: class extends Mob {
     parabola := Parabola new(1, 1)
 
     shadow: Shadow
-
-    blockHandler: static CollisionHandler
 
     init: func (.level, .pos) {
         super(level, pos)
@@ -123,14 +121,6 @@ Hopper: class extends Mob {
         level space addShape(shape)
     }
 
-    initHandlers: func {
-        super()
-        if (!blockHandler) {
-            blockHandler = BlockHopperHandler new()
-        }
-        blockHandler ensure(level)
-    }
-
     destroy: func {
         shadow destroy()
         level space removeShape(shape)
@@ -140,33 +130,16 @@ Hopper: class extends Mob {
         level charGroup remove(sprite)
     }
 
+    touchBlock: func (tile: Tile) -> Bool {
+        grounded?()
+    }
+
     jump: func {
         jumpCount = jumpCountMax
         target := Target choose(pos, level, radius)
         body setVel(cpv(target sub(pos) normalized() mul(speed)))
 
         parabola = Parabola new(jumpHeight, jumpCountMax * 0.5)
-    }
-
-}
-
-BlockHopperHandler: class extends CollisionHandler {
-
-    preSolve: func (arbiter: CpArbiter, space: CpSpace) -> Bool {
-        shape1, shape2: CpShape
-        arbiter getShapes(shape1&, shape2&)
-
-        object := shape1 getUserData() as Entity
-        match object {
-            case hopper: Hopper =>
-                hopper grounded?()
-            case =>
-                true
-        }
-    }
-
-    add: func (f: Func (Int, Int)) {
-        f(CollisionTypes ENEMY, CollisionTypes BLOCK)
     }
 
 }

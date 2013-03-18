@@ -50,7 +50,7 @@ RoundFly: class extends Mob {
     init: func (.level, .pos, =type) {
         super(level, pos)
 
-        life = 8.0
+        life = 20.0
 
         sprite = GlSprite new(getSpritePath())
         sprite scale set!(scale, scale)
@@ -70,6 +70,10 @@ RoundFly: class extends Mob {
         initPhysx()
 
         dir = vec2(oneOrMinusOne(), oneOrMinusOne()) 
+    }
+
+    hitBack: func (tear: Tear) {
+        // we bounce naturally
     }
 
     oneOrMinusOne: func -> Int {
@@ -101,8 +105,24 @@ RoundFly: class extends Mob {
     }
 
     update: func -> Bool {
-        vel := dir mul(speed)
-        body setVel(cpv(vel))
+        bodyVel := vec2(body getVel())
+        angle := bodyVel angle() toDegrees()
+
+        match {
+            case angle > 0.0 && angle < 90.0 =>
+                dir set!(1, 1)
+            case angle > 90.0 && angle < 180.0 =>
+                dir set!(-1, 1)
+            case angle > 180.0 && angle < 270.0 =>
+                dir set!(-1, -1)
+            case angle =>
+                dir set!(1, -1)
+        }
+
+        idealVel := dir mul(speed)
+        alpha := 0.85
+        bodyVel interpolate!(idealVel, 1 - alpha)
+        body setVel(cpv(bodyVel))
 
         bodyPos := body getPos()
         sprite pos set!(bodyPos x, bodyPos y + 8 + z)
@@ -128,9 +148,9 @@ RoundFly: class extends Mob {
     }
 
     initPhysx: func {
-        (width, height) := (30, 30)
+        radius := 20.0
         mass := 20.0
-        moment := cpMomentForBox(mass, width, height)
+        moment := cpMomentForCircle(mass, 0, radius, cpv(radius, radius))
 
         body = CpBody new(mass, moment)
         body setPos(cpv(pos))
@@ -139,11 +159,10 @@ RoundFly: class extends Mob {
         rotateConstraint = CpRotaryLimitJoint new(body, level space getStaticBody(), 0, 0)
         level space addConstraint(rotateConstraint)
 
-        shape = CpBoxShape new(body, width, height)
+        shape = CpCircleShape new(body, radius, cpv(0, 0))
         shape setUserData(this)
         shape setCollisionType(CollisionTypes ENEMY)
-        // FIXME: that's not proper, dude.
-        shape setSensor(true)
+        shape setElasticity(0.7)
         level space addShape(shape)
 
         initHandlers()
@@ -160,21 +179,6 @@ RoundFly: class extends Mob {
         level space removeBody(body)
         body free()
         level charGroup remove(sprite)
-    }
-
-    touchWalls: func (door: Door) -> Bool {
-        match (door dir) {
-            case Direction UP =>
-                dir y = -1
-            case Direction DOWN =>
-                dir y = 1
-            case Direction LEFT =>
-                dir x = 1
-            case Direction RIGHT =>
-                dir x = -1
-        }
-
-        true
     }
 
 }
