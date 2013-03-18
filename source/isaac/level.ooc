@@ -422,7 +422,7 @@ CollisionHandler: abstract class extends CpCollisionHandler {
         if (level != cachedLevel) {
             cachedLevel = level
             add(|a, b|
-                logger warn("adding between %d and %d", a, b)
+                //logger warn("adding between %d and %d", a, b)
                 level space addCollisionHandler(a, b, this)
             )
         }
