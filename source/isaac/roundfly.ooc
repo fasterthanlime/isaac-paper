@@ -17,7 +17,7 @@ import math, math/Random
 
 // our stuff
 import isaac/[game, level, paths, shadow, enemy, hero, utils, tear,
-    explosion, walls]
+    explosion, walls, tiles]
 
 RoundFlyType: enum {
     BOOM
@@ -139,6 +139,11 @@ RoundFly: class extends Mob {
     grounded?: func -> Bool {
         // kinda..
         true
+    }
+
+    touchBlock: func (tile: Tile) -> Bool {
+        // most enemies are constrained by blocks.. but not us!
+        false
     }
 
     spawnTear: func (pos, dir: Vec2) {

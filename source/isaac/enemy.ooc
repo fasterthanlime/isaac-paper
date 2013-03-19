@@ -219,7 +219,7 @@ EnemyBlockHandler: class extends CollisionHandler {
     }
 
     add: func (f: Func (Int, Int)) {
-        f(CollisionTypes ENEMY, CollisionTypes WALL)
+        f(CollisionTypes ENEMY, CollisionTypes BLOCK)
     }
 
 }
