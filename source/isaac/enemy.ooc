@@ -25,7 +25,7 @@ Enemy: abstract class extends Entity {
     z := 0.0
 
     damageCount := 0
-    damageLength := 20
+    damageLength := 12
 
     shape: CpShape
     body: CpBody

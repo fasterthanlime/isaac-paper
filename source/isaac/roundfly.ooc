@@ -29,7 +29,7 @@ RoundFlyType: enum {
  */
 RoundFly: class extends Mob {
 
-    scale := 0.8
+    scale := 0.75
 
     shadow: Shadow
 
@@ -124,10 +124,6 @@ RoundFly: class extends Mob {
         vel := dir mul(fireSpeed)
         tear := Tear new(level, pos, vel, TearType ENEMY, 1)
         level add(tear)
-    }
-
-    initHandlers: func {
-        super()
     }
 
     destroy: func {

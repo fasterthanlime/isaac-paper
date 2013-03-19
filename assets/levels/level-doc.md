@@ -74,6 +74,8 @@ Each possible level is separated by a blank line
 
 ### Necropolis
 
+  * `&` - swarmer
+
 ### Womb
 
 ### Utero
