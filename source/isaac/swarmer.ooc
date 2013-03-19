@@ -34,6 +34,8 @@ Swarmer: class extends Mob {
 
     hairSprite: GlSprite
 
+    coughCount := 250
+
     init: func (.level, .pos) {
         super(level, pos)
 
@@ -71,6 +73,13 @@ Swarmer: class extends Mob {
 
     update: func -> Bool {
         behavior update()
+
+        if (coughCount > 0) {
+            coughCount -= 1
+        } else {
+            spawnFlies()
+            coughCount = Random randInt(320, 480)
+        }
 
         bodyPos := body getPos()
 

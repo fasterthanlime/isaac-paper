@@ -133,13 +133,13 @@ Door: class extends Entity {
     init: func (=level, =dir) {
         match dir {
             case Direction UP =>
-                pos = vec2(400, 600 - 100 - 75 + 30)
+                pos = vec2(400, 425 + 35)
             case Direction DOWN =>
-                pos = vec2(400, 75 - 30)
+                pos = vec2(400, 75 - 35)
             case Direction LEFT =>
-                pos = vec2(40, 75 + 170)
+                pos = vec2(75 - 35, 250)
             case Direction RIGHT =>
-                pos = vec2(800 - 40, 75 + 170)
+                pos = vec2(725 + 35, 250)
         }
         super(level, pos)
 
@@ -237,7 +237,7 @@ Door: class extends Entity {
         body setPos(cpv(pos))
 
         length := 100
-        thickness := 60
+        thickness := 70
         size := match dir {
             case Direction UP || Direction DOWN =>
                 vec2(length, thickness)
