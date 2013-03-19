@@ -34,7 +34,15 @@ BallBehavior: class {
 
     init: func (=enemy) {
         level = enemy level
-        dir = vec2(oneOrMinusOne(), oneOrMinusOne()) 
+        dir = vec2(oneOrMinusOne(), oneOrMinusOne())
+    }
+
+    setDir: func (.dir) {
+        dir set!(dir)
+    }
+
+    applyDir: func {
+        enemy body setVel(cpv(dir normalized() mul(speed)))
     }
 
     oneOrMinusOne: func -> Int {
@@ -60,6 +68,8 @@ BallBehavior: class {
         // assign to our master
         enemy body = body
         enemy shape = shape
+
+        applyDir()
     }
 
     update: func {

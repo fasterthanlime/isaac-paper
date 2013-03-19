@@ -64,7 +64,9 @@ Swarmer: class extends Mob {
 
     onDeath: func {
         // spawn a boom fly
-        level add(RoundFly new(level, pos, RoundFlyType BOOM))
+        roundFly := RoundFly new(level, pos, RoundFlyType BOOM)
+        roundFly behavior setDir(behavior dir)
+        level add(roundFly)
     }
 
     update: func -> Bool {
