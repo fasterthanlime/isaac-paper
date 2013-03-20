@@ -138,12 +138,11 @@ Hero: class extends Entity {
         body setVel(cpv(currVel))
 
         if (door) {
-            "Moving in %s and we have a door in dir %s" printfln(dir toString(),
-                door dir toString())
-
             if (door dir along?(dir)) {
                 // pressing against a door
                 doorCount += 1
+            } else {
+                doorCount = 0
             }
         }
     }
