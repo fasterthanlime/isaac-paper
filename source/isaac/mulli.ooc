@@ -101,7 +101,7 @@ Mulli: class extends Mob {
             case MulliType MULLIBOOM =>
                 level add(Explosion new(level, pos))
             case MulliType MULLIGAN || MulliType HIVE =>
-                spawnFlies()
+                spawnFlies(Random randInt(3, 5))
             case MulliType MULLIGOON =>
                 spawnBombAndTears()
         }

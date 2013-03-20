@@ -77,8 +77,9 @@ Swarmer: class extends Mob {
         if (coughCount > 0) {
             coughCount -= 1
         } else {
-            spawnFlies()
-            coughCount = Random randInt(320, 480)
+            maxFlies := 1 + (3 * (life / maxLife)) as Int
+            spawnFlies(Random randInt(1, maxFlies))
+            coughCount = Random randInt(480, 600)
         }
 
         bodyPos := body getPos()

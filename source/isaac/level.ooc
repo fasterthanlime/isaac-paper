@@ -386,8 +386,7 @@ Entity: class {
         heart catapult()
     }
 
-    spawnFlies: func {
-        numFlies := Random randInt(3, 5)
+    spawnFlies: func (numFlies: Int) {
         for (i in 0..numFlies) {
             number := Random randInt(0, 100)
             type := match {

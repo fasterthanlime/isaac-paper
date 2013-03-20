@@ -97,9 +97,9 @@ Hero: class extends Entity {
     }
 
     initPhysx: func {
-        (width, height) := (40, 40)
+        radius := 20.0
         mass := 10.0
-        moment := cpMomentForBox(mass, width, height)
+        moment := cpMomentForCircle(mass, 0, radius, cpv(radius, radius))
 
         body = CpBody new(mass, moment)
         body setPos(cpv(pos))
@@ -108,7 +108,7 @@ Hero: class extends Entity {
         rotateConstraint = CpRotaryLimitJoint new(body, level space getStaticBody(), 0, 0)
         level space addConstraint(rotateConstraint)
 
-        shape = CpBoxShape new(body, width, height)
+        shape = CpCircleShape new(body, radius, cpv(0, 0))
         shape setUserData(this)
         shape setCollisionType(CollisionTypes HERO)
         level space addShape(shape)
