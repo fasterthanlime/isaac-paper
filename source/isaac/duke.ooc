@@ -59,7 +59,7 @@ DukePart: class extends Mob {
     flies := ArrayList<Fly> new()
 
     flyCounter := 0
-    flyCounterThreshold := 70
+    flyCounterThreshold := 60
 
     baseAngle := 0.0
     baseAngleIncr := 0.5
