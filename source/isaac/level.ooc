@@ -294,24 +294,25 @@ Level: class {
     }
 
     eachInRadius: func (pos: Vec2, radius: Float, f: Func (Entity)) {
-        test := func (e: Entity) {
-            eRadius := pos dist(e pos)
-            if (eRadius <= radius) {
-                f(e)
-            }
+        _radiusTest(entities, pos, radius, f)
+        tileGrid each(|col, row, e| _radiusTest(e, pos, radius, f))
+        _radiusTest(hero, pos, radius, f)
+        _radiusTest(walls, pos, radius, f)
+    }
+
+    _radiusTest: func ~single (e: Entity, pos: Vec2, radius: Float, f: Func (Entity)) {
+        eRadius := pos dist(e pos)
+        if (eRadius <= radius) {
+            f(e)
         }
+        e eachInRadius(pos, radius, f)
+    }
 
-        for (e in entities) {
-            test(e)
+    _radiusTest: func ~list (children: List<Entity>, pos: Vec2, radius: Float,
+            f: Func (Entity)) {
+        for (e in children) {
+            _radiusTest(e, pos, radius, f)
         }
-
-        tileGrid each(|col, row, e| test(e))
-        test(hero)
-
-        test(walls upDoor)
-        test(walls downDoor)
-        test(walls leftDoor)
-        test(walls rightDoor)
     }
 
 }
@@ -405,6 +406,10 @@ Entity: class {
             fly body setVel(cpv(vel))
             level add(fly)
         }
+    }
+
+    eachInRadius: func (pos: Vec2, radius: Float, f: Func (Entity)) {
+        // by default we have no children. If you have some, implement that
     }
 
 }

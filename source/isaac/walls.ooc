@@ -104,6 +104,13 @@ Walls: class extends Entity {
         true
     }
 
+    eachInRadius: func (pos: Vec2, radius: Float, f: Func (Entity)) {
+        level _radiusTest(upDoor, pos, radius, f)
+        level _radiusTest(downDoor, pos, radius, f)
+        level _radiusTest(leftDoor, pos, radius, f)
+        level _radiusTest(rightDoor, pos, radius, f)
+    }
+
 }
 
 Door: class extends Entity {
