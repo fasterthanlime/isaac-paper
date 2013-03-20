@@ -17,16 +17,21 @@ import math, math/Random
 
 // our stuff
 import isaac/[level, shadow, enemy, hero, utils, paths, boss,
-    ballbehavior, tear]
+    ballbehavior, tear, explosion]
 
 DukeOfFlies: class extends Boss {
+
+    part: DukePart
 
     init: func (.level, .pos) {
         super(level, pos)
 
-        part := DukePart new(level, pos)
-        level add(part)
+        part = DukePart new(level, pos)
         parts add(part)
+    }
+
+    maxHealth: func -> Float {
+        part maxLife
     }
 
 }
@@ -43,11 +48,12 @@ DukePart: class extends Mob {
     moveCountMax := 80
 
     behavior: BallBehavior
+    maxLife := 80.0
 
     init: func (.level, .pos) {
         super(level, pos)
 
-        life = 80.0
+        life = maxLife
 
         sprite = GlSprite new(getSpritePath())
         sprite scale set!(scale, scale)
@@ -63,6 +69,8 @@ DukePart: class extends Mob {
         mass := 400.0
         behavior initPhysx(radius, mass)
         shape setElasticity(0.4)
+
+        collisionRadius := 60.0
     }
 
     hitBack: func (tear: Tear) {
@@ -91,6 +99,10 @@ DukePart: class extends Mob {
         level space removeBody(body)
         body free()
         level charGroup remove(sprite)
+    }
+
+    bombHarm: func (explosion: Explosion) {
+        harm(explosion damage * 5)
     }
 
 }

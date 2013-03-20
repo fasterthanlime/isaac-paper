@@ -506,8 +506,13 @@ Game: class {
         keyLabel value = "*%02d" format(heroStats keyCount)
         //fpsLabel value = "%.0fFPS" format(loop fps)
 
-        if (level && level hero) {
-            fpsLabel value = "doorCount %d" format(level hero doorCount)
+        if (level) {
+            (total, count) := level bossState()
+            if (count > 0) {
+                fpsLabel value = "boss health = %d" format((total * 100.0) as Int)
+            } else {
+                fpsLabel value = "no boss"
+            }
         }
 
         health update()

@@ -18,7 +18,7 @@ import math/Random
 
 // our stuff
 import isaac/[game, hero, walls, hopper, bomb, rooms, enemy, map, tiles,
-    freezer, explosion, collectible, fly]
+    freezer, explosion, collectible, fly, boss]
 
 Level: class {
 
@@ -31,8 +31,6 @@ Level: class {
 
     // when locked, some operations are buffered
     locked := false
-    addCount := 0
-    removeCount := 0
 
     // actual entity list
     entities := ArrayList<Entity> new()
@@ -106,17 +104,17 @@ Level: class {
     destroy: func {
         tileGrid clear()
 
-        iter := entities iterator()
+        destroyList(entities)
+        space free()
+    }
+
+    destroyList: func (list: List<Entity>) {
+        iter := list iterator()
         while (iter hasNext?()) {
             e := iter next()
             iter remove()
-            removeCount += 1
             e destroy()
         }
-        space free()
-
-        logger debug("Finished destroying, add / remove = %d / %d",
-            addCount, removeCount)
     }
 
     getHeroStartPos: func -> Vec2 {
@@ -151,7 +149,6 @@ Level: class {
     }
 
     add: func (e: Entity) {
-        addCount += 1
         if (locked) {
             addBuffer add(e)
         } else {
@@ -228,6 +225,8 @@ Level: class {
                     if (enemy blocksRoom?()) {
                         count += 1
                     }
+                case boss: Boss =>
+                    count += 1
             }
         }
 
@@ -248,17 +247,7 @@ Level: class {
         hero update()
         walls update()
 
-        iter := entities iterator()
-        while (iter hasNext?()) {
-            e := iter next()
-            if (!e update()) {
-                removeCount += 1
-                logger debug("Destroying object %p (it's a %s) - add %d, remove %d",
-                    e, e class name, addCount, removeCount)
-                iter remove()
-                e destroy()
-            }
-        }
+        updateList(entities)
         locked = false
 
         if (!addBuffer empty?()) {
@@ -270,6 +259,18 @@ Level: class {
                 }
             }
             addBuffer clear()
+        }
+    }
+
+    updateList: func (list: List<Entity>) {
+        iter := list iterator()
+        while (iter hasNext?()) {
+            e := iter next()
+            if (!e update()) {
+                logger debug("Destroying object %p (it's a %s)", e, e class name)
+                iter remove()
+                e destroy()
+            }
         }
     }
 
@@ -315,12 +316,28 @@ Level: class {
         }
     }
 
+    bossState: func -> (Float, Int) {
+        count := 0
+        total := 0.0
+
+        for (e in entities) {
+            match e {
+                case boss: Boss =>
+                    total += boss totalHealth() / boss maxHealth()
+                    count += 1
+            }
+        }
+
+        return (total / count as Float, count)
+    }
+
 }
 
 Entity: class {
 
     pos: Vec2
     level: Level
+    collisionRadius := 20.0
 
     init: func (=level, .pos) {
         this pos = vec2(pos)
