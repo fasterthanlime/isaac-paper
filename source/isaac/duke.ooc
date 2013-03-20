@@ -14,10 +14,11 @@ import gnaar/[utils]
 
 // sdk stuff
 import math, math/Random
+import structs/[ArrayList, List]
 
 // our stuff
 import isaac/[level, shadow, enemy, hero, utils, paths, boss,
-    ballbehavior, tear, explosion]
+    ballbehavior, tear, explosion, fly]
 
 DukeOfFlies: class extends Boss {
 
@@ -32,6 +33,10 @@ DukeOfFlies: class extends Boss {
 
     maxHealth: func -> Float {
         part maxLife
+    }
+
+    onDeath: func {
+        part releaseFlies()
     }
 
 }
@@ -49,6 +54,14 @@ DukePart: class extends Mob {
 
     behavior: BallBehavior
     maxLife := 80.0
+
+    maxFlies := 8
+    flies := ArrayList<Fly> new()
+
+    flyCounter := 0
+    flyCounterThreshold := 50
+
+    baseAngle := 0.0
 
     init: func (.level, .pos) {
         super(level, pos)
@@ -81,11 +94,43 @@ DukePart: class extends Mob {
         "assets/png/duke-of-flies-frame1.png"
     }
 
+    spawnFly: func {
+        fly := Fly new(level, pos, FlyType BLACK_FLY)
+        flies add(fly)
+    }
+
+    releaseFlies: func {
+        // TODO: apply speed
+        for (f in flies) {
+            level add(f)
+        }
+        flies clear()
+    }
+
+    updateFlies: func {
+        fliesCount := flies size
+
+        if (fliesCount < maxFlies) {
+            if (flyCounter < flyCounterThreshold) {
+                flyCounter += 1
+            } else {
+                flyCounter = Random randInt(-20, 10)
+                spawnFly()
+            }
+        }
+    
+        // TODO: specify target
+
+        level updateList(flies)
+    }
+
     update: func -> Bool {
         bodyPos := body getPos()
         sprite pos set!(bodyPos x, bodyPos y + 4 + z)
         pos set!(body getPos())
         shadow setPos(pos sub(0, shadowYOffset))
+
+        updateFlies()
 
         behavior update()
 

@@ -143,6 +143,7 @@ Boss: abstract class extends Entity {
         level updateList(parts)
 
         if (dead?()) {
+            onDeath()
             return false
         }
 
@@ -155,6 +156,10 @@ Boss: abstract class extends Entity {
 
     eachInRadius: func (pos: Vec2, radius: Float, f: Func (Entity)) {
         level _radiusTest(parts, pos, radius, f)
+    }
+
+    onDeath: func {
+        // override to do stuff on death
     }
 
 }
