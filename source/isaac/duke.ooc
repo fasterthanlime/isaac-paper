@@ -59,9 +59,12 @@ DukePart: class extends Mob {
     flies := ArrayList<Fly> new()
 
     flyCounter := 0
-    flyCounterThreshold := 50
+    flyCounterThreshold := 70
 
     baseAngle := 0.0
+    baseAngleIncr := 0.5
+    flyRadius := 80.0
+    maxSpawns := 3
 
     init: func (.level, .pos) {
         super(level, pos)
@@ -95,13 +98,27 @@ DukePart: class extends Mob {
     }
 
     spawnFly: func {
-        fly := Fly new(level, pos, FlyType BLACK_FLY)
+        number := Random randInt(0, 100)
+        type := match number {
+            case number < 20 =>
+                FlyType BIG_ATTACK_FLY
+            case =>
+                FlyType ATTACK_FLY
+        }
+
+        fly := Fly new(level, pos, type)
+        fly autonomous = false
+        fly mover alpha = 0.4
+        fly mover speed = 180
         flies add(fly)
     }
 
     releaseFlies: func {
         // TODO: apply speed
         for (f in flies) {
+            f autonomous = true
+            f mover alpha = 0.95
+            f mover speed = 70
             level add(f)
         }
         flies clear()
@@ -115,11 +132,26 @@ DukePart: class extends Mob {
                 flyCounter += 1
             } else {
                 flyCounter = Random randInt(-20, 10)
-                spawnFly()
+                numFlies := Random randInt(0, maxSpawns < maxFlies ? maxSpawns : maxFlies)
+
+                for (i in 0..numFlies) {
+                    spawnFly()
+                }
             }
         }
+        fliesCount = flies size
     
         // TODO: specify target
+        baseAngle += baseAngleIncr
+        step := 360.0 / maxFlies as Float
+
+        angle := baseAngle
+        for (f in flies) {
+            diff := Vec2 fromAngle(angle toRadians()) mul(flyRadius)
+            flyPos := pos add(diff)
+            angle += step
+            f mover setTarget(flyPos)
+        }
 
         level updateList(flies)
     }

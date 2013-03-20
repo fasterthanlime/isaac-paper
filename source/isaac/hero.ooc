@@ -219,7 +219,7 @@ HeroStats: class {
 
     shotSpeed := 400.0
 
-    shootRate := 6 // testing
+    shootRate := 2 // testing
 
     shootRateInv: Int { get { 60 / shootRate } }
 
