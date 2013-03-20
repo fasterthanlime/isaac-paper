@@ -175,7 +175,7 @@ Level: class {
         if (input isPressed(KeyCode D)) {
             dir x = 1
         }
-        hero move(dir)
+        hero move(dir normalized())
 
         // Hero shots
         if (input isPressed(KeyCode RIGHT)) {
@@ -491,6 +491,16 @@ Direction: enum {
             case This LEFT   => vec2i(-1, 0)
             case This RIGHT  => vec2i( 1, 0)
             case => vec2i(1, 1) // nonsensical value to make sure we notice it
+        }
+    }
+
+    along?: func (v: Vec2, epsilon := 0.2) -> Bool {
+        match this {
+            case This UP    => v y > epsilon
+            case This DOWN  => v y < -epsilon
+            case This LEFT  => v x < -epsilon
+            case This RIGHT => v x > epsilon
+            case => false // nonsensical
         }
     }
 }

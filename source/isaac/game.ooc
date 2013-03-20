@@ -504,7 +504,11 @@ Game: class {
         coinLabel value = "*%02d" format(heroStats coinCount)
         bombLabel value = "*%02d" format(heroStats bombCount)
         keyLabel value = "*%02d" format(heroStats keyCount)
-        fpsLabel value = "%.0fFPS" format(loop fps)
+        //fpsLabel value = "%.0fFPS" format(loop fps)
+
+        if (level && level hero) {
+            fpsLabel value = "doorCount %d" format(level hero doorCount)
+        }
 
         health update()
     }

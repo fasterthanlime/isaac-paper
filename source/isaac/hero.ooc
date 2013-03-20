@@ -15,7 +15,7 @@ import gnaar/[utils]
 
 // our stuff
 import isaac/[game, level, tear, shadow, bomb, collectible, options,
-    explosion]
+    explosion, walls]
 
 /*
  * Dat Isaac...
@@ -44,6 +44,10 @@ Hero: class extends Entity {
     hitBackCountMax := 3
 
     stats: HeroStats
+
+    door: Door
+    doorCount := 0
+    doorCountThreshold := 10
 
     init: func (.level, .pos, =stats) {
         super(level, pos)
@@ -132,6 +136,16 @@ Hero: class extends Entity {
         currVel := vec2(body getVel())
         currVel interpolate!(vel, 1 - 0.8)
         body setVel(cpv(currVel))
+
+        if (door) {
+            "Moving in %s and we have a door in dir %s" printfln(dir toString(),
+                door dir toString())
+
+            if (door dir along?(dir)) {
+                // pressing against a door
+                doorCount += 1
+            }
+        }
     }
 
     getSpeed: func -> Float {

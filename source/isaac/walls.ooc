@@ -333,18 +333,43 @@ IsaacDoorHandler: class extends CollisionHandler {
         shape1, shape2: CpShape
         arbiter getShapes(shape1&, shape2&)
 
+        hero := shape1 getUserData() as Hero
         ent := shape2 getUserData() as Entity
         match ent {
             case door: Door =>
                 if (door walkable?()) {
-                    door walkthrough = true
+                    if (hero door == door) {
+                        // all good
+                    } else {
+                        hero door = door
+                        hero doorCount = 0
+                    }
+
+                    if (hero doorCount > hero doorCountThreshold) {
+                        hero doorCount = 0
+                        door walkthrough = true
+                    }
                     return false
-                } else {
-                    return true
                 }
+                return true
         }
 
         true
+    }
+
+    separate: func (arbiter: CpArbiter, space: CpSpace) {
+        shape1, shape2: CpShape
+        arbiter getShapes(shape1&, shape2&)
+
+        hero := shape1 getUserData() as Hero
+        ent := shape2 getUserData() as Entity
+        match ent {
+            case door: Door =>
+                if (hero door == door) {
+                    hero door = null
+                    hero doorCount = 0
+                }
+        }
     }
 
     add: func (f: Func (Int, Int)) {
