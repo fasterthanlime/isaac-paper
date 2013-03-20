@@ -62,8 +62,8 @@ DukePart: class extends Mob {
     flyCounterThreshold := 60
 
     baseAngle := 0.0
-    baseAngleIncr := 0.5
-    flyRadius := 80.0
+    baseAngleIncr := 1.2
+    flyRadius := 70.0
     maxSpawns := 3
 
     init: func (.level, .pos) {

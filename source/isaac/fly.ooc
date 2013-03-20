@@ -65,6 +65,8 @@ Fly: class extends Mob {
 
     autonomous := true
 
+    moverSpeed := 80.0
+
     init: func (.level, .pos, =type) {
         super(level, pos)
 
@@ -75,11 +77,15 @@ Fly: class extends Mob {
                 life = 6.0
             case FlyType BIG_ATTACK_FLY =>
                 life = 12.0
-                scale := 1.0
+                scale := 1.4
             case FlyType MOTER =>
                 life = 14.0
             case =>
                 life = 8.0
+        }
+
+        if (attackFly?()) {
+            moverSpeed = 110.0
         }
 
         sinus incr = 0.15
@@ -265,7 +271,7 @@ Fly: class extends Mob {
 
             dist := level hero pos dist(pos)
             if (dist < speedyRadius) {
-                mover speed = Random randInt(100, 130) as Float
+                mover speed = Random randInt(130, 170) as Float
                 moveCount = Random randInt(20, 40)
             } else {
                 resetSpeedAndCount()
@@ -278,7 +284,7 @@ Fly: class extends Mob {
     }
     
     resetSpeedAndCount: func {
-        mover speed = Random randInt(80, 90) as Float
+        mover speed = moverSpeed
         moveCount = moveCountMax + Random randInt(-10, 40)
     }
 
