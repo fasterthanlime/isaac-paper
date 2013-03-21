@@ -97,7 +97,7 @@ DukePart: class extends Mob {
         "assets/png/duke-of-flies-frame1.png"
     }
 
-    spawnFly: func {
+    spawnFly: func (autonomous := false) {
         number := Random randInt(0, 100)
         type := match number {
             case number < 20 =>
@@ -107,10 +107,14 @@ DukePart: class extends Mob {
         }
 
         fly := Fly new(level, pos, type)
-        fly autonomous = false
-        fly mover alpha = 0.4
-        fly mover speed = 180
-        flies add(fly)
+        if (autonomous) {
+            level add(fly)
+        } else {
+            fly autonomous = false
+            fly mover alpha = 0.5
+            fly mover speed = 220
+            flies add(fly)
+        }
     }
 
     releaseFlies: func {
@@ -119,6 +123,12 @@ DukePart: class extends Mob {
             f autonomous = true
             f mover alpha = 0.95
             f mover speed = 70
+
+            dir := f pos sub(pos) normalized()
+            releaseSpeed := 300
+            vel := dir mul(releaseSpeed)
+            f body setVel(cpv(vel))
+
             level add(f)
         }
         flies clear()
@@ -131,11 +141,31 @@ DukePart: class extends Mob {
             if (flyCounter < flyCounterThreshold) {
                 flyCounter += 1
             } else {
-                flyCounter = Random randInt(-20, 10)
-                numFlies := Random randInt(0, maxSpawns < maxFlies ? maxSpawns : maxFlies)
+                burpChance := Random randInt(0, 100)
 
-                for (i in 0..numFlies) {
-                    spawnFly()
+                spawnDefense := true
+
+                if (fliesCount > 3) {
+                    match {
+                        case (burpChance < 20) =>
+                            releaseFlies()
+                            spawnDefense = false
+                        case (burpChance < 40) =>
+                            spawnFly(true)
+                            spawnDefense = false
+                        case =>
+                            // all good
+                            spawnDefense = true
+                    }
+                }
+
+                if (spawnDefense) {
+                    flyCounter = Random randInt(-20, 10)
+                    numFlies := Random randInt(0, maxSpawns < maxFlies ? maxSpawns : maxFlies)
+
+                    for (i in 0..numFlies) {
+                        spawnFly()
+                    }
                 }
             }
         }

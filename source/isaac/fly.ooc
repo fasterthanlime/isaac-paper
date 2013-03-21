@@ -40,8 +40,8 @@ Fly: class extends Mob {
     moveCount := 0
     moveCountMax := 30
 
-    radius := 350.0
-    speedyRadius := 180.0
+    radius := 600.0
+    speedyRadius := 280.0
 
     scale := 0.8
 
