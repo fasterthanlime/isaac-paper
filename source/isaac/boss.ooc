@@ -133,16 +133,33 @@ Boss: abstract class extends Entity {
         total
     }
 
+    maxHealth: abstract func -> Float
+
     dead?: func -> Bool {
         parts empty?()
     }
 
     update: func -> Bool {
+        level updateList(parts)
+
         if (dead?()) {
+            onDeath()
             return false
         }
 
         true
+    }
+    
+    destroy: func {
+        level destroyList(parts)
+    }
+
+    eachInRadius: func (pos: Vec2, radius: Float, f: Func (Entity)) {
+        level _radiusTest(parts, pos, radius, f)
+    }
+
+    onDeath: func {
+        // override to do stuff on death
     }
 
 }

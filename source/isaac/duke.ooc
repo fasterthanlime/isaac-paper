@@ -14,40 +14,62 @@ import gnaar/[utils]
 
 // sdk stuff
 import math, math/Random
+import structs/[ArrayList, List]
 
 // our stuff
-import isaac/[level, shadow, enemy, hero, utils, paths, boss]
+import isaac/[level, shadow, enemy, hero, utils, paths, boss,
+    ballbehavior, tear, explosion, fly]
 
 DukeOfFlies: class extends Boss {
+
+    part: DukePart
 
     init: func (.level, .pos) {
         super(level, pos)
 
-        part := DukePart new(level, pos)
-        level add(part)
+        part = DukePart new(level, pos)
         parts add(part)
+    }
+
+    maxHealth: func -> Float {
+        part maxLife
+    }
+
+    onDeath: func {
+        part releaseFlies()
     }
 
 }
 
 DukePart: class extends Mob {
 
-    rotateConstraint: CpConstraint
     scale := 0.8
 
     shadow: Shadow
     shadowFactor := 0.7
     shadowYOffset := 50
 
-    mover: Mover
-
     moveCount := 60
     moveCountMax := 80
+
+    behavior: BallBehavior
+    maxLife := 80.0
+
+    maxFlies := 8
+    flies := ArrayList<Fly> new()
+
+    flyCounter := 0
+    flyCounterThreshold := 60
+
+    baseAngle := 0.0
+    baseAngleIncr := 1.2
+    flyRadius := 70.0
+    maxSpawns := 3
 
     init: func (.level, .pos) {
         super(level, pos)
 
-        life = 120.0
+        life = maxLife
 
         sprite = GlSprite new(getSpritePath())
         sprite scale set!(scale, scale)
@@ -56,53 +78,125 @@ DukePart: class extends Mob {
         level charGroup add(sprite)
         sprite pos set!(pos)
 
-        initPhysx()
-        mover = Mover new(level, body, 140.0)
-        mover alpha = 0.8
+        behavior = BallBehavior new(this)
+        behavior speed = 80.0
+
+        radius := 50.0
+        mass := 400.0
+        behavior initPhysx(radius, mass)
+        shape setElasticity(0.4)
+
+        collisionRadius := 60.0
+    }
+
+    hitBack: func (tear: Tear) {
+        // we bounce naturally
     }
 
     getSpritePath: func -> String {
         "assets/png/duke-of-flies-frame1.png"
     }
 
-    update: func -> Bool {
-        if (moveCount > 0) {
-            moveCount -= 1
-        } else {
-            updateTarget()
+    spawnFly: func (autonomous := false) {
+        number := Random randInt(0, 100)
+        type := match number {
+            case number < 20 =>
+                FlyType BIG_ATTACK_FLY
+            case =>
+                FlyType ATTACK_FLY
         }
-        mover update(pos)
 
+        fly := Fly new(level, pos, type)
+        if (autonomous) {
+            level add(fly)
+        } else {
+            fly autonomous = false
+            fly mover alpha = 0.5
+            fly mover speed = 220
+            flies add(fly)
+        }
+    }
+
+    releaseFlies: func {
+        // TODO: apply speed
+        for (f in flies) {
+            f autonomous = true
+            f mover alpha = 0.95
+            f mover speed = 70
+
+            dir := f pos sub(pos) normalized()
+            releaseSpeed := 300
+            vel := dir mul(releaseSpeed)
+            f body setVel(cpv(vel))
+
+            level add(f)
+        }
+        flies clear()
+    }
+
+    updateFlies: func {
+        fliesCount := flies size
+
+        if (fliesCount < maxFlies) {
+            if (flyCounter < flyCounterThreshold) {
+                flyCounter += 1
+            } else {
+                burpChance := Random randInt(0, 100)
+
+                spawnDefense := true
+
+                if (fliesCount > 3) {
+                    match {
+                        case (burpChance < 20) =>
+                            releaseFlies()
+                            spawnDefense = false
+                        case (burpChance < 40) =>
+                            spawnFly(true)
+                            spawnDefense = false
+                        case =>
+                            // all good
+                            spawnDefense = true
+                    }
+                }
+
+                if (spawnDefense) {
+                    flyCounter = Random randInt(-20, 10)
+                    numFlies := Random randInt(0, maxSpawns < maxFlies ? maxSpawns : maxFlies)
+
+                    for (i in 0..numFlies) {
+                        spawnFly()
+                    }
+                }
+            }
+        }
+        fliesCount = flies size
+    
+        // TODO: specify target
+        baseAngle += baseAngleIncr
+        step := 360.0 / maxFlies as Float
+
+        angle := baseAngle
+        for (f in flies) {
+            diff := Vec2 fromAngle(angle toRadians()) mul(flyRadius)
+            flyPos := pos add(diff)
+            angle += step
+            f mover setTarget(flyPos)
+        }
+
+        level updateList(flies)
+    }
+
+    update: func -> Bool {
         bodyPos := body getPos()
         sprite pos set!(bodyPos x, bodyPos y + 4 + z)
         pos set!(body getPos())
         shadow setPos(pos sub(0, shadowYOffset))
 
+        updateFlies()
+
+        behavior update()
+
         super()
-    }
-
-    updateTarget: func {
-        // blah for now
-        mover setTarget(level hero pos)
-        moveCount = 5
-    }
-
-    initPhysx: func {
-        (width, height) := (100, 100)
-        mass := 15.0
-        moment := cpMomentForBox(mass, width, height)
-
-        body = CpBody new(mass, moment)
-        body setPos(cpv(pos))
-        level space addBody(body)
-
-        rotateConstraint = CpRotaryLimitJoint new(body, level space getStaticBody(), 0, 0)
-        level space addConstraint(rotateConstraint)
-
-        shape = CpBoxShape new(body, width, height)
-        shape setUserData(this)
-        shape setCollisionType(CollisionTypes ENEMY)
-        level space addShape(shape)
     }
 
     destroy: func {
@@ -112,6 +206,10 @@ DukePart: class extends Mob {
         level space removeBody(body)
         body free()
         level charGroup remove(sprite)
+    }
+
+    bombHarm: func (explosion: Explosion) {
+        harm(explosion damage * 5)
     }
 
 }

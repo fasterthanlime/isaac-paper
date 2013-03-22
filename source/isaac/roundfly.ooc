@@ -17,7 +17,7 @@ import math, math/Random
 
 // our stuff
 import isaac/[game, level, paths, shadow, enemy, hero, utils, tear,
-    explosion, walls]
+    explosion, walls, tiles, ballbehavior]
 
 RoundFlyType: enum {
     BOOM
@@ -29,12 +29,7 @@ RoundFlyType: enum {
  */
 RoundFly: class extends Mob {
 
-    rotateConstraint: CpConstraint
-
-    radius := 350.0
-    speedyRadius := 180.0
-
-    scale := 0.8
+    scale := 0.75
 
     shadow: Shadow
 
@@ -42,10 +37,9 @@ RoundFly: class extends Mob {
 
     fireSpeed := 280.0
 
-    speed := 120.0
-
-    dir: Vec2
     baseColor: Color
+
+    behavior: BallBehavior
 
     init: func (.level, .pos, =type) {
         super(level, pos)
@@ -67,17 +61,14 @@ RoundFly: class extends Mob {
         level charGroup add(sprite)
         sprite pos set!(pos)
 
-        initPhysx()
-
-        dir = vec2(oneOrMinusOne(), oneOrMinusOne()) 
+        behavior = BallBehavior new(this)
+        radius := 20.0
+        mass := 20.0
+        behavior initPhysx(radius, mass)
     }
 
     hitBack: func (tear: Tear) {
         // we bounce naturally
-    }
-
-    oneOrMinusOne: func -> Int {
-        Random randInt(0, 1) * 2 - 1
     }
 
     getSpritePath: func -> String {
@@ -105,24 +96,7 @@ RoundFly: class extends Mob {
     }
 
     update: func -> Bool {
-        bodyVel := vec2(body getVel())
-        angle := bodyVel angle() toDegrees()
-
-        match {
-            case angle > 0.0 && angle < 90.0 =>
-                dir set!(1, 1)
-            case angle > 90.0 && angle < 180.0 =>
-                dir set!(-1, 1)
-            case angle > 180.0 && angle < 270.0 =>
-                dir set!(-1, -1)
-            case angle =>
-                dir set!(1, -1)
-        }
-
-        idealVel := dir mul(speed)
-        alpha := 0.85
-        bodyVel interpolate!(idealVel, 1 - alpha)
-        body setVel(cpv(bodyVel))
+        behavior update()
 
         bodyPos := body getPos()
         sprite pos set!(bodyPos x, bodyPos y + 8 + z)
@@ -141,35 +115,15 @@ RoundFly: class extends Mob {
         true
     }
 
+    touchBlock: func (tile: Tile) -> Bool {
+        // most enemies are constrained by blocks.. but not us!
+        false
+    }
+
     spawnTear: func (pos, dir: Vec2) {
         vel := dir mul(fireSpeed)
         tear := Tear new(level, pos, vel, TearType ENEMY, 1)
         level add(tear)
-    }
-
-    initPhysx: func {
-        radius := 20.0
-        mass := 20.0
-        moment := cpMomentForCircle(mass, 0, radius, cpv(radius, radius))
-
-        body = CpBody new(mass, moment)
-        body setPos(cpv(pos))
-        level space addBody(body)
-
-        rotateConstraint = CpRotaryLimitJoint new(body, level space getStaticBody(), 0, 0)
-        level space addConstraint(rotateConstraint)
-
-        shape = CpCircleShape new(body, radius, cpv(0, 0))
-        shape setUserData(this)
-        shape setCollisionType(CollisionTypes ENEMY)
-        shape setElasticity(0.7)
-        level space addShape(shape)
-
-        initHandlers()
-    }
-
-    initHandlers: func {
-        super()
     }
 
     destroy: func {

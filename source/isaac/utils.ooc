@@ -61,6 +61,8 @@ Mover: class {
     speed: Float
     alpha := 0.95
 
+    distSpeedFactor := 4.0
+
     moving := false
 
     cellPath: ArrayList<Vec2i>
@@ -73,7 +75,12 @@ Mover: class {
         dist := pos dist(target)
         if (moving && dist > radius) {
             vel := vec2(body getVel())
-            idealVel := target sub(pos) normalized() mul(speed)
+    
+            diff := target sub(pos)
+            dist := diff norm() * distSpeedFactor
+            effectiveSpeed := speed < dist ? speed : dist
+
+            idealVel := diff normalized() mul(effectiveSpeed)
             vel interpolate!(idealVel, 1 - alpha)
             body setVel(cpv(vel))
         } else {

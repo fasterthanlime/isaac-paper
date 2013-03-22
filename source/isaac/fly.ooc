@@ -21,6 +21,7 @@ import isaac/[game, level, paths, shadow, enemy, hero, utils, tear]
 
 FlyType: enum {
     ATTACK_FLY
+    BIG_ATTACK_FLY
     BLACK_FLY
     MOTER
     POOTER 
@@ -39,8 +40,8 @@ Fly: class extends Mob {
     moveCount := 0
     moveCountMax := 30
 
-    radius := 350.0
-    speedyRadius := 180.0
+    radius := 600.0
+    speedyRadius := 280.0
 
     scale := 0.8
 
@@ -62,6 +63,10 @@ Fly: class extends Mob {
     rosishCount := 0
     rosishCountMax := 25
 
+    autonomous := true
+
+    moverSpeed := 80.0
+
     init: func (.level, .pos, =type) {
         super(level, pos)
 
@@ -70,10 +75,17 @@ Fly: class extends Mob {
                 life = 2.0
             case FlyType ATTACK_FLY =>
                 life = 6.0
+            case FlyType BIG_ATTACK_FLY =>
+                life = 12.0
+                scale := 1.4
             case FlyType MOTER =>
-                life = 10.0
+                life = 14.0
             case =>
                 life = 8.0
+        }
+
+        if (attackFly?()) {
+            moverSpeed = 110.0
         }
 
         sinus incr = 0.15
@@ -105,7 +117,7 @@ Fly: class extends Mob {
                 "assets/png/sucker-spit.png"
             case FlyType MOTER =>
                 "assets/png/moter.png"
-            case FlyType ATTACK_FLY =>
+            case FlyType ATTACK_FLY || FlyType BIG_ATTACK_FLY =>
                 "assets/png/attack-fly.png"
             case =>
                 "assets/png/black-fly.png"
@@ -114,7 +126,7 @@ Fly: class extends Mob {
 
     attackFly?: func -> Bool {
         match type {
-            case FlyType ATTACK_FLY || FlyType MOTER =>
+            case FlyType ATTACK_FLY || FlyType BIG_ATTACK_FLY || FlyType MOTER =>
                 // moters also blink and also zero in on
                 // isaac so, it's all good. 
                 true
@@ -147,10 +159,12 @@ Fly: class extends Mob {
     update: func -> Bool {
         z = 5.0 + sinus eval()
 
-        if (moveCount > 0) {
-            moveCount -= 1
-        } else {
-            updateTarget()
+        if (autonomous) {
+            if (moveCount > 0) {
+                moveCount -= 1
+            } else {
+                updateTarget()
+            }
         }
         mover update(pos)
 
@@ -234,7 +248,7 @@ Fly: class extends Mob {
     }
 
     aggressive?: func -> Bool {
-        type == FlyType ATTACK_FLY
+        type == FlyType ATTACK_FLY || FlyType BIG_ATTACK_FLY
     }
 
     updateTarget: func {
@@ -257,7 +271,7 @@ Fly: class extends Mob {
 
             dist := level hero pos dist(pos)
             if (dist < speedyRadius) {
-                mover speed = Random randInt(100, 130) as Float
+                mover speed = Random randInt(130, 170) as Float
                 moveCount = Random randInt(20, 40)
             } else {
                 resetSpeedAndCount()
@@ -270,7 +284,7 @@ Fly: class extends Mob {
     }
     
     resetSpeedAndCount: func {
-        mover speed = Random randInt(80, 90) as Float
+        mover speed = moverSpeed
         moveCount = moveCountMax + Random randInt(-10, 40)
     }
 

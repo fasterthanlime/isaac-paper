@@ -104,6 +104,13 @@ Walls: class extends Entity {
         true
     }
 
+    eachInRadius: func (pos: Vec2, radius: Float, f: Func (Entity)) {
+        level _radiusTest(upDoor, pos, radius, f)
+        level _radiusTest(downDoor, pos, radius, f)
+        level _radiusTest(leftDoor, pos, radius, f)
+        level _radiusTest(rightDoor, pos, radius, f)
+    }
+
 }
 
 Door: class extends Entity {
@@ -133,13 +140,13 @@ Door: class extends Entity {
     init: func (=level, =dir) {
         match dir {
             case Direction UP =>
-                pos = vec2(400, 600 - 100 - 75 + 30)
+                pos = vec2(400, 425 + 35)
             case Direction DOWN =>
-                pos = vec2(400, 75 - 30)
+                pos = vec2(400, 75 - 35)
             case Direction LEFT =>
-                pos = vec2(40, 75 + 170)
+                pos = vec2(75 - 35, 250)
             case Direction RIGHT =>
-                pos = vec2(800 - 40, 75 + 170)
+                pos = vec2(725 + 35, 250)
         }
         super(level, pos)
 
@@ -237,7 +244,7 @@ Door: class extends Entity {
         body setPos(cpv(pos))
 
         length := 100
-        thickness := 60
+        thickness := 70
         size := match dir {
             case Direction UP || Direction DOWN =>
                 vec2(length, thickness)
@@ -326,18 +333,43 @@ IsaacDoorHandler: class extends CollisionHandler {
         shape1, shape2: CpShape
         arbiter getShapes(shape1&, shape2&)
 
+        hero := shape1 getUserData() as Hero
         ent := shape2 getUserData() as Entity
         match ent {
             case door: Door =>
                 if (door walkable?()) {
-                    door walkthrough = true
+                    if (hero door == door) {
+                        // all good
+                    } else {
+                        hero door = door
+                        hero doorCount = 0
+                    }
+
+                    if (hero doorCount > hero doorCountThreshold) {
+                        hero doorCount = 0
+                        door walkthrough = true
+                    }
                     return false
-                } else {
-                    return true
                 }
+                return true
         }
 
         true
+    }
+
+    separate: func (arbiter: CpArbiter, space: CpSpace) {
+        shape1, shape2: CpShape
+        arbiter getShapes(shape1&, shape2&)
+
+        hero := shape1 getUserData() as Hero
+        ent := shape2 getUserData() as Entity
+        match ent {
+            case door: Door =>
+                if (hero door == door) {
+                    hero door = null
+                    hero doorCount = 0
+                }
+        }
     }
 
     add: func (f: Func (Int, Int)) {

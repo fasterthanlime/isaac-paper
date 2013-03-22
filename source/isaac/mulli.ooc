@@ -101,31 +101,9 @@ Mulli: class extends Mob {
             case MulliType MULLIBOOM =>
                 level add(Explosion new(level, pos))
             case MulliType MULLIGAN || MulliType HIVE =>
-                spawnFlies()
+                spawnFlies(Random randInt(3, 5))
             case MulliType MULLIGOON =>
                 spawnBombAndTears()
-        }
-    }
-
-    spawnFlies: func {
-        numFlies := Random randInt(3, 5)
-        for (i in 0..numFlies) {
-            number := Random randInt(0, 100)
-            type := match {
-                case number < 20 =>
-                    FlyType POOTER
-                case number < 60 =>
-                    FlyType ATTACK_FLY
-                case =>
-                    FlyType BLACK_FLY
-            }
-
-            vel := Vec2 random(100)
-            diff := Vec2 random(40)
-
-            fly := Fly new(level, pos add(diff), type)
-            fly body setVel(cpv(vel))
-            level add(fly)
         }
     }
 

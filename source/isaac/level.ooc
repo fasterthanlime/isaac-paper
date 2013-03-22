@@ -18,7 +18,7 @@ import math/Random
 
 // our stuff
 import isaac/[game, hero, walls, hopper, bomb, rooms, enemy, map, tiles,
-    freezer, explosion, collectible]
+    freezer, explosion, collectible, fly, boss]
 
 Level: class {
 
@@ -31,8 +31,6 @@ Level: class {
 
     // when locked, some operations are buffered
     locked := false
-    addCount := 0
-    removeCount := 0
 
     // actual entity list
     entities := ArrayList<Entity> new()
@@ -106,17 +104,17 @@ Level: class {
     destroy: func {
         tileGrid clear()
 
-        iter := entities iterator()
+        destroyList(entities)
+        space free()
+    }
+
+    destroyList: func (list: List<Entity>) {
+        iter := list iterator()
         while (iter hasNext?()) {
             e := iter next()
             iter remove()
-            removeCount += 1
             e destroy()
         }
-        space free()
-
-        logger debug("Finished destroying, add / remove = %d / %d",
-            addCount, removeCount)
     }
 
     getHeroStartPos: func -> Vec2 {
@@ -151,7 +149,6 @@ Level: class {
     }
 
     add: func (e: Entity) {
-        addCount += 1
         if (locked) {
             addBuffer add(e)
         } else {
@@ -175,7 +172,7 @@ Level: class {
         if (input isPressed(KeyCode D)) {
             dir x = 1
         }
-        hero move(dir)
+        hero move(dir normalized())
 
         // Hero shots
         if (input isPressed(KeyCode RIGHT)) {
@@ -228,6 +225,8 @@ Level: class {
                     if (enemy blocksRoom?()) {
                         count += 1
                     }
+                case boss: Boss =>
+                    count += 1
             }
         }
 
@@ -248,17 +247,7 @@ Level: class {
         hero update()
         walls update()
 
-        iter := entities iterator()
-        while (iter hasNext?()) {
-            e := iter next()
-            if (!e update()) {
-                removeCount += 1
-                logger debug("Destroying object %p (it's a %s) - add %d, remove %d",
-                    e, e class name, addCount, removeCount)
-                iter remove()
-                e destroy()
-            }
-        }
+        updateList(entities)
         locked = false
 
         if (!addBuffer empty?()) {
@@ -270,6 +259,18 @@ Level: class {
                 }
             }
             addBuffer clear()
+        }
+    }
+
+    updateList: func (list: List<Entity>) {
+        iter := list iterator()
+        while (iter hasNext?()) {
+            e := iter next()
+            if (!e update()) {
+                logger debug("Destroying object %p (it's a %s)", e, e class name)
+                iter remove()
+                e destroy()
+            }
         }
     }
 
@@ -294,24 +295,40 @@ Level: class {
     }
 
     eachInRadius: func (pos: Vec2, radius: Float, f: Func (Entity)) {
-        test := func (e: Entity) {
-            eRadius := pos dist(e pos)
-            if (eRadius <= radius) {
-                f(e)
+        _radiusTest(entities, pos, radius, f)
+        tileGrid each(|col, row, e| _radiusTest(e, pos, radius, f))
+        _radiusTest(hero, pos, radius, f)
+        _radiusTest(walls, pos, radius, f)
+    }
+
+    _radiusTest: func ~single (e: Entity, pos: Vec2, radius: Float, f: Func (Entity)) {
+        eRadius := pos dist(e pos)
+        if (eRadius <= radius) {
+            f(e)
+        }
+        e eachInRadius(pos, radius, f)
+    }
+
+    _radiusTest: func ~list (children: List<Entity>, pos: Vec2, radius: Float,
+            f: Func (Entity)) {
+        for (e in children) {
+            _radiusTest(e, pos, radius, f)
+        }
+    }
+
+    bossState: func -> (Float, Int) {
+        count := 0
+        total := 0.0
+
+        for (e in entities) {
+            match e {
+                case boss: Boss =>
+                    total += boss totalHealth() / boss maxHealth()
+                    count += 1
             }
         }
 
-        for (e in entities) {
-            test(e)
-        }
-
-        tileGrid each(|col, row, e| test(e))
-        test(hero)
-
-        test(walls upDoor)
-        test(walls downDoor)
-        test(walls leftDoor)
-        test(walls rightDoor)
+        return (total / count as Float, count)
     }
 
 }
@@ -320,6 +337,7 @@ Entity: class {
 
     pos: Vec2
     level: Level
+    collisionRadius := 20.0
 
     init: func (=level, .pos) {
         this pos = vec2(pos)
@@ -384,6 +402,31 @@ Entity: class {
     spawnHeart: func {
         heart := level tile room spawnHeart(pos, level)
         heart catapult()
+    }
+
+    spawnFlies: func (numFlies: Int) {
+        for (i in 0..numFlies) {
+            number := Random randInt(0, 100)
+            type := match {
+                case number < 20 =>
+                    FlyType POOTER
+                case number < 60 =>
+                    FlyType ATTACK_FLY
+                case =>
+                    FlyType BLACK_FLY
+            }
+
+            vel := Vec2 random(100)
+            diff := Vec2 random(40)
+
+            fly := Fly new(level, pos add(diff), type)
+            fly body setVel(cpv(vel))
+            level add(fly)
+        }
+    }
+
+    eachInRadius: func (pos: Vec2, radius: Float, f: Func (Entity)) {
+        // by default we have no children. If you have some, implement that
     }
 
 }
@@ -465,6 +508,16 @@ Direction: enum {
             case This LEFT   => vec2i(-1, 0)
             case This RIGHT  => vec2i( 1, 0)
             case => vec2i(1, 1) // nonsensical value to make sure we notice it
+        }
+    }
+
+    along?: func (v: Vec2, epsilon := 0.2) -> Bool {
+        match this {
+            case This UP    => v y > epsilon
+            case This DOWN  => v y < -epsilon
+            case This LEFT  => v x < -epsilon
+            case This RIGHT => v x > epsilon
+            case => false // nonsensical
         }
     }
 }

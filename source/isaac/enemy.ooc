@@ -25,7 +25,7 @@ Enemy: abstract class extends Entity {
     z := 0.0
 
     damageCount := 0
-    damageLength := 20
+    damageLength := 12
 
     shape: CpShape
     body: CpBody
@@ -219,7 +219,7 @@ EnemyBlockHandler: class extends CollisionHandler {
     }
 
     add: func (f: Func (Int, Int)) {
-        f(CollisionTypes ENEMY, CollisionTypes WALL)
+        f(CollisionTypes ENEMY, CollisionTypes BLOCK)
     }
 
 }

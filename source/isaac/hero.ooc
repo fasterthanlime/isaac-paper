@@ -15,7 +15,7 @@ import gnaar/[utils]
 
 // our stuff
 import isaac/[game, level, tear, shadow, bomb, collectible, options,
-    explosion]
+    explosion, walls]
 
 /*
  * Dat Isaac...
@@ -44,6 +44,10 @@ Hero: class extends Entity {
     hitBackCountMax := 3
 
     stats: HeroStats
+
+    door: Door
+    doorCount := 0
+    doorCountThreshold := 10
 
     init: func (.level, .pos, =stats) {
         super(level, pos)
@@ -97,9 +101,9 @@ Hero: class extends Entity {
     }
 
     initPhysx: func {
-        (width, height) := (40, 40)
+        radius := 20.0
         mass := 10.0
-        moment := cpMomentForBox(mass, width, height)
+        moment := cpMomentForCircle(mass, 0, radius, cpv(radius, radius))
 
         body = CpBody new(mass, moment)
         body setPos(cpv(pos))
@@ -108,7 +112,7 @@ Hero: class extends Entity {
         rotateConstraint = CpRotaryLimitJoint new(body, level space getStaticBody(), 0, 0)
         level space addConstraint(rotateConstraint)
 
-        shape = CpBoxShape new(body, width, height)
+        shape = CpCircleShape new(body, radius, cpv(0, 0))
         shape setUserData(this)
         shape setCollisionType(CollisionTypes HERO)
         level space addShape(shape)
@@ -132,6 +136,15 @@ Hero: class extends Entity {
         currVel := vec2(body getVel())
         currVel interpolate!(vel, 1 - 0.8)
         body setVel(cpv(currVel))
+
+        if (door) {
+            if (door dir along?(dir)) {
+                // pressing against a door
+                doorCount += 1
+            } else {
+                doorCount = 0
+            }
+        }
     }
 
     getSpeed: func -> Float {
@@ -206,7 +219,7 @@ HeroStats: class {
 
     shotSpeed := 400.0
 
-    shootRate := 6 // testing
+    shootRate := 2 // testing
 
     shootRateInv: Int { get { 60 / shootRate } }
 
