@@ -216,9 +216,9 @@ Game: class {
 
         name = match (map currentTile type) {
             case RoomType BOSS =>
-                // TODO: separate boss musics
+                // TODO: separate boss music for regular boss and wotl boss
                 if (!level cleared) {
-                    name = "my-innermost-apocalypse" // backup
+                    name = "divine-combat"
                 }
                 name
             case RoomType SECRET =>
