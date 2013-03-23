@@ -159,7 +159,7 @@ Mulli: class extends Mob {
 
         bodyPos := body getPos()
         sprite pos set!(bodyPos x, bodyPos y + 4 + z)
-        pos set!(body getPos())
+        pos set!(bodyPos)
         shadow setPos(pos sub(0, shadowYOffset))
 
         super()

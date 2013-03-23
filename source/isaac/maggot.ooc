@@ -43,7 +43,10 @@ Maggot: class extends Enemy {
     state := MaggotState STROLL
 
     sprite: MaggotSprite
-    dummySprite: GlSprite
+
+    shadow: Shadow
+    shadowFactor := 0.4
+    shadowYOffset := 10
 
     init: func (.level, .pos, =type) {
         super(level, pos)
@@ -65,23 +68,52 @@ Maggot: class extends Enemy {
         sprite = MaggotSprite new(level, type)
         level charGroup add(sprite)
 
-        dummySprite = GlSprite new("assets/png/cross.png")
-        level charGroup add(dummySprite)
+        shadow = Shadow new(level, 30)
+
+        initPhysx()
     }
 
     update: func -> Bool {
         // TODO: physx
 
-        sprite pos set!(pos)
+        bodyPos := body getPos()
+        sprite pos set!(bodyPos x, bodyPos y)
+        pos set!(bodyPos)
         sprite update(dir, state == MaggotState CHARGE)
-
-        dummySprite pos set!(pos)
+        shadow setPos(pos sub(0, shadowYOffset))
 
         true
     }
 
+    initPhysx: func {
+        (width, height) := (40, 20)
+        mass := 15.0
+        moment := cpMomentForBox(mass, width, height)
+
+        body = CpBody new(mass, moment)
+        body setPos(cpv(pos))
+        level space addBody(body)
+
+        rotateConstraint = CpRotaryLimitJoint new(body, level space getStaticBody(), 0, 0)
+        level space addConstraint(rotateConstraint)
+
+        shape = CpBoxShape new(body, width, height)
+        shape setUserData(this)
+        shape setCollisionType(CollisionTypes ENEMY)
+        level space addShape(shape)
+    }
+
     setOpacity: func (opacity: Float) {
         sprite opacity = opacity
+    }
+
+    destroy: func {
+        shadow destroy()
+        level space removeShape(shape)
+        shape free()
+        level space removeBody(body)
+        body free()
+        level charGroup remove(sprite)
     }
 
 }
