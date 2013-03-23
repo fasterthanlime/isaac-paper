@@ -39,7 +39,7 @@ Each possible level is separated by a blank line
   * '8' - moter
   * `h` - horf
 
-### Cellar`
+### Cellar
 
   * `s` - spider
   * `S` - big spider
@@ -78,4 +78,9 @@ Each possible level is separated by a blank line
 
 ### Womb
 
+  *
+
 ### Utero
+
+  *
+
