@@ -101,9 +101,10 @@ MaggotSprite: class extends GlDrawable {
 
     xswap := false
 
-    myAngle := 0.0
-
     init: func (=level, =type) {
+        factor := 0.9
+        scale set!(factor, factor)
+
         match type {
             case MaggotType MAGGOT =>
                 front = loadSprite("maggot-front")
@@ -141,21 +142,13 @@ MaggotSprite: class extends GlDrawable {
                 current = (charging ? leftCharging : left) 
                 xswap = true
         }
-
-        if (type == MaggotType MAGGOT) {
-            myAngle += 1.0
-        } else {
-            angle -= 1.0
-        }
     }
 
     draw: func (dye: DyeContext, modelView: Matrix4) {
-        // TODO: xswap support
         if (current) {
             current opacity = opacity
             current color = color
-            current angle = myAngle
-            current pos set!(32, 32)
+            current scale x = xswap ? -1.0 : 1.0
             current render(dye, modelView)
         }
     }
