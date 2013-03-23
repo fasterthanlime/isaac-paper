@@ -43,6 +43,7 @@ Maggot: class extends Enemy {
     state := MaggotState STROLL
 
     sprite: MaggotSprite
+    dummySprite: GlSprite
 
     init: func (.level, .pos, =type) {
         super(level, pos)
@@ -58,6 +59,9 @@ Maggot: class extends Enemy {
 
         sprite = MaggotSprite new(level, type)
         level charGroup add(sprite)
+
+        dummySprite = GlSprite new("assets/png/cross.png")
+        level charGroup add(dummySprite)
     }
 
     update: func -> Bool {
@@ -65,6 +69,8 @@ Maggot: class extends Enemy {
 
         sprite pos set!(pos)
         sprite update(dir, state == MaggotState CHARGE)
+
+        dummySprite pos set!(pos)
 
         true
     }
