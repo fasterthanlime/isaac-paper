@@ -14,7 +14,7 @@ import math/Random
 // our stuff
 import isaac/[level, spider, sack, fly, hopper, trite, cobweb,
     fire, collectible, tiles, trapdoor, hole, tnt, spikes, mulli,
-    roundfly, swarmer]
+    roundfly, swarmer, maggot]
 
 Rooms: class {
     sets := HashMap<String, RoomSet> new()
@@ -210,6 +210,12 @@ Room: class {
                 level add(Mulli new(level, level gridPos(x, y), MulliType HIVE))
             case '&' =>
                 level add(Swarmer new(level, level gridPos(x, y)))
+            case '|' =>
+                level add(Maggot new(level, level gridPos(x, y), MaggotType MAGGOT))
+            case '!' =>
+                level add(Maggot new(level, level gridPos(x, y), MaggotType CHARGER))
+            case '$' =>
+                level add(Maggot new(level, level gridPos(x, y), MaggotType SPITY))
             case =>
                 goodB = false
         }
