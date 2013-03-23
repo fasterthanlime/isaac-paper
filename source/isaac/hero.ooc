@@ -141,8 +141,6 @@ Hero: class extends Entity {
             if (door dir along?(dir)) {
                 // pressing against a door
                 doorCount += 1
-            } else {
-                doorCount = 0
             }
         }
     }
