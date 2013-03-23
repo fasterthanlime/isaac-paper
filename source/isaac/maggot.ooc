@@ -50,8 +50,13 @@ Maggot: class extends Enemy {
 
         life = match type {
             case MaggotType MAGGOT =>
+                dir = Direction RIGHT
                 12.0
-            case MaggotType CHARGER || MaggotType SPITY =>
+            case MaggotType CHARGER =>
+                dir = Direction UP
+                20.0
+            case MaggotType SPITY =>
+                dir = Direction DOWN
                 16.0
             case =>
                 0.0 // dafuk?
@@ -96,6 +101,8 @@ MaggotSprite: class extends GlDrawable {
 
     xswap := false
 
+    myAngle := 0.0
+
     init: func (=level, =type) {
         match type {
             case MaggotType MAGGOT =>
@@ -134,6 +141,12 @@ MaggotSprite: class extends GlDrawable {
                 current = (charging ? leftCharging : left) 
                 xswap = true
         }
+
+        if (type == MaggotType MAGGOT) {
+            myAngle += 1.0
+        } else {
+            angle -= 1.0
+        }
     }
 
     draw: func (dye: DyeContext, modelView: Matrix4) {
@@ -141,7 +154,9 @@ MaggotSprite: class extends GlDrawable {
         if (current) {
             current opacity = opacity
             current color = color
-            current draw(dye, modelView)
+            current angle = myAngle
+            current pos set!(32, 32)
+            current render(dye, modelView)
         }
     }
 
