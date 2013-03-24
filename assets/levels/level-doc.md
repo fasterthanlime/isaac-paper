@@ -68,8 +68,6 @@ Each possible level is separated by a blank line
   * `K` - Knight and Selfless Knight
   * `W` - Mr. Maw
   
-  
-  
 ### Catacombs
 
 ### Necropolis

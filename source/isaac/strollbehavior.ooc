@@ -43,6 +43,7 @@ StrollBehavior: class {
 
     // adjustable stuff
     speed := 80.0
+    chargeSpeed := 240.0
     canCharge := true
     backSight := false
     flies := false
@@ -80,17 +81,37 @@ StrollBehavior: class {
             }
         }
 
+        if (canCharge && !charging?()) {
+            maybeCharge()
+        }
+
         delta := dir toDeltaFloat()
         idealVel := delta mul(speed)
         enemy body setVel(cpv(idealVel))
     }
 
+    maybeCharge: func {
+        snappedPos := level snappedPos(enemy pos)
+        heroPos := level snappedPos(level hero pos)
+
+        diffX := snappedPos x - heroPos x
+        diffY := snappedPos y - heroPos y
+
+        if (diffX == 0) {
+            "Opportunity in X! diff = %d, %d" printfln(diffX, diffY)
+        } else if (diffY == 0) {
+            "Opportunity in Y! diff = %d, %d" printfln(diffX, diffY)
+        }
+    }
+
     reachedTarget?: func -> Bool {
-        threshold := 30.0
-        dist := enemy pos dist(target)
-        //"dist = %.2f" printfln(dist)
-        if (dist < threshold) {
-            return true // yes we did, brett.
+        if (!charging?()) {
+            threshold := 30.0
+            dist := enemy pos dist(target)
+            //"dist = %.2f" printfln(dist)
+            if (dist < threshold) {
+                return true // yes we did, brett.
+            }
         }
 
         snappedPos := level snappedPos(enemy pos)

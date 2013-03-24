@@ -44,22 +44,24 @@ Maggot: class extends Enemy {
     init: func (.level, .pos, =type) {
         super(level, pos)
 
-        life = match type {
-            case MaggotType MAGGOT =>
-                20.0
-            case MaggotType CHARGER =>
-                30.0
-            case MaggotType SPITY =>
-                30.0
-            case =>
-                0.0 // dafuk?
-        }
-
         sprite = MaggotSprite new(level, type)
         level charGroup add(sprite)
 
         shadow = Shadow new(level, 30)
         behavior = StrollBehavior new(level, this)
+
+        life = match type {
+            case MaggotType MAGGOT =>
+                behavior canCharge = false
+                20.0
+            case MaggotType CHARGER =>
+                30.0
+            case MaggotType SPITY =>
+                behavior canCharge = false
+                30.0
+            case =>
+                0.0 // dafuk?
+        }
 
         width := 40
         height := 40

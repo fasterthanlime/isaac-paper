@@ -532,15 +532,32 @@ Direction: enum {
         }
     }
 
+    fromDelta: static func (delta: Vec2i) -> This {
+        if (delta x abs() > delta y abs()) {
+
+        } else {
+
+        }
+    }
+
     random: static func -> This {
         Random randInt(1, 4) as This
     }
 
     next: func -> This {
-        // input is in 1..4
-        // (input % 4) is in 0..3
-        // (input % 4 + 1) is in 1..4
-        (((this as Int) % 4) + 1) as This
+        shift(1)
+    }
+
+    prev: func -> This {
+        shift(-1)
+    }
+
+    opposite: func -> This {
+        shift(2)
+    }
+
+    shift: func (offset: Int) -> This {
+        (this as Int + offset) clamp(1, 4) as This
     }
 }
 
