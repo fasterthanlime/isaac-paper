@@ -16,7 +16,7 @@ import gnaar/[utils]
 import math, math/Random
 
 // our stuff
-import isaac/[game, level, utils, enemy]
+import isaac/[game, level, utils, enemy, tiles]
 
 StrollState: enum {
     STROLL
@@ -31,13 +31,21 @@ StrollBehavior: class {
     level: Level
     enemy: Enemy
 
-    speed := 60.0
-
     rotateConstraint: CpConstraint
 
-    dir := Direction LEFT
-
+    // state
+    dir := Direction random()
     state := StrollState STROLL
+    target: Vec2
+
+    targetCounter := 0
+    targetCounterMax := 30
+
+    // adjustable stuff
+    speed := 80.0
+    canCharge := true
+    backSight := false
+    flies := false
 
     init: func (=level, =enemy)
 
@@ -64,12 +72,91 @@ StrollBehavior: class {
     setDir: func (=dir)
 
     update: func {
-        bodyVel := vec2(enemy body getVel())
+        if (!target || reachedTarget?()) {
+            targetCounter -= 1
+            if (targetCounter <= 0) {
+                targetCounter = targetCounterMax
+                chooseTarget()
+            }
+        }
+
         delta := dir toDeltaFloat()
         idealVel := delta mul(speed)
-        alpha := 0.85
-        bodyVel interpolate!(idealVel, 1 - alpha)
-        enemy body setVel(cpv(bodyVel))
+        enemy body setVel(cpv(idealVel))
+    }
+
+    reachedTarget?: func -> Bool {
+        threshold := 30.0
+        dist := enemy pos dist(target)
+        //"dist = %.2f" printfln(dist)
+        if (dist < threshold) {
+            return true // yes we did, brett.
+        }
+
+        snappedPos := level snappedPos(enemy pos)
+        next := snappedPos add(dir toDelta())
+        walkable := walkable?(next)
+        //"next = %s, walkable = %d" printfln(next toString(), walkable)
+
+        !walkable
+    }
+
+    chooseTarget: func {
+        candidate := Direction random()
+        if (candidate == dir) {
+            candidate = candidate next()
+        }
+
+        hw := headway(candidate)
+        target = vec2(level gridPos(hw x, hw y))
+        dir = candidate
+    }
+
+    headway: func (candidate: Direction) -> Vec2i {
+        delta := candidate toDelta()
+        coords := level snappedPos(enemy pos) 
+
+        target := vec2i(coords)
+
+        walking := true
+
+        while (walkable?(coords) && walking) {
+            target set!(coords)
+
+            // 1/4 chance to stop here
+            if (Random randInt(0, 100) < 25) {
+                walking = false
+            }
+
+            coords add!(delta)
+        }
+
+        coords
+    }
+
+    walkable?: func ~coords (coords: Vec2i) -> Bool {
+        walkable?(coords x, coords y)
+    }
+
+    walkable?: func (col, row: Int) -> Bool {
+        if (!level tileGrid validCoords?(col, row)) {
+            return false
+        }
+
+        tile := level tileGrid get(col, row)
+        if (!tile) {
+            return true
+        }
+
+        !obstacle?(tile)
+    }
+
+    obstacle?: func (tile: Tile) -> Bool {
+        if (flies) {
+            return false // there ain't nothing we cannot fly over
+        }
+    
+        true // if we're on foot, everything is an obstacle
     }
 
     charging?: func -> Bool {

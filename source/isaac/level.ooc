@@ -530,6 +530,17 @@ Direction: enum {
             case => false // nonsensical
         }
     }
+
+    random: static func -> This {
+        Random randInt(1, 4) as This
+    }
+
+    next: func -> This {
+        // input is in 1..4
+        // (input % 4) is in 0..3
+        // (input % 4 + 1) is in 1..4
+        (((this as Int) % 4) + 1) as This
+    }
 }
 
 Grid: class {

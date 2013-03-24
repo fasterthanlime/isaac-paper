@@ -62,7 +62,7 @@ Maggot: class extends Enemy {
         behavior = StrollBehavior new(level, this)
 
         width := 40
-        height := 20
+        height := 40
         mass := 15.0
         behavior initPhysx(width, height, mass)
     }
