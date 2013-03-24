@@ -511,6 +511,16 @@ Direction: enum {
         }
     }
 
+    toDeltaFloat: func -> Vec2 {
+        match this {
+            case This UP     => vec2(0,  1)
+            case This DOWN   => vec2(0, -1)
+            case This LEFT   => vec2(-1, 0)
+            case This RIGHT  => vec2( 1, 0)
+            case => vec2(1, 1) // nonsensical value to make sure we notice it
+        }
+    }
+
     along?: func (v: Vec2, epsilon := 0.2) -> Bool {
         match this {
             case This UP    => v y > epsilon

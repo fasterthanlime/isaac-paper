@@ -17,7 +17,8 @@ import gnaar/[utils]
 import math, math/Random
 
 // our stuff
-import isaac/[level, shadow, enemy, hero, utils, paths]
+import isaac/[level, shadow, enemy, hero, utils, paths,
+    strollbehavior, tear]
 
 MaggotType: enum {
     MAGGOT
@@ -25,41 +26,30 @@ MaggotType: enum {
     SPITY
 }
 
-MaggotState: enum {
-    STROLL
-    CHARGE
-}
-
 /**
  * Maggot.
  */
 Maggot: class extends Enemy {
 
-    rotateConstraint: CpConstraint
-
     type: MaggotType
-
-    dir := Direction LEFT
-    state := MaggotState STROLL
 
     sprite: MaggotSprite
 
     shadow: Shadow
     shadowFactor := 0.4
-    shadowYOffset := 10
+    shadowYOffset := 13
+
+    behavior: StrollBehavior
 
     init: func (.level, .pos, =type) {
         super(level, pos)
 
         life = match type {
             case MaggotType MAGGOT =>
-                dir = Direction RIGHT
                 12.0
             case MaggotType CHARGER =>
-                dir = Direction UP
                 20.0
             case MaggotType SPITY =>
-                dir = Direction DOWN
                 16.0
             case =>
                 0.0 // dafuk?
@@ -69,38 +59,28 @@ Maggot: class extends Enemy {
         level charGroup add(sprite)
 
         shadow = Shadow new(level, 30)
+        behavior = StrollBehavior new(level, this)
 
-        initPhysx()
+        width := 40
+        height := 20
+        mass := 15.0
+        behavior initPhysx(width, height, mass)
     }
 
     update: func -> Bool {
-        // TODO: physx
-
         bodyPos := body getPos()
         sprite pos set!(bodyPos x, bodyPos y)
         pos set!(bodyPos)
-        sprite update(dir, state == MaggotState CHARGE)
+        sprite update(behavior dir, behavior charging?())
         shadow setPos(pos sub(0, shadowYOffset))
 
-        true
+        behavior update()
+
+        super()
     }
 
-    initPhysx: func {
-        (width, height) := (40, 20)
-        mass := 15.0
-        moment := cpMomentForBox(mass, width, height)
-
-        body = CpBody new(mass, moment)
-        body setPos(cpv(pos))
-        level space addBody(body)
-
-        rotateConstraint = CpRotaryLimitJoint new(body, level space getStaticBody(), 0, 0)
-        level space addConstraint(rotateConstraint)
-
-        shape = CpBoxShape new(body, width, height)
-        shape setUserData(this)
-        shape setCollisionType(CollisionTypes ENEMY)
-        level space addShape(shape)
+    hitBack: func (tear: Tear) {
+        return
     }
 
     setOpacity: func (opacity: Float) {
