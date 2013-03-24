@@ -46,11 +46,11 @@ Maggot: class extends Enemy {
 
         life = match type {
             case MaggotType MAGGOT =>
-                12.0
-            case MaggotType CHARGER =>
                 20.0
+            case MaggotType CHARGER =>
+                30.0
             case MaggotType SPITY =>
-                16.0
+                30.0
             case =>
                 0.0 // dafuk?
         }
@@ -65,6 +65,7 @@ Maggot: class extends Enemy {
         height := 40
         mass := 15.0
         behavior initPhysx(width, height, mass)
+        shape setGroup(CollisionGroups MAGGOT)
     }
 
     update: func -> Bool {
