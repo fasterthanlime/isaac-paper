@@ -27,6 +27,7 @@ Each possible level is separated by a blank line
 
   * `e` - embryo (little blastocyst)
   * `q` - pacer
+  * `Q` - gurgle
   * `g` - gaper
   * `G` - gusher
   * `u` - sucker

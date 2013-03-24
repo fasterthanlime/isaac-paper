@@ -14,7 +14,7 @@ import math/Random
 // our stuff
 import isaac/[level, spider, sack, fly, hopper, trite, cobweb,
     fire, collectible, tiles, trapdoor, hole, tnt, spikes, mulli,
-    roundfly, swarmer, maggot]
+    roundfly, swarmer, maggot, gaper]
 
 Rooms: class {
     sets := HashMap<String, RoomSet> new()
@@ -216,6 +216,21 @@ Room: class {
                 level add(Maggot new(level, level gridPos(x, y), MaggotType CHARGER))
             case '$' =>
                 level add(Maggot new(level, level gridPos(x, y), MaggotType SPITY))
+            case 'G' =>
+                level add(Gaper new(level, level gridPos(x, y), GaperType GUSHER))
+            case 'g' =>
+                chance := Random randInt(0, 100)
+                type := match {
+                    case chance < 33 =>
+                        GaperType GAPER
+                    case =>
+                        GaperType FROWNING
+                }
+                level add(Gaper new(level, level gridPos(x, y), type))
+            case 'q' =>
+                level add(Gaper new(level, level gridPos(x, y), GaperType PACER))
+            case 'Q' =>
+                level add(Gaper new(level, level gridPos(x, y), GaperType GURGLE))
             case =>
                 goodB = false
         }
