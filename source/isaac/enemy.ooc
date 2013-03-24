@@ -66,6 +66,12 @@ Enemy: abstract class extends Entity {
             redish = false
         }
 
+        if (redish) {
+            setColor(255, 30, 30)
+        } else {
+            setColor(255, 255, 255)
+        }
+
         if (life <= 0.1) {
             onDeath()
             return false
@@ -75,6 +81,8 @@ Enemy: abstract class extends Entity {
     }
 
     setOpacity: abstract func (opacity: Float)
+
+    setColor: abstract func (r, g, b: Int)
 
     grounded?: func -> Bool {
         z < level groundLevel
@@ -158,13 +166,11 @@ Mob: class extends Enemy {
         sprite opacity = opacity
     }
 
-    update: func -> Bool {
-        if (redish) {
-            sprite color set!(255, 30, 30)
-        } else {
-            sprite color set!(255, 255, 255)
-        }
+    setColor: func (r, g, b: Int) {
+        sprite color set!(r, g, b)
+    }
 
+    update: func -> Bool {
         super()
     }
 

@@ -94,13 +94,13 @@ StrollBehavior: class {
         snappedPos := level snappedPos(enemy pos)
         heroPos := level snappedPos(level hero pos)
 
-        diffX := snappedPos x - heroPos x
-        diffY := snappedPos y - heroPos y
+        diffX := heroPos x - snappedPos x
+        diffY := heroPos y - snappedPos y
 
-        if (diffX == 0) {
-            "Opportunity in X! diff = %d, %d" printfln(diffX, diffY)
-        } else if (diffY == 0) {
-            "Opportunity in Y! diff = %d, %d" printfln(diffX, diffY)
+        if (diffX == 0 || diffY == 0) {
+            oppDir := Direction fromDelta(diffX, diffY)
+
+            "Opportunity in dir %s" printfln(oppDir toString())
         }
     }
 

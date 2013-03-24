@@ -86,6 +86,10 @@ Maggot: class extends Enemy {
         return
     }
 
+    setColor: func (r, g, b: Int) {
+        sprite color set!(r, g, b)
+    }
+
     setOpacity: func (opacity: Float) {
         sprite opacity = opacity
     }

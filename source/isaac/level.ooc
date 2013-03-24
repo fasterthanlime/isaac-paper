@@ -532,12 +532,22 @@ Direction: enum {
         }
     }
 
-    fromDelta: static func (delta: Vec2i) -> This {
-        if (delta x abs() > delta y abs()) {
-
+    fromDelta: static func (deltaX, deltaY: Int) -> This {
+        if (deltaX abs() > deltaY abs()) {
+            if (deltaX > 0) {
+                return This RIGHT
+            } else {
+                return This LEFT
+            }
         } else {
-
+            if (deltaY > 0) {
+                return This UP
+            } else {
+                return This DOWN
+            }
         }
+
+        This UP // hmm.
     }
 
     random: static func -> This {
