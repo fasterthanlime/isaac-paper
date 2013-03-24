@@ -18,7 +18,7 @@ import math/Random
 
 // our stuff
 import isaac/[game, hero, walls, hopper, bomb, rooms, enemy, map, tiles,
-    freezer, explosion, collectible, fly, boss]
+    freezer, explosion, collectible, fly, boss, plan]
 
 Level: class {
 
@@ -43,6 +43,7 @@ Level: class {
 
     // layers
     group: GlGroup
+    bgGroup: GlGroup
     floorGroup: GlGroup
     holeGroup: GlGroup
     blockGroup: GlGroup
@@ -72,8 +73,9 @@ Level: class {
     cleared := false
 
     tile: MapTile
+    floor: PlanFloor
 
-    init: func (=game, =tile) {
+    init: func (=game, =tile, =floor) {
         group = GlGroup new()
 
         initGroups()
@@ -91,6 +93,35 @@ Level: class {
         // update once without drawing to set up everything correctly
         updateEntities()
     }
+
+    loadBg: func {
+        // TODO: special bgs for some rooms
+        name := match (floor type) {
+            case FloorType BASEMENT =>
+                "basement"
+            case FloorType CELLAR =>
+                "cellar"
+            case FloorType CAVES || FloorType CATACOMBS =>
+                "caves"
+            case FloorType DEPTHS || FloorType NECROPOLIS =>
+                "depths"
+            case FloorType WOMB || FloorType UTERO =>
+                "womb"
+            case FloorType CATHEDRAL =>
+                "depths"
+            case FloorType SHEOL =>
+                "depths"
+            case FloorType CHEST =>
+                "basement"
+            case =>
+                "basement" // fallback
+        }
+        path := "assets/png/%s-bg.png" format(name)
+        bgPic := GlSprite new(path)
+        bgPic center = false
+        bgGroup add(bgPic)
+    }
+
     
     gridPos: func (x, y: Int) -> Vec2 {
         vec2(paddedBottomLeft x + 50.0 * x,
@@ -122,6 +153,9 @@ Level: class {
     }
 
     initGroups: func {
+        bgGroup = GlGroup new()
+        group add(bgGroup)
+
         floorGroup = GlGroup new()
         group add(floorGroup)
 
@@ -142,6 +176,8 @@ Level: class {
 
         charGroup = GlSortedGroup new()
         group add(charGroup)
+
+        loadBg()
     }
 
     initPhysx: func {
