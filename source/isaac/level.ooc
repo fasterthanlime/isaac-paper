@@ -478,8 +478,8 @@ CollisionHandler: abstract class extends CpCollisionHandler {
 
 Direction: enum {
     LEFT
-    RIGHT
     UP
+    RIGHT
     DOWN
 
     toString: func -> String {
@@ -568,6 +568,10 @@ Direction: enum {
 
     shift: func (offset: Int) -> This {
         (this as Int + offset) clamp(1, 4) as This
+    }
+
+    isOpposed?: func (other: This) -> Bool {
+        (this as Int - other as Int) abs() == 2
     }
 }
 

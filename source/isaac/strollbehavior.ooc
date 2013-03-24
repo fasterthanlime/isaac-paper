@@ -43,7 +43,7 @@ StrollBehavior: class {
 
     // adjustable stuff
     speed := 80.0
-    chargeSpeed := 240.0
+    chargeSpeed := 200.0
     canCharge := true
     backSight := false
     flies := false
@@ -86,7 +86,7 @@ StrollBehavior: class {
         }
 
         delta := dir toDeltaFloat()
-        idealVel := delta mul(speed)
+        idealVel := delta mul(charging?() ? chargeSpeed : speed)
         enemy body setVel(cpv(idealVel))
     }
 
@@ -100,8 +100,42 @@ StrollBehavior: class {
         if (diffX == 0 || diffY == 0) {
             oppDir := Direction fromDelta(diffX, diffY)
 
-            "Opportunity in dir %s" printfln(oppDir toString())
+            if (!backSight && oppDir isOpposed?(dir)) {
+                return
+            }
+
+            threshold := 3
+            if (diffX > threshold || diffX < -threshold || \
+                diffY > threshold || diffY < -threshold) {
+                return
+            }
+
+            if (!hasPath?(snappedPos, heroPos, oppDir)) {
+                return
+            }
+
+            dir = oppDir
+            state = StrollState CHARGE
+            target = vec2(level hero pos)
         }
+    }
+
+    hasPath?: func (a, b: Vec2i, dir: Direction) -> Bool {
+        coords := vec2i(a x, a y)
+        delta := dir toDelta()
+
+        foolproof := 28
+
+        while (!coords equals?(b) && foolproof > 0) {
+            if (!walkable?(coords)) {
+                return false
+            }
+
+            coords add!(delta)
+            foolproof -= 1
+        }
+
+        true
     }
 
     reachedTarget?: func -> Bool {
@@ -131,6 +165,7 @@ StrollBehavior: class {
         hw := headway(candidate)
         target = vec2(level gridPos(hw x, hw y))
         dir = candidate
+        state = StrollState STROLL
     }
 
     headway: func (candidate: Direction) -> Vec2i {
