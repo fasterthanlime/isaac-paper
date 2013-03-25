@@ -4,6 +4,9 @@
 use deadlogger
 import deadlogger/[Log, Logger]
 
+use bleep
+import bleep
+
 use chipmunk
 import chipmunk
 
@@ -14,10 +17,11 @@ use gnaar
 import gnaar/[utils]
 
 // sdk stuff
+import structs/[ArrayList]
 import math/Random
 
 // our stuff
-import isaac/[level, hero]
+import isaac/[level, hero, game]
 
 
 Splash: class extends Entity {
@@ -35,6 +39,9 @@ Splash: class extends Entity {
 
     alphaFactor := 0.6
 
+    // SFX
+    splashPool: static ArrayList<Sample>
+
     init: func (.level, .pos) {
         super(level, pos)
 
@@ -43,6 +50,23 @@ Splash: class extends Entity {
         sprite scale set!(scaleA, scaleB)
         sprite angle = Random randInt(1, 360) as Float
         level group add(sprite)
+
+        initSamples()
+        playSplash()
+    }
+
+    initSamples: func {
+        if (!splashPool) {
+            splashPool = ArrayList<Sample> new()
+            for (i in 0..3) {
+                path := "assets/wav/tear-splash%d.wav" format(i + 1)
+                splashPool add(level game bleep loadSample(path))
+            }
+        }
+    }
+
+    playSplash: func {
+        Random choice(splashPool) play(0)
     }
 
     getSpritePath: func -> String {
