@@ -7,14 +7,21 @@ import deadlogger/[Log, Logger]
 use chipmunk
 import chipmunk
 
+use bleep
+import bleep
+
 use dye
 import dye/[core, sprite, primitives, math]
 
 use gnaar
 import gnaar/[utils]
 
+// sdk stuff
+import structs/[ArrayList]
+import math/Random
+
 // our stuff
-import isaac/[level, hero, splash, enemy, fire, tiles, tnt]
+import isaac/[level, hero, splash, enemy, fire, tiles, tnt, game]
 
 Tear: class extends Entity {
 
@@ -36,6 +43,9 @@ Tear: class extends Entity {
 
     heroHandler, enemyHandler, blockHandler, fireHandler, ignoreHandler: static CollisionHandler
 
+    // SFX
+    emitPool: static ArrayList<Sample>
+
     init: func (.level, .pos, .vel, =type, =damage) {
         super(level, pos)
 
@@ -50,6 +60,25 @@ Tear: class extends Entity {
         level group add(sprite)
 
         initPhysx()
+        initSamples()
+
+        if (type == TearType HERO) {
+            playEmit()
+        }
+    }
+
+    initSamples: func {
+        if (!emitPool) {
+            emitPool = ArrayList<Sample> new()
+            for (i in 0..3) {
+                path := "assets/wav/tear-emit%d.wav" format(i + 1)
+                emitPool add(level game bleep loadSample(path))
+            }
+        }
+    }
+
+    playEmit: func {
+        Random choice(emitPool) play(0)
     }
 
     update: func -> Bool {
