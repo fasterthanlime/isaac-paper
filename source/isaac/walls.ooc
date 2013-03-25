@@ -244,7 +244,7 @@ Door: class extends Entity {
         body setPos(cpv(pos))
 
         length := 100
-        thickness := 70
+        thickness := 44
         size := match dir {
             case Direction UP || Direction DOWN =>
                 vec2(length, thickness)
