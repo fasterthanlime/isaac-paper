@@ -40,7 +40,7 @@ Game: class {
 
     uiGroup, mapGroup, levelGroup: GlGroup
 
-    level: Level
+    level, oldLevel: Level
 
     logger := static Log getLogger(This name)
 
@@ -64,10 +64,11 @@ Game: class {
     // state stuff
     state := GameState PLAY
     changeRoomDir := Direction UP
-    changeRoomIncr := 30.0
+    changeRoomIncr := 15.0
 
     resetCount := 0
     resetCountThreshold := 40
+    resetCountAlpha := 0.8
 
     cheats := true
 
@@ -208,12 +209,6 @@ Game: class {
     }
 
     initLevel: func {
-        if (level) {
-            levelGroup remove(level group)
-            level destroy()
-            level = null
-        }
-
         level = Level new(this, map currentTile, floor)
         levelGroup add(level group)
         
@@ -268,6 +263,25 @@ Game: class {
 
     changeRoom: func (=changeRoomDir) {
         state = GameState CHANGEROOM
+
+        // furl old room
+        map currentTile furl(level)
+
+        // destroy old hero
+        level hero destroy()
+
+        // the old switcharoo
+        oldLevel = level
+
+        // set up new room
+        delta := changeRoomDelta()
+        newPos := map currentTile pos add(delta)
+        map currentTile = map grid get(newPos x, newPos y)
+        loadRoom()
+
+        // offset new level for now
+        offset := vec2(delta x * 400, delta y * 250)
+        level group pos set!(offset)
     }
 
     changeFloor: func {
@@ -401,17 +415,21 @@ Game: class {
 
         match changeRoomDir {
             case Direction UP =>
-                levelGroup pos y -= changeRoomIncr
-                finished = levelGroup pos y < -400
+                levelGroup pos y = (levelGroup pos y as Float) * resetCountAlpha \
+                     + -250.0 * (1.0 - resetCountAlpha)
+                finished = levelGroup pos y < -249
             case Direction DOWN =>
-                levelGroup pos y += changeRoomIncr
-                finished = levelGroup pos y > 400
+                levelGroup pos y = (levelGroup pos y as Float) * resetCountAlpha \
+                     +  250.0 * (1.0 - resetCountAlpha)
+                finished = levelGroup pos y > 249
             case Direction LEFT =>
-                levelGroup pos x += changeRoomIncr
-                finished = levelGroup pos x > 800
+                levelGroup pos x = (levelGroup pos x as Float) * resetCountAlpha \
+                     +  400.0 * (1.0 - resetCountAlpha)
+                finished = levelGroup pos x > 399
             case Direction RIGHT =>
-                levelGroup pos x -= changeRoomIncr
-                finished = levelGroup pos x < -800
+                levelGroup pos x = (levelGroup pos x as Float) * resetCountAlpha \
+                     + -400.0 * (1.0 - resetCountAlpha)
+                finished = levelGroup pos x < -399
         }
 
         if (finished) {
@@ -452,15 +470,18 @@ Game: class {
         }
     }
 
-    finalizeChangeRoom: func {
-        // furl old room
-        map currentTile furl(level)
+    destroyOldLevel: func {
+        if (oldLevel) {
+            levelGroup remove(oldLevel group)
+            oldLevel destroy()
+            oldLevel = null
+        }
+    }
 
-        // set up new room
-        delta := changeRoomDelta()
-        newPos := map currentTile pos add(delta)
-        map currentTile = map grid get(newPos x, newPos y)
-        loadRoom()
+    finalizeChangeRoom: func {
+        destroyOldLevel()
+        levelGroup pos set!(0, 0)
+        level group pos set!(0, 0)
 
         state = GameState PLAY
     }

@@ -25,6 +25,7 @@ Hero: class extends Entity {
     logger := static Log getLogger(This name)
 
     sprite: GlSprite
+    spriteYOffset := 20
 
     shape: CpShape
     body: CpBody
@@ -34,6 +35,7 @@ Hero: class extends Entity {
 
     shadow: Shadow
     shadowFactor := 0.8
+    shadowYOffset := 8
 
     webCount := 0
 
@@ -75,9 +77,9 @@ Hero: class extends Entity {
         }
 
         bodyPos := body getPos()
-        sprite pos set!(bodyPos x, bodyPos y + 20)
+        sprite pos set!(bodyPos x, bodyPos y + spriteYOffset)
         pos set!(body getPos())
-        shadow setPos(pos sub(0, 8))
+        shadow setPos(pos x, pos y - shadowYOffset)
 
         setOpacity(1.0)
         if (invicibilityCount > 0) {
@@ -98,6 +100,8 @@ Hero: class extends Entity {
     setPos: func (.pos) {
         this pos set!(pos)
         body setPos(cpv(pos))
+        sprite pos set!(pos x, pos y + spriteYOffset)
+        shadow setPos(pos x, pos y - shadowYOffset)
     }
 
     initPhysx: func {

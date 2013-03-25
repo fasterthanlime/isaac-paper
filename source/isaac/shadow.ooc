@@ -51,6 +51,10 @@ Shadow: class extends Entity {
         sprite pos set!(pos)
     }
 
+    setPos: func ~floats (x, y: Float) {
+        sprite pos set!(x, y)
+    }
+
     setOpacity: func (=opacity) {
         sprite opacity = baseOpacity * opacity
     }

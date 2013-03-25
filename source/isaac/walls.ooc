@@ -135,18 +135,18 @@ Door: class extends Entity {
 
     opacityIncr := 0.075
 
-    scale := 0.9
+    scale := 0.7
 
     init: func (=level, =dir) {
         match dir {
             case Direction UP =>
-                pos = vec2(400, 425 + 35)
+                pos = vec2(400, 425 + 22)
             case Direction DOWN =>
-                pos = vec2(400, 75 - 35)
+                pos = vec2(400, 75 - 22)
             case Direction LEFT =>
-                pos = vec2(75 - 35, 250)
+                pos = vec2(75 - 22, 250)
             case Direction RIGHT =>
-                pos = vec2(725 + 35, 250)
+                pos = vec2(725 + 22, 250)
         }
         super(level, pos)
 
