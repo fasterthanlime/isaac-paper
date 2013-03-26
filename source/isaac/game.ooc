@@ -74,6 +74,9 @@ Game: class {
 
     classes: List<Class>
 
+    // SFX
+    samples := HashMap<String, Sample> new()
+
     /* Initialization, duh */
     init: func {
         // Just testing for fun
@@ -514,6 +517,27 @@ Game: class {
         exit(0)
     }
 
+    // SFX code
+    playSound: func (name: String, loops := 0) {
+        if (samples contains?(name)) {
+            samples get(name) play(loops)
+        } else {
+            path := "assets/wav/%s.wav" format(name)
+            sample := bleep loadSample(path)
+            if (sample) {
+                samples put(name, sample)
+                sample play(loops)
+            } else {
+                logger warn("Couldn't load sfx %s", path)
+            }
+        }
+    }
+
+    playRandomSound: func (name: String, variants := 2, loops := 0) {
+        variant := Random randInt(1, variants)
+        playSound("%s%d" format(name, variant), loops)
+    }
+
 }
 
 
@@ -522,4 +546,7 @@ GameState: enum {
     CHANGEROOM
     CHANGEFLOOR
 }
+
+
+
 

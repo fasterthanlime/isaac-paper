@@ -7,9 +7,6 @@ import deadlogger/[Log, Logger]
 use chipmunk
 import chipmunk
 
-use bleep
-import bleep
-
 use dye
 import dye/[core, sprite, primitives, math]
 
@@ -43,9 +40,6 @@ Tear: class extends Entity {
 
     heroHandler, enemyHandler, blockHandler, fireHandler, ignoreHandler: static CollisionHandler
 
-    // SFX
-    emitPool: static ArrayList<Sample>
-
     init: func (.level, .pos, .vel, =type, =damage) {
         super(level, pos)
 
@@ -60,25 +54,14 @@ Tear: class extends Entity {
         level group add(sprite)
 
         initPhysx()
-        initSamples()
 
         if (type == TearType HERO) {
             playEmit()
         }
     }
 
-    initSamples: func {
-        if (!emitPool) {
-            emitPool = ArrayList<Sample> new()
-            for (i in 0..3) {
-                path := "assets/wav/tear-emit%d.wav" format(i + 1)
-                emitPool add(level game bleep loadSample(path))
-            }
-        }
-    }
-
     playEmit: func {
-        Random choice(emitPool) play(0)
+        level game playRandomSound("tear-emit", 3)
     }
 
     update: func -> Bool {

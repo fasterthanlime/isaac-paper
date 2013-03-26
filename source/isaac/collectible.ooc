@@ -3,6 +3,9 @@
 use deadlogger
 import deadlogger/[Log, Logger]
 
+use bleep
+import bleep
+
 use chipmunk
 import chipmunk
 
@@ -13,6 +16,7 @@ use gnaar
 import gnaar/[utils]
 
 // sdk stuff
+import structs/[ArrayList]
 import math/Random
 
 // our stuff
@@ -148,11 +152,20 @@ CollectibleCoin: class extends Collectible {
     type: CoinType
     worth: Int { get { getWorth() } } 
 
+    // SFX
+    pickupSample: static Sample
+
     init: func (.level, .pos, type := CoinType PENNY) {
         this type = type
         super(level, pos)
 
         shadowYOffset = 3
+    }
+
+    initSamples: func {
+        if (!pickupSample) {
+            pickupSample
+        }
     }
 
     getWorth: func -> Int {

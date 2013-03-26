@@ -4,20 +4,14 @@
 use deadlogger
 import deadlogger/[Log, Logger]
 
-use chipmunk
-import chipmunk
-
 use dye
 import dye/[core, sprite, primitives, math]
 
 use gnaar
 import gnaar/[utils]
 
-use bleep
-import bleep
-
-// sdk stuff
-import structs/[ArrayList]
+use chipmunk
+import chipmunk
 
 // our stuff
 import isaac/[game, level, tear, shadow, explosion, freezer]
@@ -37,9 +31,6 @@ Bomb: class extends Entity {
 
     gracePeriod := 10
 
-    // SFX
-    bombDrop: static Sample
-
     init: func (.level, .pos) {
         super(level, pos)
 
@@ -49,18 +40,7 @@ Bomb: class extends Entity {
         countdown = maxCountdown
 
         initPhysx()
-        initSamples()
-        playDrop()
-    }
-
-    initSamples: func {
-        if (!bombDrop) {
-            bombDrop = level game bleep loadSample("assets/wav/bomb-drop.wav")
-        }
-    }
-
-    playDrop: func {
-        bombDrop play(0)
+        level game playSound("bomb-drop")
     }
 
     update: func -> Bool {

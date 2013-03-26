@@ -4,9 +4,6 @@
 use deadlogger
 import deadlogger/[Log, Logger]
 
-use bleep
-import bleep
-
 use chipmunk
 import chipmunk
 
@@ -39,9 +36,6 @@ Splash: class extends Entity {
 
     alphaFactor := 0.6
 
-    // SFX
-    splashPool: static ArrayList<Sample>
-
     init: func (.level, .pos) {
         super(level, pos)
 
@@ -51,22 +45,11 @@ Splash: class extends Entity {
         sprite angle = Random randInt(1, 360) as Float
         level group add(sprite)
 
-        initSamples()
         playSplash()
     }
 
-    initSamples: func {
-        if (!splashPool) {
-            splashPool = ArrayList<Sample> new()
-            for (i in 0..3) {
-                path := "assets/wav/tear-splash%d.wav" format(i + 1)
-                splashPool add(level game bleep loadSample(path))
-            }
-        }
-    }
-
     playSplash: func {
-        Random choice(splashPool) play(0)
+        level game playRandomSound("tear-splash", 3)
     }
 
     getSpritePath: func -> String {

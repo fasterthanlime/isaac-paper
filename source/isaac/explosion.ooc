@@ -4,9 +4,6 @@
 use deadlogger
 import deadlogger/[Log, Logger]
 
-use bleep
-import bleep
-
 use chipmunk
 import chipmunk
 
@@ -29,9 +26,6 @@ Explosion: class extends Splash {
     explosionRadius := 105.0
     damage := 30
 
-    // SFX
-    boomSample: static Sample
-
     init: func (.level, .pos) {
         super(level, pos)
 
@@ -46,13 +40,7 @@ Explosion: class extends Splash {
     }
 
     playSplash: func {
-        boomSample play(0)
-    }
-
-    initSamples: func {
-        if (!boomSample) {
-            boomSample = level game bleep loadSample("assets/wav/bomb-explode.wav")
-        }
+        level game playSound("bomb-explode")
     }
 
     update: func -> Bool {
