@@ -519,6 +519,9 @@ Game: class {
 
     // SFX code
     playSound: func (name: String, loops := 0) {
+        // abide by the mute
+        if (options mute) return
+
         if (samples contains?(name)) {
             samples get(name) play(loops)
         } else {
