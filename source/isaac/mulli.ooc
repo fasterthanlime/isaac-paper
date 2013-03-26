@@ -19,7 +19,7 @@ import structs/[ArrayList, List, HashMap]
 
 // our stuff
 import isaac/[level, shadow, enemy, hero, utils, paths, pathfinding,
-    explosion, bomb, fly, tear]
+    explosion, bomb, fly, tear, guidebehavior]
 
 MulliType: enum {
     MULLIGAN
@@ -46,13 +46,9 @@ Mulli: class extends Mob {
     shadowFactor := 0.4
     shadowYOffset := 25
 
-    fleeRadius := 400
-
-    mover: Mover
-
-    parabola: Parabola
-
     type: MulliType
+
+    behavior: GuideBehavior
 
     init: func (.level, .pos, =type) {
         super(level, pos)
@@ -67,8 +63,9 @@ Mulli: class extends Mob {
         sprite pos set!(pos)
 
         initPhysx()
-        mover = Mover new(level, body, getSpeed())
-        mover alpha = 0.9
+
+        behavior = GuideBehavior new(this, getSpeed())
+        behavior flee = (type != MulliType MULLIBOOM)
     }
 
     getSpeed: func -> Float {
@@ -121,41 +118,8 @@ Mulli: class extends Mob {
         level add(tear)
     }
 
-    touchHero: func (hero: Hero) -> Bool {
-        match type {
-            case MulliType MULLIBOOM =>
-                life = 0.0
-                // return so we don't hurt him yet for half a heart..
-                // we'll let the explosion hurt him for a full heart.
-                // MWUHAHAHA
-                return true
-        }
-
-        super(hero)
-    }
-
     update: func -> Bool {
-        if (parabola) {
-            // handle height
-            z = parabola eval(moveCountMax - moveCount)
-            if (parabola done?()) {
-                z = parabola bottom
-                parabola = null
-                shape setSensor(true)
-            }
-        }
-
-        if (moveCount > 0) {
-            moveCount -= 1
-            if (type == MulliType MULLIBOOM && !mover moving) {
-                moveCount = 0
-            }
-        } else {
-            updateTarget()
-        }
-        if (!parabola) {
-            mover update(pos)
-        }
+        behavior update(level hero pos)
 
         bodyPos := body getPos()
         sprite pos set!(bodyPos x, bodyPos y + 4 + z)
@@ -163,54 +127,6 @@ Mulli: class extends Mob {
         shadow setPos(pos sub(0, shadowYOffset))
 
         super()
-    }
-
-    updateTarget: func {
-        if (type == MulliType MULLIBOOM) {
-            a := level snappedPos(pos)
-            b := level snappedPos(level hero pos)
-            finder := PathFinder new(level, a, b)
-
-            // remove first component in path, it's a snapped version of ourselves
-            finder path removeAt(0)
-            
-            if (finder path) {
-                mover setCellPath(finder path)
-                moveCount = 60
-            } else {
-                moveCount = 30
-            }
-        } else {
-            diff := pos sub(level hero pos)
-            if (diff norm() < fleeRadius) {
-                dist := 80.0
-
-                fleeDiff := diff normalized() mul(dist)
-                target := pos add(fleeDiff)
-                if (!target inside?(level paddedBottomLeft, level paddedTopRight)) {
-                    // we're trapped! Let's rush on him 
-                    target = pos sub(fleeDiff)
-                }
-
-                a := level snappedPos(pos)
-                b := level snappedPos(target)
-                b = b clamp(level gridBottomLeft, level gridTopRight)
-
-                //"Trying to go from %s to %s!" printfln(a _, b _)
-                finder := PathFinder new(level, a, b)
-
-                if (finder path) {
-                    mover setCellPath(finder path)
-                } else {
-                    //"No path to flee from %s to %s!" printfln(a _, b _)
-                    moveCount = 60
-                }
-                moveCount = 40 + Random randInt(-10, 20)
-            } else {
-                mover setTarget(pos add(Vec2 random(40)))
-                moveCount = 20
-            }
-        }
     }
 
     initPhysx: func {
@@ -233,10 +149,16 @@ Mulli: class extends Mob {
 
     destroy: func {
         shadow destroy()
+
         level space removeShape(shape)
         shape free()
+
+        level space removeConstraint(rotateConstraint)
+        rotateConstraint free()
+
         level space removeBody(body)
         body free()
+
         level charGroup remove(sprite)
     }
 
