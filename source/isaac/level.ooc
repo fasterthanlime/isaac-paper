@@ -238,6 +238,8 @@ Level: class {
     }
 
     onClear: func {
+        game playSound("doors-open")
+
         if (tile roomDrop?()) {
             // spawn at the center of the room
             // TODO: algorithm to not spawn on top of rocks?

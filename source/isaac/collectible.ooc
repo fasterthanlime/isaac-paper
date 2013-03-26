@@ -3,9 +3,6 @@
 use deadlogger
 import deadlogger/[Log, Logger]
 
-use bleep
-import bleep
-
 use chipmunk
 import chipmunk
 
@@ -152,20 +149,11 @@ CollectibleCoin: class extends Collectible {
     type: CoinType
     worth: Int { get { getWorth() } } 
 
-    // SFX
-    pickupSample: static Sample
-
     init: func (.level, .pos, type := CoinType PENNY) {
         this type = type
         super(level, pos)
 
         shadowYOffset = 3
-    }
-
-    initSamples: func {
-        if (!pickupSample) {
-            pickupSample
-        }
     }
 
     getWorth: func -> Int {
@@ -187,6 +175,7 @@ CollectibleCoin: class extends Collectible {
 
     collect: func {
         level game heroStats pickupCoin(this)
+        level game playSound("penny-pickup")
     }
 
     shouldFreeze: func -> Bool {
@@ -239,6 +228,7 @@ CollectibleBomb: class extends Collectible {
 
     collect: func {
         level game heroStats pickupBomb(this)
+        level game playSound("bomb-pickup")
     }
 
     shouldFreeze: func -> Bool {
@@ -345,6 +335,7 @@ CollectibleKey: class extends Collectible {
 
     collect: func {
         level game heroStats pickupKey(this)
+        level game playSound("key-pickup")
     }
 
     shouldFreeze: func -> Bool {
