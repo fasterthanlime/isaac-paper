@@ -51,24 +51,21 @@ Spider: class extends Mob {
 
         life = 8.0
 
-        sprite = GlSprite new(getSpritePath())
-        sprite scale set!(scale, scale)
+        loadSprite(getSpriteName(), level charGroup, scale)
         shadow = Shadow new(level, sprite width * scale * shadowFactor)
 
-        level charGroup add(sprite)
-        sprite pos set!(pos)
+        createBox(10, 10, 15.0)
 
-        initPhysx()
         mover = Mover new(level, body, 280.0)
         mover alpha = 0.8
     }
 
-    getSpritePath: func -> String {
+    getSpriteName: func -> String {
         match type {
             case SpiderType SMALL =>
-                "assets/png/spider.png"
+                "spider"
             case =>
-                "assets/png/big-spider.png"
+                "big-spider"
         }
     }
 
@@ -126,31 +123,9 @@ Spider: class extends Mob {
         moveCount = moveCountMax + Random randInt(-10, 40)
     }
 
-    initPhysx: func {
-        (width, height) := (10, 10)
-        mass := 15.0
-        moment := cpMomentForBox(mass, width, height)
-
-        body = CpBody new(mass, moment)
-        body setPos(cpv(pos))
-        level space addBody(body)
-
-        rotateConstraint = CpRotaryLimitJoint new(body, level space getStaticBody(), 0, 0)
-        level space addConstraint(rotateConstraint)
-
-        shape = CpBoxShape new(body, width, height)
-        shape setUserData(this)
-        shape setCollisionType(CollisionTypes ENEMY)
-        level space addShape(shape)
-    }
-
     destroy: func {
         shadow destroy()
-        level space removeShape(shape)
-        shape free()
-        level space removeBody(body)
-        body free()
-        level charGroup remove(sprite)
+        super()
     }
 
 }
