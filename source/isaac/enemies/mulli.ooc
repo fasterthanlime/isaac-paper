@@ -19,7 +19,9 @@ import structs/[ArrayList, List, HashMap]
 
 // our stuff
 import isaac/[level, shadow, enemy, hero, utils, paths, pathfinding,
-    explosion, bomb, fly, tear, guidebehavior]
+    explosion, bomb, tear]
+import isaac/enemies/[fly]
+import isaac/behaviors/[guidebehavior]
 
 MulliType: enum {
     MULLIGAN
@@ -40,10 +42,6 @@ Mulli: class extends Mob {
 
     scale := 0.9
 
-    shadow: Shadow
-    shadowFactor := 0.4
-    shadowYOffset := 25
-
     type: MulliType
 
     behavior: GuideBehavior
@@ -54,7 +52,10 @@ Mulli: class extends Mob {
         life = 14.0
 
         loadSprite(getSpriteName(), level charGroup, scale)
-        shadow = Shadow new(level, sprite width * scale * shadowFactor)
+        spriteYOffset = 4
+
+        createShadow(30)
+        shadowYOffset = 25
 
         createBox(35, 35, 15.0)
 
@@ -105,17 +106,10 @@ Mulli: class extends Mob {
 
     update: func -> Bool {
         behavior update(level hero pos)
-
-        bodyPos := body getPos()
-        sprite pos set!(bodyPos x, bodyPos y + 4 + z)
-        pos set!(bodyPos)
-        shadow setPos(pos sub(0, shadowYOffset))
-
         super()
     }
 
     destroy: func {
-        shadow destroy()
         super()
     }
 

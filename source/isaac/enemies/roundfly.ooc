@@ -17,7 +17,8 @@ import math, math/Random
 
 // our stuff
 import isaac/[game, level, paths, shadow, enemy, hero, utils, tear,
-    explosion, walls, tiles, ballbehavior]
+    explosion, walls, tiles]
+import isaac/behaviors/[ballbehavior]
 
 RoundFlyType: enum {
     BOOM
@@ -31,13 +32,9 @@ RoundFly: class extends Mob {
 
     scale := 0.7
 
-    shadow: Shadow
-
     type: RoundFlyType
 
     fireSpeed := 280.0
-
-    baseColor: Color
 
     behavior: BallBehavior
 
@@ -47,16 +44,12 @@ RoundFly: class extends Mob {
         life = 20.0
 
         loadSprite(getSpriteName(), level charGroup, scale)
-
-        baseColor = match type {
-            case RoundFlyType RED =>
-                Color new(255, 140, 140)
-            case =>
-                Color white()
+        if (type == RoundFlyType RED) {
+            baseColor = Color new(255, 140, 140)
         }
 
-        factor := 0.2
-        shadow = Shadow new(level, sprite width * scale * factor)
+        shadowYOffset = 3
+        createShadow(30)
 
         createCircle(/* radius */ 20.0, /* mass */ 20.0)
         // so that we bounce back
@@ -91,17 +84,7 @@ RoundFly: class extends Mob {
 
     update: func -> Bool {
         behavior update()
-
-        bodyPos := body getPos()
-        sprite pos set!(bodyPos x, bodyPos y + 8 + z)
-        pos set!(body getPos())
-        shadow setPos(pos sub(0.0, 3.0))
-
-        retVal := super()
-        if (!redish) {
-            sprite color set!(baseColor)
-        }
-        retVal
+        super()
     }
 
     grounded?: func -> Bool {

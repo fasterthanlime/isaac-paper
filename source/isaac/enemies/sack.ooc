@@ -16,7 +16,8 @@ import gnaar/[utils]
 import math, math/Random
 
 // our stuff
-import isaac/[level, shadow, enemy, hero, utils, spider, paths]
+import isaac/[level, shadow, enemy, hero, utils, paths]
+import isaac/enemies/[spider]
 
 /*
  * Spiderer.
@@ -29,7 +30,6 @@ Sack: class extends Mob {
 
     damage := 4.0
 
-    shadow: Shadow
     maxLife := 30.0
     lifeIncr := 0.04
 
@@ -39,7 +39,7 @@ Sack: class extends Mob {
         life = maxLife
 
         loadSprite("sack", level charGroup)
-        shadow = Shadow new(level, sprite width * 0.5)
+        createShadow(30)
 
         createBox(20, 20, INFINITY, INFINITY)
     }
@@ -73,11 +73,6 @@ Sack: class extends Mob {
             }
         }
 
-        bodyPos := body getPos()
-        sprite pos set!(bodyPos x, bodyPos y + 4 + z)
-        pos set!(body getPos())
-        shadow setPos(pos)
-
         scale := 0.8 * life / maxLife
         sprite scale set!(scale, scale)
         shadow setScale(scale)
@@ -101,7 +96,6 @@ Sack: class extends Mob {
     }
 
     destroy: func {
-        shadow destroy()
         super()
     }
 

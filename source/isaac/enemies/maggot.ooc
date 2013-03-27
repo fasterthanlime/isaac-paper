@@ -18,7 +18,8 @@ import math, math/Random
 
 // our stuff
 import isaac/[level, shadow, enemy, hero, utils, paths,
-    strollbehavior, tear]
+    tear]
+import isaac/behaviors/[strollbehavior]
 
 MaggotType: enum {
     MAGGOT

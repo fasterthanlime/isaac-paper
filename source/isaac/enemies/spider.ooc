@@ -33,12 +33,6 @@ Spider: class extends Mob {
     moveCountMax := 80
     radius := 180
 
-    scale := 0.8
-
-    shadow: Shadow
-    shadowFactor := 0.7
-    shadowYOffset := 8
-
     mover: Mover
 
     parabola: Parabola
@@ -51,8 +45,11 @@ Spider: class extends Mob {
 
         life = 8.0
 
-        loadSprite(getSpriteName(), level charGroup, scale)
-        shadow = Shadow new(level, sprite width * scale * shadowFactor)
+        loadSprite(getSpriteName(), level charGroup, 0.8)
+        spriteYOffset = 4
+
+        createShadow(30)
+        shadowYOffset = 8
 
         createBox(10, 10, 15.0)
 
@@ -110,11 +107,6 @@ Spider: class extends Mob {
             mover update(pos)
         }
 
-        bodyPos := body getPos()
-        sprite pos set!(bodyPos x, bodyPos y + 4 + z)
-        pos set!(body getPos())
-        shadow setPos(pos sub(0, shadowYOffset))
-
         super()
     }
 
@@ -124,7 +116,6 @@ Spider: class extends Mob {
     }
 
     destroy: func {
-        shadow destroy()
         super()
     }
 

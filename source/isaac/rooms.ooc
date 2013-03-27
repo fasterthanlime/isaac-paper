@@ -12,9 +12,10 @@ import io/[FileReader]
 import math/Random
 
 // our stuff
-import isaac/[level, spider, sack, fly, hopper, trite, cobweb,
-    fire, collectible, tiles, trapdoor, hole, tnt, spikes, mulli,
-    roundfly, swarmer, maggot, gaper]
+import isaac/[level, cobweb, fire, collectible, tiles,
+        trapdoor, hole, tnt, spikes]
+import isaac/enemies/[spider, sack, fly, hopper, trite, mulli,
+        roundfly, swarmer, maggot, gaper]
 
 Rooms: class {
     sets := HashMap<String, RoomSet> new()

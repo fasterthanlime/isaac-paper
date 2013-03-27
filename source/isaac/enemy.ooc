@@ -16,7 +16,7 @@ import gnaar/[utils]
 import math, math/Random
 
 // our stuff
-import isaac/[level, explosion, tear, hero, walls, tiles]
+import isaac/[level, explosion, tear, hero, walls, tiles, shadow]
 
 /*
  * Any type of enemy
@@ -37,6 +37,7 @@ Enemy: abstract class extends Entity {
     hitbackSpeed := 200
     
     redish: Bool
+    baseColor := Color white()
 
     heroHandler, wallsHandler, blockHandler: static CollisionHandler
 
@@ -98,13 +99,16 @@ Enemy: abstract class extends Entity {
         if (redish) {
             setColor(255, 30, 30)
         } else {
-            setColor(255, 255, 255)
+            setColor(baseColor r, baseColor g, baseColor b)
         }
 
         if (life <= 0.1) {
             onDeath()
             return false
         }
+
+        // update pos from body
+        pos set!(body getPos())
 
         true
     }
@@ -277,6 +281,10 @@ Mob: class extends Enemy {
 
     sprite: GlSprite
     spriteGroup: GlGroup
+    spriteYOffset := 0.0
+
+    shadow: Shadow
+    shadowYOffset := 0.0
 
     init: func (.level, .pos) {
         super(level, pos)
@@ -291,7 +299,23 @@ Mob: class extends Enemy {
     }
 
     update: func -> Bool {
-        super()
+        if (!super()) {
+            return false
+        }
+
+        if (shadow) {
+            shadow setPos(pos x, pos y - shadowYOffset)
+        }
+
+        if (sprite) {
+            sprite pos set!(pos x, pos y + spriteYOffset + z)
+        }
+
+        true
+    }
+
+    createShadow: func (width: Float) {
+        shadow = Shadow new(level, width)
     }
 
     loadSprite: func (name: String, =spriteGroup, scale := 1.0) -> GlSprite {
@@ -313,6 +337,10 @@ Mob: class extends Enemy {
 
     destroy: func {
         super()
+
+        if (shadow) {
+            shadow destroy()
+        }
 
         if (sprite && spriteGroup) {
             spriteGroup remove(sprite)

@@ -17,14 +17,14 @@ import math, math/Random
 
 // our stuff
 import isaac/[game, level, paths, shadow, enemy, hero, utils, tear,
-    explosion, walls, tiles, ballbehavior, roundfly]
+    explosion, walls, tiles]
+import isaac/enemies/[roundfly]
+import isaac/behaviors/[ballbehavior]
 
 /**
  * Cough cough.
  */
 Swarmer: class extends Mob {
-
-    shadow: Shadow
 
     fireSpeed := 280.0
 
@@ -44,9 +44,10 @@ Swarmer: class extends Mob {
 
         loadSprite("swarmer-head", level charGroup)
         hairSprite = loadSecondarySprite("swarmer-hair")
+        spriteYOffset = 8
 
-        factor := 0.2
-        shadow = Shadow new(level, sprite width * factor)
+        createShadow(30)
+        shadowYOffset = 3
 
         createCircle(20.0, 40.0)
         // so that we bounce back
@@ -78,18 +79,10 @@ Swarmer: class extends Mob {
             coughCount = Random randInt(480, 600)
         }
 
-        bodyPos := body getPos()
-
-        spriteX := bodyPos x
-        spriteY := bodyPos y + 8 + z
-        sprite pos set!(spriteX, spriteY)
-        hairSprite pos set!(spriteX, spriteY + 1)
+        hairSprite pos set!(pos x, pos y + z + spriteYOffset + 1)
 
         hairScale := 0.5 + 0.5 * (life / maxLife)
         hairSprite scale set!(hairScale, hairScale)
-
-        pos set!(body getPos())
-        shadow setPos(pos sub(0.0, 3.0))
 
         super()
     }

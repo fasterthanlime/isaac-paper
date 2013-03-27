@@ -18,7 +18,9 @@ import structs/[ArrayList, List]
 
 // our stuff
 import isaac/[level, shadow, enemy, hero, utils, paths, boss,
-    ballbehavior, tear, explosion, fly]
+    tear, explosion]
+import isaac/enemies/[fly]
+import isaac/behaviors/[ballbehavior]
 
 DukeOfFlies: class extends Boss {
 
@@ -45,10 +47,6 @@ DukePart: class extends Mob {
 
     scale := 0.8
 
-    shadow: Shadow
-    shadowFactor := 0.7
-    shadowYOffset := 50
-
     moveCount := 60
     moveCountMax := 80
 
@@ -72,8 +70,10 @@ DukePart: class extends Mob {
         life = maxLife
 
         loadSprite("duke-of-flies-frame1", level charGroup, scale)
+        spriteYOffset = 4
 
-        shadow = Shadow new(level, sprite width * scale * shadowFactor)
+        createShadow(40)
+        shadowYOffset = 50
 
         behavior = BallBehavior new(this)
         behavior speed = 80.0
@@ -174,25 +174,10 @@ DukePart: class extends Mob {
     }
 
     update: func -> Bool {
-        bodyPos := body getPos()
-        sprite pos set!(bodyPos x, bodyPos y + 4 + z)
-        pos set!(body getPos())
-        shadow setPos(pos sub(0, shadowYOffset))
-
         updateFlies()
-
         behavior update()
 
         super()
-    }
-
-    destroy: func {
-        shadow destroy()
-        level space removeShape(shape)
-        shape free()
-        level space removeBody(body)
-        body free()
-        level charGroup remove(sprite)
     }
 
     bombHarm: func (explosion: Explosion) {

@@ -43,8 +43,6 @@ Fly: class extends Mob {
 
     scale := 0.8
 
-    shadow: Shadow
-
     mover: Mover
 
     type: FlyType
@@ -90,12 +88,12 @@ Fly: class extends Mob {
 
         loadSprite(getSpriteName(), level charGroup, scale)
 
-        factor := 0.2
-
+        shadowSize := 20
         if (type == FlyType FAT_FLY) {
-            factor = 0.4
+            shadowSize = 40
         }
-        shadow = Shadow new(level, sprite width * scale * factor)
+        createShadow(shadowSize)
+        shadowYOffset = 3
 
         createBox(15, 15, 15.0)
         shape setSensor(true)
@@ -161,11 +159,6 @@ Fly: class extends Mob {
         }
         mover update(pos)
 
-        bodyPos := body getPos()
-        sprite pos set!(bodyPos x, bodyPos y + 8 + z)
-        pos set!(body getPos())
-        shadow setPos(pos x, pos y - 3)
-
         if (fires?()) {
             dist := pos dist(level hero pos)
             if (dist < fireRadius) {
@@ -186,13 +179,13 @@ Fly: class extends Mob {
             }
         }
 
-        retVal := super()
-
-        if (rosish && !redish) {
-            sprite color set!(255, 140, 140)
+        if (rosish) {
+            baseColor set!(255, 140, 140)
+        } else {
+            baseColor set!(255, 255, 255)
         }
 
-        retVal
+        super()
     }
 
     grounded?: func -> Bool {

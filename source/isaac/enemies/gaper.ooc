@@ -36,18 +36,13 @@ Gaper: class extends Mob {
 
     type: GaperType
 
-    shadow: Shadow
-    shadowFactor := 0.4
-    shadowYOffset := 13
-
-    scale := 0.8
-
     init: func (=level, =pos, =type) {
         super(level, pos)
 
-        shadow = Shadow new(level, 40)
+        loadSprite(getSpriteName(), level charGroup, 0.8)
 
-        loadSprite(getSpriteName(), level charGroup, scale)
+        createShadow(40)
+        shadowYOffset = 13
 
         createBox(35, 35, 15.0)
     }
@@ -66,18 +61,12 @@ Gaper: class extends Mob {
     }
 
     update: func -> Bool {
-        bodyPos := body getPos()
-        pos set!(bodyPos)
-        sprite pos set!(pos)
-        shadow setPos(pos sub(0, shadowYOffset))
-
         //behavior update()
 
         super()
     }
 
     destroy: func {
-        shadow destroy()
         super()
     }
 

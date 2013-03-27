@@ -14,8 +14,8 @@ import math/Random
 import structs/[HashMap, List, ArrayList]
 
 // our stuff
-import isaac/[level, plan, rooms, game, boss, freezer, spider, options, boss,
-    duke]
+import isaac/[level, plan, rooms, game, boss, freezer, options, boss]
+import isaac/bosses/[duke]
 
 RoomType: enum {
     FIRST

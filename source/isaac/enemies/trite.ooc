@@ -1,6 +1,7 @@
 
 // our stuff
-import isaac/[level, hopper]
+import isaac/[level]
+import isaac/enemies/hopper
 
 Trite: class extends Hopper {
 

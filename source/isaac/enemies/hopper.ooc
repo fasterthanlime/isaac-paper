@@ -38,15 +38,15 @@ Hopper: class extends Mob {
     // parabola for jump
     parabola := Parabola new(1, 1)
 
-    shadow: Shadow
-
     init: func (.level, .pos) {
         super(level, pos)
 
         life = 10.0
 
         loadSprite(getSpriteName(), level charGroup, scale)
-        shadow = Shadow new(level, sprite width * scale)
+        spriteYOffset = 12
+
+        createShadow(30)
 
         createBox(24, 24, 10.0)
     }
@@ -80,11 +80,6 @@ Hopper: class extends Mob {
             body setVel(vel)
         }
 
-        bodyPos := body getPos()
-        sprite pos set!(bodyPos x, bodyPos y + 12 + z)
-        pos set!(body getPos())
-        shadow setPos(pos)
-
         super()
     }
 
@@ -98,7 +93,7 @@ Hopper: class extends Mob {
     }
 
     destroy: func {
-        shadow destroy()
+        super()
     }
 
     touchBlock: func (tile: Tile) -> Bool {
