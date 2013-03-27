@@ -38,13 +38,14 @@ Sack: class extends Mob {
 
         life = maxLife
 
-        sprite = GlSprite new("assets/png/sack.png")
+        loadSprite("sack", level charGroup)
         shadow = Shadow new(level, sprite width * 0.5)
 
-        level charGroup add(sprite)
-        sprite pos set!(pos)
+        createBox(20, 20, INFINITY, INFINITY)
+    }
 
-        initPhysx()
+    getSpriteName: func -> String {
+        "sack"
     }
 
     fixed?: func -> Bool {
@@ -99,35 +100,9 @@ Sack: class extends Mob {
         spawnCount = spawnCountMax + Random randInt(-20, 120)
     }
 
-    initPhysx: func {
-        (width, height) := (20, 20)
-
-        body = CpBody new(INFINITY, INFINITY)
-        bodyPos := cpv(pos)
-        body setPos(bodyPos)
-        level space addBody(body)
-
-        rotateConstraint = CpRotaryLimitJoint new(body, level space getStaticBody(), 0, 0)
-        level space addConstraint(rotateConstraint)
-
-        shape = CpBoxShape new(body, width, height)
-        shape setUserData(this)
-        shape setCollisionType(CollisionTypes ENEMY)
-        level space addShape(shape)
-
-        initHandlers()
-    }
-
-    initHandlers: func {
-    }
-
     destroy: func {
         shadow destroy()
-        level space removeShape(shape)
-        shape free()
-        level space removeBody(body)
-        body free()
-        level charGroup remove(sprite)
+        super()
     }
 
     harm: func (damage: Float) {

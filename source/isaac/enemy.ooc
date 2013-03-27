@@ -185,6 +185,10 @@ Enemy: abstract class extends Entity {
 
     createBox: func (width, height: Float, mass: Float) {
         moment := cpMomentForBox(mass, width, height)
+        createBox(width, height, mass, moment)
+    }
+
+    createBox: func ~withMoment (width, height: Float, mass, moment: Float) {
         createBody(mass, moment)
 
         shape = CpBoxShape new(body, width, height)
