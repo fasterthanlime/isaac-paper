@@ -47,11 +47,9 @@ Gaper: class extends Mob {
 
         shadow = Shadow new(level, 40)
 
-        sprite = GlSprite new("assets/png/%s.png" format(getSpriteName()))
-        sprite scale set!(scale, scale)
-        level charGroup add(sprite)
+        loadSprite(getSpriteName(), level charGroup, scale)
 
-        initPhysx()
+        createBox(35, 35, 15.0)
     }
 
     getSpriteName: func -> String {
@@ -80,35 +78,7 @@ Gaper: class extends Mob {
 
     destroy: func {
         shadow destroy()
-
-        level space removeShape(shape)
-        shape free()
-
-        level space removeConstraint(rotateConstraint)
-        rotateConstraint free()
-
-        level space removeBody(body)
-        body free()
-
-        level charGroup remove(sprite)
-    }
-
-    initPhysx: func {
-        (width, height) := (35, 35)
-        mass := 15.0
-        moment := cpMomentForBox(mass, width, height)
-
-        body = CpBody new(mass, moment)
-        body setPos(cpv(pos))
-        level space addBody(body)
-
-        rotateConstraint = CpRotaryLimitJoint new(body, level space getStaticBody(), 0, 0)
-        level space addConstraint(rotateConstraint)
-
-        shape = CpBoxShape new(body, width, height)
-        shape setUserData(this)
-        shape setCollisionType(CollisionTypes ENEMY)
-        level space addShape(shape)
+        super()
     }
 
 }

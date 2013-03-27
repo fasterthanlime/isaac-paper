@@ -99,11 +99,6 @@ Hopper: class extends Mob {
 
     destroy: func {
         shadow destroy()
-        level space removeShape(shape)
-        shape free()
-        level space removeBody(body)
-        body free()
-        level charGroup remove(sprite)
     }
 
     touchBlock: func (tile: Tile) -> Bool {
