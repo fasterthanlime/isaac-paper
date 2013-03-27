@@ -23,8 +23,6 @@ import isaac/[level, shadow, enemy, hero, utils, spider, paths]
  */
 Sack: class extends Mob {
 
-    rotateConstraint: CpConstraint
-
     spawnCount := 200
     spawnCountMax := 140
     radius := 180

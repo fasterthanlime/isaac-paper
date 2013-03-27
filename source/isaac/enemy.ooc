@@ -12,6 +12,9 @@ import dye/[core, sprite, primitives, math]
 use gnaar
 import gnaar/[utils]
 
+// sdk stuff
+import math, math/Random
+
 // our stuff
 import isaac/[level, explosion, tear, hero, walls, tiles]
 
@@ -29,6 +32,7 @@ Enemy: abstract class extends Entity {
 
     shape: CpShape
     body: CpBody
+    rotateConstraint: CpConstraint
 
     hitbackSpeed := 200
     
@@ -42,6 +46,9 @@ Enemy: abstract class extends Entity {
         initHandlers()
     }
 
+    /* DAMAGE STUFF
+    ===========================*/
+
     harm: func (damage: Float) {
         if (damageCount <= 0) {
             damageCount = damageLength
@@ -52,6 +59,28 @@ Enemy: abstract class extends Entity {
     bombHarm: func (explosion: Explosion) {
         harm(explosion damage)            
     }
+
+    hitBack: func (tear: Tear) {
+        if (fixed?()) {
+            return
+        }
+
+        // TODO: make blast dependant on tear damage
+        bodyVel := body getVel()
+        dir := pos sub(tear pos) normalized()
+        vel := dir mul(hitbackSpeed)
+
+        bodyVel x += vel x
+        bodyVel y += vel y
+        body setVel(bodyVel)
+    }
+
+    onDeath: func {
+        // normally, die in peace
+    }
+
+    /* UPDATE STUFF
+    ===========================*/
 
     update: func -> Bool {
         if (damageCount > 0) {
@@ -80,37 +109,22 @@ Enemy: abstract class extends Entity {
         true
     }
 
+    /* SPRITE STUFF
+    ===========================*/
+
     setOpacity: abstract func (opacity: Float)
 
     setColor: abstract func (r, g, b: Int)
+
+    /* FLYING STUFF
+    ===========================*/
 
     grounded?: func -> Bool {
         z < level groundLevel
     }
 
-    fixed?: func -> Bool {
-        // override for stuff like sacks etc.
-        false
-    }
-
-    hitBack: func (tear: Tear) {
-        if (fixed?()) {
-            return
-        }
-
-        // TODO: make blast dependant on tear damage
-        bodyVel := body getVel()
-        dir := pos sub(tear pos) normalized()
-        vel := dir mul(hitbackSpeed)
-
-        bodyVel x += vel x
-        bodyVel y += vel y
-        body setVel(bodyVel)
-    }
-
-    onDeath: func {
-        // normally, die in peace
-    }
+    /* COLLISION STUFF
+    ===================== */
 
     touchHero: func (hero: Hero) -> Bool {
         // override if the enemy doesn't hurt on touch
@@ -147,9 +161,84 @@ Enemy: abstract class extends Entity {
         blockHandler ensure(level)
     }
 
+    /* PROPERTIES STUFF
+    ===================== */
+
+    fixed?: func -> Bool {
+        // override for stuff like sacks etc.
+        false
+    }
+
     blocksRoom?: func -> Bool {
         // override to false for stuff like grimaces, slides and poky
         true
+    }
+
+    /* PHYSICS STUFF
+    =======================*/
+
+    createBody: func (mass, moment: Float) {
+        body = CpBody new(mass, moment)
+        body setPos(cpv(pos))
+        level space addBody(body)
+    }
+
+    createBox: func (width, height: Float, mass: Float) {
+        moment := cpMomentForBox(mass, width, height)
+        createBody(mass, moment)
+
+        shape = CpBoxShape new(body, width, height)
+        shape setUserData(this)
+        shape setCollisionType(CollisionTypes ENEMY)
+        level space addShape(shape)
+
+        createConstraint()
+    }
+
+    createConstraint: func {
+        rotateConstraint = CpRotaryLimitJoint new(body, level space getStaticBody(), 0, 0)
+        level space addConstraint(rotateConstraint)
+    }
+
+    destroy: func {
+        level space removeShape(shape)
+        shape free()
+
+        level space removeConstraint(rotateConstraint)
+        rotateConstraint free()
+
+        level space removeBody(body)
+        body free()
+    }
+
+    /* SPAWN STUFF
+     ======================*/
+
+    spawnPlusTears: func (fireSpeed: Float) {
+        spawnTear(pos, vec2(-1, 0), fireSpeed)
+        spawnTear(pos, vec2(1, 0), fireSpeed)
+        spawnTear(pos, vec2(0, -1), fireSpeed)
+        spawnTear(pos, vec2(0, 1), fireSpeed)
+    }
+
+    spawnTwoTears: func (pos, diff: Vec2, fireSpeed: Float) {
+        angle := diff angle()
+        spread := PI / 10.0
+        a1 := angle += spread
+        a2 := angle -= spread
+        offset := 4.0
+
+        pos1 := pos add(Vec2 fromAngle(a1 + PI / 2.0) mul(offset))
+        spawnTear(pos1, Vec2 fromAngle(a1), fireSpeed)
+
+        pos2 := pos add(Vec2 fromAngle(a2 - PI / 2.0) mul(offset))
+        spawnTear(pos2, Vec2 fromAngle(a2), fireSpeed)
+    }
+
+    spawnTear: func (pos, dir: Vec2, fireSpeed: Float) {
+        vel := dir mul(fireSpeed)
+        tear := Tear new(level, pos, vel, TearType ENEMY, 1)
+        level add(tear)
     }
 
 }
@@ -157,6 +246,7 @@ Enemy: abstract class extends Entity {
 Mob: class extends Enemy {
 
     sprite: GlSprite
+    spriteGroup: GlGroup
 
     init: func (.level, .pos) {
         super(level, pos)
@@ -172,6 +262,22 @@ Mob: class extends Enemy {
 
     update: func -> Bool {
         super()
+    }
+
+    loadSprite: func (name: String, =spriteGroup, scale := 1.0) {
+        path := "assets/png/%s.png" format(name)
+        sprite = GlSprite new(path)
+        sprite pos set!(pos)
+        sprite scale set!(scale, scale)
+        spriteGroup add(sprite)
+    }
+
+    destroy: func {
+        super()
+
+        if (sprite && spriteGroup) {
+            spriteGroup remove(sprite)
+        }
     }
 
 }

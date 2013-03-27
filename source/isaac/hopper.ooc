@@ -26,8 +26,6 @@ Hopper: class extends Mob {
 
     speed := 230.0
 
-    rotateConstraint: CpConstraint
-
     jumpCount := 60
     jumpCountMax := 100
     jumpGracePeriod := 40

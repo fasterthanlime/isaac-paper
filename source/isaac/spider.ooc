@@ -29,8 +29,6 @@ SpiderType: enum {
  */
 Spider: class extends Mob {
 
-    rotateConstraint: CpConstraint
-
     moveCount := 60
     moveCountMax := 80
     radius := 180

@@ -36,8 +36,6 @@ Gaper: class extends Mob {
 
     type: GaperType
 
-    rotateConstraint: CpConstraint
-
     shadow: Shadow
     shadowFactor := 0.4
     shadowYOffset := 13

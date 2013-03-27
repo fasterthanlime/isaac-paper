@@ -35,8 +35,6 @@ Mulli: class extends Mob {
 
     fireSpeed := 280.0
 
-    rotateConstraint: CpConstraint
-
     moveCount := 60
     moveCountMax := 80
 
@@ -55,14 +53,10 @@ Mulli: class extends Mob {
 
         life = 14.0
 
-        sprite = GlSprite new(getSpritePath())
-        sprite scale set!(scale, scale)
+        loadSprite(getSpriteName(), level charGroup, scale)
         shadow = Shadow new(level, sprite width * scale * shadowFactor)
 
-        level charGroup add(sprite)
-        sprite pos set!(pos)
-
-        initPhysx()
+        createBox(35, 35, 15.0)
 
         behavior = GuideBehavior new(this, getSpeed())
         behavior flee = (type != MulliType MULLIBOOM)
@@ -77,16 +71,16 @@ Mulli: class extends Mob {
         }
     }
 
-    getSpritePath: func -> String {
+    getSpriteName: func -> String {
         match type {
             case MulliType MULLIGAN =>
-                "assets/png/mulligan.png"
+                "mulligan"
             case MulliType MULLIGOON =>
-                "assets/png/mulligoon.png"
+                "mulligoon"
             case MulliType MULLIBOOM =>
-                "assets/png/mulliboom.png"
+                "mulliboom"
             case MulliType HIVE =>
-                "assets/png/hive.png"
+                "hive"
             case =>
                 raise("Invalid mulli type: %d" format(type))
                 ""
@@ -106,16 +100,7 @@ Mulli: class extends Mob {
 
     spawnBombAndTears: func {
         level add(Bomb new(level, pos))
-        spawnTear(pos, vec2(-1, 0))
-        spawnTear(pos, vec2(1, 0))
-        spawnTear(pos, vec2(0, -1))
-        spawnTear(pos, vec2(0, 1))
-    }
-
-    spawnTear: func (pos, dir: Vec2) {
-        vel := dir mul(fireSpeed)
-        tear := Tear new(level, pos, vel, TearType ENEMY, 1)
-        level add(tear)
+        spawnPlusTears(fireSpeed)
     }
 
     update: func -> Bool {
@@ -129,39 +114,10 @@ Mulli: class extends Mob {
         super()
     }
 
-    initPhysx: func {
-        (width, height) := (35, 35)
-        mass := 15.0
-        moment := cpMomentForBox(mass, width, height)
-
-        body = CpBody new(mass, moment)
-        body setPos(cpv(pos))
-        level space addBody(body)
-
-        rotateConstraint = CpRotaryLimitJoint new(body, level space getStaticBody(), 0, 0)
-        level space addConstraint(rotateConstraint)
-
-        shape = CpBoxShape new(body, width, height)
-        shape setUserData(this)
-        shape setCollisionType(CollisionTypes ENEMY)
-        level space addShape(shape)
-    }
-
     destroy: func {
         shadow destroy()
-
-        level space removeShape(shape)
-        shape free()
-
-        level space removeConstraint(rotateConstraint)
-        rotateConstraint free()
-
-        level space removeBody(body)
-        body free()
-
-        level charGroup remove(sprite)
+        super()
     }
 
 }
-
 

@@ -89,7 +89,7 @@ RoundFly: class extends Mob {
                 // spawn tears in 6 directions
                 angle := (Random randInt(0, 360) as Float) toRadians()
                 for (i in 0..6) {
-                    spawnTear(pos, Vec2 fromAngle(angle as Float)) 
+                    spawnTear(pos, Vec2 fromAngle(angle as Float), fireSpeed) 
                     angle += (PI * 0.33)
                 }
         }
@@ -118,12 +118,6 @@ RoundFly: class extends Mob {
     touchBlock: func (tile: Tile) -> Bool {
         // most enemies are constrained by blocks.. but not us!
         false
-    }
-
-    spawnTear: func (pos, dir: Vec2) {
-        vel := dir mul(fireSpeed)
-        tear := Tear new(level, pos, vel, TearType ENEMY, 1)
-        level add(tear)
     }
 
     destroy: func {

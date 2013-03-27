@@ -35,8 +35,6 @@ FlyType: enum {
  */
 Fly: class extends Mob {
 
-    rotateConstraint: CpConstraint
-
     moveCount := 0
     moveCountMax := 30
 
@@ -149,10 +147,7 @@ Fly: class extends Mob {
                 spawnAttackFly(pos add( spread, 0.0))
             case FlyType SUCKER =>
                 // spawn tears in the shape of a '+'
-                spawnTear(pos, vec2(-1, 0)) 
-                spawnTear(pos, vec2(1, 0))
-                spawnTear(pos, vec2(0, 1))
-                spawnTear(pos, vec2(0, -1))
+                spawnPlusTears(fireSpeed)
         }
     }
 
@@ -220,27 +215,12 @@ Fly: class extends Mob {
         diff := level hero pos sub(pos) normalized()
         match type {
             case FlyType POOTER =>
-                spawnTear(pos, diff)
+                spawnTear(pos, diff, fireSpeed)
             case FlyType FAT_FLY =>
-                angle := diff angle()
-                spread := PI / 18.0
-                a1 := angle -= spread
-                a2 := angle -= spread
-                offset := 3.0
-
-                spawnTear(pos add(Vec2 fromAngle(a1 + PI / 2.0) mul(offset)),
-                    Vec2 fromAngle(a1))
-                spawnTear(pos add(Vec2 fromAngle(a2 - PI / 2.0) mul(offset)),
-                    Vec2 fromAngle(a2))
+                spawnTwoTears(pos, diff, fireSpeed)
         }
 
         resetFireCount()
-    }
-
-    spawnTear: func (pos, dir: Vec2) {
-        vel := dir mul(fireSpeed)
-        tear := Tear new(level, pos, vel, TearType ENEMY, 1)
-        level add(tear)
     }
 
     resetFireCount: func {
