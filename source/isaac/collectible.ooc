@@ -280,7 +280,16 @@ CollectibleHeart: class extends Collectible {
     }
 
     collect: func {
-        if (!level game heroStats pickupHealth(this)) {
+        if (level game heroStats pickupHealth(this)) {
+            match type {
+                case HeartType RED =>
+                    level game playSound("red-heart-pickup")
+                case HeartType SPIRIT =>
+                    level game playSound("spirit-heart-pickup")
+                case HeartType ETERNAL =>
+                    level game playSound("eternal-heart-pickup")
+            }
+        } else {
             // we did not get picked up!
             collected = false
         }

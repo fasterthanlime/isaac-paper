@@ -197,6 +197,7 @@ Hero: class extends Entity {
         invicibilityCount = invicibilityCountMax
 
         // ouch
+        level game playRandomSound("hero-hurt", 3)
         stats takeDamage(damage)
         true
     }
