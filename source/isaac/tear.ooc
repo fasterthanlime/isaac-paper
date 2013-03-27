@@ -89,6 +89,7 @@ Tear: class extends Entity {
         shape setUserData(this)
         shape setCollisionType(CollisionTypes TEAR)
         shape setGroup(CollisionGroups TEAR)
+        shape setElasticity(0.8)
         level space addShape(shape)
 
         initHandlers()

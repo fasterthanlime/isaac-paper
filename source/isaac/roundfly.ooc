@@ -29,7 +29,7 @@ RoundFlyType: enum {
  */
 RoundFly: class extends Mob {
 
-    scale := 0.75
+    scale := 0.7
 
     shadow: Shadow
 

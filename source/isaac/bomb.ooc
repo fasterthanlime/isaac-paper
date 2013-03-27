@@ -87,7 +87,7 @@ Bomb: class extends Entity {
 
         // friction
         {
-            friction := 0.9
+            friction := 0.98
             vel := body getVel()
             vel x *= friction
             vel y *= friction
@@ -128,7 +128,7 @@ Bomb: class extends Entity {
         shape = CpCircleShape new(body, radius, cpv(0, 0))
         shape setUserData(this)
         shape setCollisionType(CollisionTypes BOMB)
-        shape setElasticity(0.6)
+        shape setElasticity(0.9)
         level space addShape(shape)
 
         initHandlers()
