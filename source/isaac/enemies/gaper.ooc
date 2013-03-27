@@ -32,6 +32,9 @@ Gaper: class extends Mob {
     guideBehavior: GuideBehavior
     strollBehavior: StrollBehavior
 
+    fireCount := 20
+    fireCountMax := 60
+
     frownRadius := 160.0
 
     init: func (=level, =pos, =type) {
@@ -47,6 +50,8 @@ Gaper: class extends Mob {
 
         guideBehavior = GuideBehavior new(this, 80)
         strollBehavior = StrollBehavior new(this)
+        strollBehavior canCharge = false
+
         changeType(type) // set initial values
     }
 
@@ -91,9 +96,32 @@ Gaper: class extends Mob {
         }
     }
 
+    onDeath: func {
+        match type {
+            case GaperType GAPER || GaperType FROWNING =>
+                // so you're saying there's a chance?
+                number := Random randInt(0, 100)
+                type := match {
+                    case (number < 40) =>
+                        GaperType GUSHER
+                    case =>
+                        GaperType PACER
+                }
+
+                child := Gaper new(level, pos, type)
+                level add(child)
+        }
+    }
+
+    checkFire: func {
+        if (type == GaperType GUSHER) {
+        }
+    }
+
     update: func -> Bool {
         updateBehaviors()
         checkFrown()
+        checkFire()
 
         super()
     }
