@@ -32,6 +32,7 @@ RoomType: enum {
     LIBRARY
     CURSE
     ARENA
+    ARCADE
 
     ANGEL
     DEVIL
@@ -52,6 +53,7 @@ RoomType: enum {
             case This LIBRARY      => "library"
             case This CURSE        => "curse"
             case This ARENA        => "arena"
+            case This ARCADE       => "arcade"
             
             case This ANGEL        => "angel"
             case This DEVIL        => "devil"

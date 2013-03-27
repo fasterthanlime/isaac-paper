@@ -164,13 +164,11 @@ Game: class {
     }
 
     loadMusic: func {
-        // TODO: special music for some rooms
-
         name := match (floor type) {
             case FloorType BASEMENT =>
                 "sacrificial"
             case FloorType CELLAR =>
-                "sacrificial" // filler
+                "sacrificial" // filler, should be penance
             case FloorType CAVES =>
                 "repentant"
             case FloorType CATACOMBS =>
@@ -184,7 +182,7 @@ Game: class {
             case FloorType SHEOL =>
                 "lament-of-the-angel" // backup
             case FloorType CHEST =>
-                "lament-of-the-angel" // backup
+                "divine-combat"
             case =>
                 "basement" // fallback
         }
@@ -199,11 +197,15 @@ Game: class {
             case RoomType SECRET =>
                 "respite"
             case RoomType SUPERSECRET =>
-                "respite"
+                "serenity"
             case RoomType LIBRARY =>
-                "tomes" // filler
+                "tomes"
             case RoomType SHOP =>
-                "tomes" // filler
+                "tomes" // filler, should be greed
+            case RoomType ARENA =>
+                "burning-ambush"
+            case RoomType ARCADE =>
+                "sacrificial" // filler, should be $4cR1f1c14|_
             case =>
                 name
         }
