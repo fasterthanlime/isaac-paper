@@ -50,26 +50,6 @@ StrollBehavior: class {
 
     init: func (=level, =enemy)
 
-    initPhysx: func (width, height, mass: Float) {
-        moment := cpMomentForBox(mass, width, height)
-
-        body := CpBody new(mass, moment)
-        body setPos(cpv(enemy pos))
-        level space addBody(body)
-
-        rotateConstraint = CpRotaryLimitJoint new(body, level space getStaticBody(), 0, 0)
-        level space addConstraint(rotateConstraint)
-
-        shape := CpBoxShape new(body, width, height)
-        shape setUserData(enemy)
-        shape setCollisionType(CollisionTypes ENEMY)
-        level space addShape(shape)
-
-        // assign to our master
-        enemy body = body
-        enemy shape = shape
-    }
-
     setDir: func (=dir)
 
     update: func {

@@ -36,7 +36,6 @@ Maggot: class extends Enemy {
     sprite: MaggotSprite
 
     shadow: Shadow
-    shadowFactor := 0.4
     shadowYOffset := 13
 
     behavior: StrollBehavior
@@ -63,10 +62,9 @@ Maggot: class extends Enemy {
                 0.0 // dafuk?
         }
 
-        width := 40
-        height := 40
-        mass := 15.0
-        behavior initPhysx(width, height, mass)
+        createBox(40, 40, 15.0)
+
+        // maggots go through each other
         shape setGroup(CollisionGroups MAGGOT)
     }
 
@@ -96,11 +94,9 @@ Maggot: class extends Enemy {
 
     destroy: func {
         shadow destroy()
-        level space removeShape(shape)
-        shape free()
-        level space removeBody(body)
-        body free()
         level charGroup remove(sprite)
+
+        super()
     }
 
 }
