@@ -43,6 +43,9 @@ GuideBehavior: class {
     }
 
     update: func (targetPos: Vec2) {
+        // the mover does the actual work, sync speed
+        mover speed = speed
+
         if (moveCount > 0) {
             moveCount -= 1
             if (!flee && !mover moving) {
@@ -85,21 +88,22 @@ GuideBehavior: class {
                 }
                 moveCount = 40 + Random randInt(-10, 20)
             } else {
-                mover setTarget(pos add(Vec2 random(40)))
+                mover setTarget(targetPos add(Vec2 random(40)))
                 moveCount = 20
             }
         } else {
             a := level snappedPos(pos)
             b := level snappedPos(targetPos)
             finder := PathFinder new(level, a, b)
-
-            // remove first component in path, it's a snapped version of ourselves
-            finder path removeAt(0)
             
             if (finder path) {
+                // remove first component in path, it's
+                // a snapped version of ourselves
+                finder path removeAt(0)
                 mover setCellPath(finder path)
                 moveCount = 60
             } else {
+                mover setTarget(pos)
                 moveCount = 30
             }
         }

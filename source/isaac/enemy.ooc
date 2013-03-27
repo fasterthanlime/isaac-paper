@@ -324,7 +324,7 @@ Mob: class extends Enemy {
     }
 
     loadSecondarySprite: func (name: String, scale := 1.0) -> GlSprite {
-        path := "assets/png/%s.png" format(name)
+        path := texturePath(name)
         initSprite(GlSprite new(path), spriteGroup, scale)
     }
 
@@ -333,6 +333,15 @@ Mob: class extends Enemy {
         sprite scale set!(scale, scale)
         spriteGroup add(sprite)
         sprite
+    }
+
+    reloadSprite: func (name: String) {
+        path := texturePath(name)
+        sprite setTexture(path)
+    }
+
+    texturePath: func (name: String) -> String {
+        "assets/png/%s.png" format(name)
     }
 
     destroy: func {

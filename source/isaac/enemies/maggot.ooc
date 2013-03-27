@@ -48,7 +48,7 @@ Maggot: class extends Enemy {
         level charGroup add(sprite)
 
         shadow = Shadow new(level, 30)
-        behavior = StrollBehavior new(level, this)
+        behavior = StrollBehavior new(this)
 
         life = match type {
             case MaggotType MAGGOT =>

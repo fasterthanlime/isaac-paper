@@ -20,14 +20,7 @@ import structs/[ArrayList, List, HashMap]
 // our stuff
 import isaac/[level, shadow, enemy, hero, utils, paths, pathfinding,
     explosion, tear]
-
-GaperType: enum {
-    GAPER
-    FROWNING
-    GUSHER
-    PACER
-    GURGLE 
-}
+import isaac/behaviors/[guidebehavior, strollbehavior]
 
 /**
  * Awrrrgllll
@@ -35,6 +28,11 @@ GaperType: enum {
 Gaper: class extends Mob {
 
     type: GaperType
+
+    guideBehavior: GuideBehavior
+    strollBehavior: StrollBehavior
+
+    frownRadius := 160.0
 
     init: func (=level, =pos, =type) {
         super(level, pos)
@@ -45,6 +43,10 @@ Gaper: class extends Mob {
         shadowYOffset = 13
 
         createBox(35, 35, 15.0)
+
+        guideBehavior = GuideBehavior new(this, 80)
+        strollBehavior = StrollBehavior new(this)
+        changeType(type) // set initial values
     }
 
     getSpriteName: func -> String {
@@ -60,8 +62,37 @@ Gaper: class extends Mob {
         }
     }
 
+    updateBehaviors: func {
+        match type {
+            case GaperType GAPER || GaperType FROWNING || GaperType GURGLE =>
+                guideBehavior update(level hero pos)
+            case GaperType PACER || GaperType GUSHER =>
+                strollBehavior update()
+        }
+    }
+
+    changeType: func (=type) {
+        match type {
+            case GaperType GAPER || GaperType GURGLE =>
+                guideBehavior speed = 160.0
+            case GaperType FROWNING =>
+                guideBehavior speed = 60.0
+        }
+        reloadSprite(getSpriteName())
+    }
+
+    checkFrown: func {
+        if (type == GaperType FROWNING) {
+            if (pos dist(level hero pos) < frownRadius) {
+                level game playSound("gaper-rawr")
+                changeType(GaperType GAPER)
+            }
+        }
+    }
+
     update: func -> Bool {
-        //behavior update()
+        updateBehaviors()
+        checkFrown()
 
         super()
     }
@@ -70,5 +101,13 @@ Gaper: class extends Mob {
         super()
     }
 
+}
+
+GaperType: enum {
+    GAPER
+    FROWNING
+    GUSHER
+    PACER
+    GURGLE 
 }
 

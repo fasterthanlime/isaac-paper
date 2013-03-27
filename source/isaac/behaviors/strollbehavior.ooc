@@ -48,7 +48,9 @@ StrollBehavior: class {
     backSight := false
     flies := false
 
-    init: func (=level, =enemy)
+    init: func (=enemy) {
+        level = enemy level
+    }
 
     setDir: func (=dir)
 
