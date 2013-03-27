@@ -88,8 +88,7 @@ Fly: class extends Mob {
 
         sinus incr = 0.15
 
-        sprite = GlSprite new(getSpritePath())
-        sprite scale set!(scale, scale)
+        loadSprite(getSpriteName(), level charGroup, scale)
 
         factor := 0.2
 
@@ -98,27 +97,26 @@ Fly: class extends Mob {
         }
         shadow = Shadow new(level, sprite width * scale * factor)
 
-        level charGroup add(sprite)
-        sprite pos set!(pos)
+        createBox(15, 15, 15.0)
+        shape setSensor(true)
 
-        initPhysx()
         mover = Mover new(level, body, 70.0)
     }
 
-    getSpritePath: func -> String {
+    getSpriteName: func -> String {
         match type {
             case FlyType POOTER =>
-                "assets/png/pooter.png"
+                "pooter"
             case FlyType FAT_FLY =>
-                "assets/png/fat-fly.png"
+                "fat-fly"
             case FlyType SUCKER || FlyType SPIT =>
-                "assets/png/sucker-spit.png"
+                "sucker-spit"
             case FlyType MOTER =>
-                "assets/png/moter.png"
+                "moter"
             case FlyType ATTACK_FLY || FlyType BIG_ATTACK_FLY =>
-                "assets/png/attack-fly.png"
+                "attack-fly"
             case =>
-                "assets/png/black-fly.png"
+                "black-fly"
         }
     }
 
@@ -166,7 +164,7 @@ Fly: class extends Mob {
         bodyPos := body getPos()
         sprite pos set!(bodyPos x, bodyPos y + 8 + z)
         pos set!(body getPos())
-        shadow setPos(pos sub(0.0, 3.0))
+        shadow setPos(pos x, pos y - 3)
 
         if (fires?()) {
             dist := pos dist(level hero pos)
@@ -266,32 +264,6 @@ Fly: class extends Mob {
     resetSpeedAndCount: func {
         mover speed = moverSpeed
         moveCount = moveCountMax + Random randInt(-10, 40)
-    }
-
-    initPhysx: func {
-        (width, height) := (15, 15)
-        mass := 15.0
-        moment := cpMomentForBox(mass, width, height)
-
-        body = CpBody new(mass, moment)
-        body setPos(cpv(pos))
-        level space addBody(body)
-
-        rotateConstraint = CpRotaryLimitJoint new(body, level space getStaticBody(), 0, 0)
-        level space addConstraint(rotateConstraint)
-
-        shape = CpBoxShape new(body, width, height)
-        shape setUserData(this)
-        shape setCollisionType(CollisionTypes ENEMY)
-        // FIXME: that's not proper, dude.
-        shape setSensor(true)
-        level space addShape(shape)
-
-        initHandlers()
-    }
-
-    initHandlers: func {
-        super()
     }
 
     destroy: func {
