@@ -27,8 +27,6 @@ BallBehavior: class {
     level: Level
     enemy: Enemy
 
-    rotateConstraint: CpConstraint
-
     dir: Vec2
     speed := 120.0
 
@@ -47,29 +45,6 @@ BallBehavior: class {
 
     oneOrMinusOne: func -> Int {
         Random randInt(0, 1) * 2 - 1
-    }
-
-    initPhysx: func (radius: Float, mass: Float) {
-        moment := cpMomentForCircle(mass, 0, radius, cpv(radius, radius))
-
-        body := CpBody new(mass, moment)
-        body setPos(cpv(enemy pos))
-        level space addBody(body)
-
-        rotateConstraint = CpRotaryLimitJoint new(body, level space getStaticBody(), 0, 0)
-        level space addConstraint(rotateConstraint)
-
-        shape := CpCircleShape new(body, radius, cpv(0, 0))
-        shape setUserData(enemy)
-        shape setCollisionType(CollisionTypes ENEMY)
-        shape setElasticity(0.7)
-        level space addShape(shape)
-
-        // assign to our master
-        enemy body = body
-        enemy shape = shape
-
-        applyDir()
     }
 
     update: func {

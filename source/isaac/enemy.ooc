@@ -183,6 +183,17 @@ Enemy: abstract class extends Entity {
         level space addBody(body)
     }
 
+    createCircle: func (radius: Float, mass: Float) {
+        moment := cpMomentForCircle(mass, 0, radius, cpv(radius, radius))
+        createCircle(radius, mass, moment)
+    }
+
+    createCircle: func ~withMoment (radius: Float, mass, moment: Float) {
+        createBody(mass, moment) 
+        setShape(CpCircleShape new(body, radius, cpv(0, 0)))
+        createConstraint()
+    }
+
     createBox: func (width, height: Float, mass: Float) {
         moment := cpMomentForBox(mass, width, height)
         createBox(width, height, mass, moment)
@@ -190,13 +201,20 @@ Enemy: abstract class extends Entity {
 
     createBox: func ~withMoment (width, height: Float, mass, moment: Float) {
         createBody(mass, moment)
+        setShape(CpBoxShape new(body, width, height))
+        createConstraint()
+    }
 
-        shape = CpBoxShape new(body, width, height)
+    setShape: func (.shape) {
+        if (this shape) {
+            level space removeShape(this shape)
+            this shape free()
+        }
+
+        this shape = shape
         shape setUserData(this)
         shape setCollisionType(CollisionTypes ENEMY)
         level space addShape(shape)
-
-        createConstraint()
     }
 
     createConstraint: func {
@@ -217,6 +235,14 @@ Enemy: abstract class extends Entity {
 
     /* SPAWN STUFF
      ======================*/
+
+    spawnSixTears: func (fireSpeed: Float) {
+        angle := (Random randInt(0, 360) as Float) toRadians()
+        for (i in 0..6) {
+            spawnTear(pos, Vec2 fromAngle(angle as Float), fireSpeed) 
+            angle += (PI * 0.33)
+        }
+    }
 
     spawnPlusTears: func (fireSpeed: Float) {
         spawnTear(pos, vec2(-1, 0), fireSpeed)
@@ -268,12 +294,21 @@ Mob: class extends Enemy {
         super()
     }
 
-    loadSprite: func (name: String, =spriteGroup, scale := 1.0) {
+    loadSprite: func (name: String, =spriteGroup, scale := 1.0) -> GlSprite {
+        sprite = loadSecondarySprite(name, scale)
+        sprite
+    }
+
+    loadSecondarySprite: func (name: String, scale := 1.0) -> GlSprite {
         path := "assets/png/%s.png" format(name)
-        sprite = GlSprite new(path)
+        initSprite(GlSprite new(path), spriteGroup, scale)
+    }
+
+    initSprite: func (sprite: GlSprite, .spriteGroup, scale := 1.0) -> GlSprite {
         sprite pos set!(pos)
         sprite scale set!(scale, scale)
         spriteGroup add(sprite)
+        sprite
     }
 
     destroy: func {

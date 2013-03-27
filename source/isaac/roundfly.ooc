@@ -46,8 +46,8 @@ RoundFly: class extends Mob {
 
         life = 20.0
 
-        sprite = GlSprite new(getSpritePath())
-        sprite scale set!(scale, scale)
+        loadSprite(getSpriteName(), level charGroup, scale)
+
         baseColor = match type {
             case RoundFlyType RED =>
                 Color new(255, 140, 140)
@@ -58,25 +58,23 @@ RoundFly: class extends Mob {
         factor := 0.2
         shadow = Shadow new(level, sprite width * scale * factor)
 
-        level charGroup add(sprite)
-        sprite pos set!(pos)
+        createCircle(/* radius */ 20.0, /* mass */ 20.0)
+        // so that we bounce back
+        shape setElasticity(0.7)
 
         behavior = BallBehavior new(this)
-        radius := 20.0
-        mass := 20.0
-        behavior initPhysx(radius, mass)
     }
 
     hitBack: func (tear: Tear) {
         // we bounce naturally
     }
 
-    getSpritePath: func -> String {
+    getSpriteName: func -> String {
         match type {
             case RoundFlyType BOOM =>
-                "assets/png/boom-fly.png"
+                "boom-fly"
             case =>
-                "assets/png/red-boom-fly.png"
+                "red-boom-fly"
         }
     }
 
@@ -87,11 +85,7 @@ RoundFly: class extends Mob {
                 level add(Explosion new(level, pos))
             case RoundFlyType RED =>
                 // spawn tears in 6 directions
-                angle := (Random randInt(0, 360) as Float) toRadians()
-                for (i in 0..6) {
-                    spawnTear(pos, Vec2 fromAngle(angle as Float), fireSpeed) 
-                    angle += (PI * 0.33)
-                }
+                spawnSixTears(fireSpeed)
         }
     }
 
@@ -122,11 +116,7 @@ RoundFly: class extends Mob {
 
     destroy: func {
         shadow destroy()
-        level space removeShape(shape)
-        shape free()
-        level space removeBody(body)
-        body free()
-        level charGroup remove(sprite)
+        super()
     }
 
 }

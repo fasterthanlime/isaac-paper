@@ -42,22 +42,18 @@ Swarmer: class extends Mob {
         maxLife = 30.0
         life = maxLife
 
-        sprite = GlSprite new("assets/png/swarmer-head.png")
-        hairSprite = GlSprite new("assets/png/swarmer-hair.png")
+        loadSprite("swarmer-head", level charGroup)
+        hairSprite = loadSecondarySprite("swarmer-hair")
 
         factor := 0.2
         shadow = Shadow new(level, sprite width * factor)
 
-        level charGroup add(sprite)
-        level charGroup add(hairSprite)
-        sprite pos set!(pos)
+        createCircle(20.0, 40.0)
+        // so that we bounce back
+        shape setElasticity(0.7)
 
         behavior = BallBehavior new(this)
         behavior speed = 80.0
-
-        radius := 20.0
-        mass := 40.0
-        behavior initPhysx(radius, mass)
     }
 
     hitBack: func (tear: Tear) {
@@ -110,12 +106,8 @@ Swarmer: class extends Mob {
 
     destroy: func {
         shadow destroy()
-        level space removeShape(shape)
-        shape free()
-        level space removeBody(body)
-        body free()
-        level charGroup remove(sprite)
-        level charGroup remove(hairSprite)
+        spriteGroup remove(hairSprite)
+        super()
     }
 
 }

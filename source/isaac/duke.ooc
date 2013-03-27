@@ -71,30 +71,19 @@ DukePart: class extends Mob {
 
         life = maxLife
 
-        sprite = GlSprite new(getSpritePath())
-        sprite scale set!(scale, scale)
-        shadow = Shadow new(level, sprite width * scale * shadowFactor)
+        loadSprite("duke-of-flies-frame1", level charGroup, scale)
 
-        level charGroup add(sprite)
-        sprite pos set!(pos)
+        shadow = Shadow new(level, sprite width * scale * shadowFactor)
 
         behavior = BallBehavior new(this)
         behavior speed = 80.0
 
-        radius := 50.0
-        mass := 400.0
-        behavior initPhysx(radius, mass)
+        createCircle(50.0, 400.0)
         shape setElasticity(0.4)
-
-        collisionRadius := 60.0
     }
 
     hitBack: func (tear: Tear) {
         // we bounce naturally
-    }
-
-    getSpritePath: func -> String {
-        "assets/png/duke-of-flies-frame1.png"
     }
 
     spawnFly: func (autonomous := false) {
@@ -118,14 +107,13 @@ DukePart: class extends Mob {
     }
 
     releaseFlies: func {
-        // TODO: apply speed
         for (f in flies) {
             f autonomous = true
             f mover alpha = 0.95
             f mover speed = 70
 
             dir := f pos sub(pos) normalized()
-            releaseSpeed := 300
+            releaseSpeed := 350
             vel := dir mul(releaseSpeed)
             f body setVel(cpv(vel))
 
@@ -171,7 +159,6 @@ DukePart: class extends Mob {
         }
         fliesCount = flies size
     
-        // TODO: specify target
         baseAngle += baseAngleIncr
         step := 360.0 / maxFlies as Float
 
