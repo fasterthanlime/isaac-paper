@@ -31,7 +31,7 @@ GuideBehavior: class {
 
     // adjustable properties
     speed: Float
-    moveCount := 0
+    moveCount := 5
     flee := false
     fleeRadius := 400
 

@@ -16,7 +16,7 @@ import gnaar/[utils]
 import math, math/Random
 
 // our stuff
-import isaac/[level, explosion, tear, hero, walls, tiles, shadow]
+import isaac/[level, explosion, tear, hero, walls, tiles, shadow, collectible]
 
 /*
  * Any type of enemy
@@ -39,7 +39,7 @@ Enemy: abstract class extends Entity {
     redish: Bool
     baseColor := Color white()
 
-    heroHandler, wallsHandler, blockHandler: static CollisionHandler
+    heroHandler, wallsHandler, blockHandler, collectibleHandler: static CollisionHandler
 
     init: func (.level, .pos) {
         super(level, pos)
@@ -148,6 +148,11 @@ Enemy: abstract class extends Entity {
         true
     }
 
+    touchCollectible: func (collectible: Collectible) -> Bool {
+        // most enemies pass through items. All of them?
+        false
+    }
+
     initHandlers: func {
         if (!heroHandler) {
             heroHandler = EnemyHeroHandler new()
@@ -163,6 +168,11 @@ Enemy: abstract class extends Entity {
             blockHandler = EnemyBlockHandler new()
         }
         blockHandler ensure(level)
+
+        if (!collectibleHandler) {
+            collectibleHandler = EnemyCollectibleHandler new()
+        }
+        collectibleHandler ensure(level)
     }
 
     /* PROPERTIES STUFF
@@ -408,6 +418,24 @@ EnemyBlockHandler: class extends CollisionHandler {
 
     add: func (f: Func (Int, Int)) {
         f(CollisionTypes ENEMY, CollisionTypes BLOCK)
+    }
+
+}
+
+EnemyCollectibleHandler: class extends CollisionHandler {
+
+    begin: func (arbiter: CpArbiter, space: CpSpace) -> Bool {
+        shape1, shape2: CpShape
+        arbiter getShapes(shape1&, shape2&)
+
+        enemy := shape1 getUserData() as Enemy
+        collectible := shape2 getUserData() as Collectible
+
+        enemy touchCollectible(collectible)
+    }
+
+    add: func (f: Func (Int, Int)) {
+        f(CollisionTypes ENEMY, CollisionTypes COLLECTIBLE)
     }
 
 }

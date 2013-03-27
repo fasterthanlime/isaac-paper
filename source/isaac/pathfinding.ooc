@@ -50,6 +50,7 @@ PathFinder: class {
 
             if (lowest col == b x && lowest row == b y) {
                 // we added the end node to the closed list, it's done
+                //logger info("Done, lastNode = %d, %d", lowest col, lowest row)
                 lastNode = lowest
                 break
             }

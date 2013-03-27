@@ -38,9 +38,10 @@ Gaper: class extends Mob {
         super(level, pos)
 
         loadSprite(getSpriteName(), level charGroup, 0.8)
+        spriteYOffset = 14
 
         createShadow(40)
-        shadowYOffset = 13
+        shadowYOffset = 8
 
         createBox(35, 35, 15.0)
 
