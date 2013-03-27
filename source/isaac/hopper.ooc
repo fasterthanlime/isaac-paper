@@ -45,18 +45,14 @@ Hopper: class extends Mob {
 
         life = 10.0
 
-        sprite = GlSprite new(getSpritePath())
-        sprite scale set!(scale, scale)
+        loadSprite(getSpriteName(), level charGroup, scale)
         shadow = Shadow new(level, sprite width * scale)
 
-        level charGroup add(sprite)
-        sprite pos set!(pos)
-
-        initPhysx()
+        createBox(24, 24, 10.0)
     }
 
-    getSpritePath: func -> String {
-        "assets/png/hopper.png"
+    getSpriteName: func -> String {
+        "hopper"
     }
 
     grounded?: func -> Bool {
@@ -99,24 +95,6 @@ Hopper: class extends Mob {
         }
 
         false
-    }
-
-    initPhysx: func {
-        (width, height) := (24, 24)
-        mass := 10.0
-        moment := cpMomentForBox(mass, width, height)
-
-        body = CpBody new(mass, moment)
-        body setPos(cpv(pos))
-        level space addBody(body)
-
-        rotateConstraint = CpRotaryLimitJoint new(body, level space getStaticBody(), 0, 0)
-        level space addConstraint(rotateConstraint)
-
-        shape = CpBoxShape new(body, width, height)
-        shape setUserData(this)
-        shape setCollisionType(CollisionTypes ENEMY)
-        level space addShape(shape)
     }
 
     destroy: func {

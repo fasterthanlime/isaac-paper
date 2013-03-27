@@ -11,8 +11,8 @@ Trite: class extends Hopper {
         jumpHeight = 100
     }
 
-    getSpritePath: func -> String {
-        "assets/png/trite.png"
+    getSpriteName: func -> String {
+        "trite"
     }
 
 }
