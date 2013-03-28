@@ -1,0 +1,25 @@
+id ICON "art/isaac.ico"
+1 VERSIONINFO
+FILEVERSION     1,0,0,0
+PRODUCTVERSION  1,0,0,0
+BEGIN
+  BLOCK "StringFileInfo"
+  BEGIN
+    BLOCK "040904E4"
+    BEGIN
+      VALUE "CompanyName", "NevarGames"
+      VALUE "FileDescription", "A Binding of Isaac clone in Paper"
+      VALUE "FileVersion", "1.0"
+      VALUE "InternalName", "paper_isaac"
+      VALUE "LegalCopyright", "Amos Wenger"
+      VALUE "OriginalFilename", "isaac.exe"
+      VALUE "ProductName", "Paper Isaac"
+      VALUE "ProductVersion", "0.3.3"
+    END
+  END
+
+  BLOCK "VarFileInfo"
+  BEGIN
+    VALUE "Translation", 0x409, 1252
+  END
+END

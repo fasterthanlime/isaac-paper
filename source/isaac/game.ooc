@@ -106,6 +106,7 @@ Game: class {
         options = Options new()
 
         dye = DyeContext new(800, 600, "Paper Isaac")
+        dye setIcon("assets/bmp/icon.bmp")
         dye setClearColor(Color white())
 
         scene = dye currentScene

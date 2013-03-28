@@ -4,3 +4,7 @@ Requires: dye, bleep, gnaar
 SourcePath: source
 Main: isaac
 
+version (windows) {
+    Libs: ./isaac.res
+}
+
