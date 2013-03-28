@@ -58,7 +58,7 @@ Game: class {
     heroStats: HeroStats
 
     // resources
-    coinLabel, bombLabel, keyLabel, fpsLabel, floorLabel: GlText
+    coinLabel, bombLabel, keyLabel, fpsLabel, versionLabel, floorLabel: GlText
     health: Health
 
     // state stuff
@@ -99,6 +99,9 @@ Game: class {
         }
 
         Logging setup()
+        logger info("Starting up Paper Isaac v%s", getVersion())
+        logger info("Compiled on %s", __BUILD_DATETIME__)
+        logger info("=============================================")
 
         options = Options new()
 
@@ -327,12 +330,18 @@ Game: class {
         uiGroup add(keyLabel)
 
         fpsLabel = GlText new(FONT, "60FPS", labelFontSize)
-        fpsLabel pos set!(10, 40)
+        fpsLabel pos set!(650, 0)
         fpsLabel color set!(Color new(30, 30, 30))
         uiGroup add(fpsLabel)
 
+        versionString := "Version %s" format(getVersion())
+        versionLabel = GlText new(FONT, versionString, labelFontSize)
+        versionLabel pos set!(650, 20)
+        versionLabel color set!(Color new(30, 30, 30))
+        uiGroup add(versionLabel)
+
         floorLabel = GlText new(FONT, "", labelFontSize)
-        floorLabel pos set!(10, 10)
+        floorLabel pos set!(10, 0)
         floorLabel color set!(Color new(30, 30, 30))
         uiGroup add(floorLabel)
 
@@ -541,6 +550,10 @@ Game: class {
     playRandomSound: func (name: String, variants := 2, loops := 0) {
         variant := Random randInt(1, variants)
         playSound("%s%d" format(name, variant), loops)
+    }
+
+    getVersion: func -> String {
+        "033"
     }
 
 }

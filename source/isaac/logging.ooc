@@ -30,7 +30,8 @@ Logging: class {
             // aaand log to file.
             logFile := File new("log.txt")
             if (logFile exists?()) {
-                logFile remove()
+                // clear it
+                logFile write("")
             }
             file := FileHandler new("log.txt")
             file setFilter(LevelFilter new(Level info..Level critical))
