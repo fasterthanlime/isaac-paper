@@ -135,18 +135,20 @@ Door: class extends Entity {
 
     opacityIncr := 0.075
 
-    scale := 0.7
+    scale := 1.0
+
+    padding := 30
 
     init: func (=level, =dir) {
         match dir {
             case Direction UP =>
-                pos = vec2(400, 425 + 22)
+                pos = vec2(400, 425 + padding)
             case Direction DOWN =>
-                pos = vec2(400, 75 - 22)
+                pos = vec2(400, 75 - padding)
             case Direction LEFT =>
-                pos = vec2(75 - 22, 250)
+                pos = vec2(75 - padding, 250)
             case Direction RIGHT =>
-                pos = vec2(725 + 22, 250)
+                pos = vec2(725 + padding, 250)
         }
         super(level, pos)
 
@@ -244,7 +246,7 @@ Door: class extends Entity {
         body setPos(cpv(pos))
 
         length := 100
-        thickness := 44
+        thickness := padding * 2
         size := match dir {
             case Direction UP || Direction DOWN =>
                 vec2(length, thickness)
@@ -289,10 +291,18 @@ Door: class extends Entity {
         }
 
         holeVisible := holeVisible?()
-        if (holeVisible && holeSprite opacity < 1.0) {
-            holeSprite opacity += opacityIncr
-        } else if (!holeVisible && holeSprite opacity > 0.0) {
-            holeSprite opacity -= opacityIncr
+        if (holeVisible) {
+            if (holeSprite opacity < 1.0) {
+                holeSprite opacity += opacityIncr
+            } else {
+                holeSprite opacity = 1.0
+            }
+        } else if (!holeVisible) {
+            if (holeSprite opacity > 0.0) {
+                holeSprite opacity -= opacityIncr
+            } else {
+                holeSprite opacity = 0.0
+            }
         }
 
         true

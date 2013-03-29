@@ -18,7 +18,7 @@ import structs/[ArrayList]
 import math/Random
 
 // our stuff
-import isaac/[level, hero, splash, enemy, fire, tiles, tnt, game]
+import isaac/[level, hero, splash, enemy, fire, tiles, tnt, game, shadow]
 
 Tear: class extends Entity {
 
@@ -32,6 +32,12 @@ Tear: class extends Entity {
 
     sprite: GlSprite
 
+    z := 12.0
+    zInitial := 12.0
+    zIncrement := 0.4
+
+    shadowYOffset := 8.0
+
     // adjustable properties
     range := 100.0
     radius := 1.0
@@ -40,6 +46,8 @@ Tear: class extends Entity {
     type: TearType
 
     hit := false
+
+    shadow: Shadow
 
     heroHandler, enemyHandler, blockHandler, fireHandler, ignoreHandler: static CollisionHandler
 
@@ -58,11 +66,13 @@ Tear: class extends Entity {
 
         initPhysx()
 
+        prevPos set!(pos)
+
+        shadow = Shadow new(level, radius * 2.0)
+
         if (type == TearType HERO) {
             playEmit()
         }
-
-        prevPos set!(pos)
     }
 
     playEmit: func {
@@ -71,12 +81,18 @@ Tear: class extends Entity {
 
     update: func -> Bool {
         pos set!(body getPos())
-        sprite pos set!(pos)
 
         // keep count of how far we've travelled to splash when over
         travelled += prevPos dist(pos)
 
-        if (hit || travelled >= range) {
+        if (travelled >= (range - zInitial / zIncrement)) {
+            z -= zIncrement
+        }
+
+        sprite pos set!(pos x, pos y + z)
+        shadow setPos(pos x, pos y - shadowYOffset)
+
+        if (hit || z <= 0.0) {
             level add(Splash new(level, sprite pos))
             return false
         }
@@ -139,6 +155,8 @@ Tear: class extends Entity {
         level space removeBody(body)
         body free()
         level group remove(sprite)
+
+        shadow destroy()
     }
 
 }

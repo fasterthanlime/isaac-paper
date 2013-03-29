@@ -223,10 +223,10 @@ HeroStats: class {
     shotSpeed := 350.0
 
     shootRange := 2
-    actualShootRange: Int { get { shootRange * 150.0 } }
+    actualShootRange: Int { get { shootRange * 110.0 } }
 
-    shootRate := 2 // testing
-    shootRateInv: Int { get { 60 / shootRate } }
+    shootRate := 2
+    shootRateInv: Int { get { 50 / shootRate } }
 
     damage := 2
     actualDamage: Int { get { damage * 2 } }
