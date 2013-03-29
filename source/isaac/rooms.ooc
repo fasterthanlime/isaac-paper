@@ -15,7 +15,7 @@ import math/Random
 import isaac/[level, cobweb, fire, collectible, tiles,
         trapdoor, hole, tnt, spikes]
 import isaac/enemies/[spider, sack, fly, hopper, trite, mulli,
-        roundfly, swarmer, maggot, gaper]
+        roundfly, swarmer, maggot, gaper, horf]
 
 Rooms: class {
     sets := HashMap<String, RoomSet> new()
@@ -232,6 +232,8 @@ Room: class {
                 level add(Gaper new(level, level gridPos(x, y), GaperType PACER))
             case 'Q' =>
                 level add(Gaper new(level, level gridPos(x, y), GaperType GURGLE))
+            case 'h' =>
+                level add(Horf new(level, level gridPos(x, y)))
             case =>
                 goodB = false
         }

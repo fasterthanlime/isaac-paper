@@ -493,6 +493,7 @@ CollisionGroups: enum from Int {
     TEAR
     COLLECTIBLE
     MAGGOT
+    GAPER
 }
 
 CollisionHandler: abstract class extends CpCollisionHandler {

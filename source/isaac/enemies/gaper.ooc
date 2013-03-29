@@ -34,6 +34,7 @@ Gaper: class extends Mob {
 
     fireCount := 20
     fireCountMax := 60
+    fireSpeed := 120
 
     frownRadius := 160.0
 
@@ -43,8 +44,8 @@ Gaper: class extends Mob {
         loadSprite(getSpriteName(), level charGroup, 0.8)
         spriteYOffset = 14
 
-        createShadow(40)
-        shadowYOffset = 8
+        createShadow(30)
+        shadowYOffset = 10
 
         createBox(35, 35, 15.0)
 
@@ -53,6 +54,9 @@ Gaper: class extends Mob {
         strollBehavior canCharge = false
 
         changeType(type) // set initial values
+
+        // gapers go through each other
+        shape setGroup(CollisionGroups GAPER)
     }
 
     getSpriteName: func -> String {
@@ -72,8 +76,18 @@ Gaper: class extends Mob {
         match type {
             case GaperType GAPER || GaperType FROWNING || GaperType GURGLE =>
                 guideBehavior update(level hero pos)
-            case GaperType PACER || GaperType GUSHER =>
+            case GaperType PACER =>
                 strollBehavior update()
+            case GaperType GUSHER =>
+                // same as pacer
+                strollBehavior update()
+                // and fire sometimes
+                if (fireCount > 0) {
+                    fireCount -= 1
+                } else {
+                    fireCount = fireCountMax + Random randInt(0, 50)
+                    spawnTear(pos, Vec2 random(100) normalized(), fireSpeed)
+                }
         }
     }
 
