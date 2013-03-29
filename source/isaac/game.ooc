@@ -119,6 +119,8 @@ Game: class {
         map = Map new(this)
 
         bleep = Bleep new()
+        bleep setVolume(0.5) // SFX are too loud otherwise
+
         music = Music new(this)
         startGame()
 
