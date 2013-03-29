@@ -87,6 +87,8 @@ DukePart: class extends Mob {
     }
 
     spawnFly: func (autonomous := false) {
+        level game playSound("duke-burp1")
+
         number := Random randInt(0, 100)
         type := match number {
             case number < 20 =>
@@ -107,6 +109,8 @@ DukePart: class extends Mob {
     }
 
     releaseFlies: func {
+        level game playSound("duke-burp2")
+
         for (f in flies) {
             f autonomous = true
             f mover alpha = 0.95
