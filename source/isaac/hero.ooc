@@ -183,7 +183,7 @@ Hero: class extends Entity {
         }
         vel = vel normalized() mul(stats shotSpeed)
 
-        tear := Tear new(level, pos add(0, 10), vel, TearType HERO, stats damage)
+        tear := Tear new(level, pos add(0, 10), vel, TearType HERO, stats actualDamage, stats actualShootRange)
         level add(tear)
     }
 
@@ -220,13 +220,16 @@ HeroStats: class {
 
     speed := 250.0
 
-    shotSpeed := 400.0
+    shotSpeed := 350.0
+
+    shootRange := 2
+    actualShootRange: Int { get { shootRange * 150.0 } }
 
     shootRate := 2 // testing
-
     shootRateInv: Int { get { 60 / shootRate } }
 
-    damage := 4.0
+    damage := 2
+    actualDamage: Int { get { damage * 2 } }
 
     containers := 3
 

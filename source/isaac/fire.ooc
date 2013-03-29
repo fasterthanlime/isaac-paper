@@ -119,7 +119,7 @@ Fire: class extends Entity {
 
     fire: func {
         diff := level hero pos sub(pos) normalized()
-        tear := Tear new(level, pos, diff mul(fireSpeed), TearType ENEMY, 1)
+        tear := Tear new(level, pos, diff mul(fireSpeed), TearType ENEMY, 1, 600.0)
         level add(tear)
         resetFireCount()
     }

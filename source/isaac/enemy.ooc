@@ -29,6 +29,7 @@ Enemy: abstract class extends Entity {
 
     damageCount := 0
     damageLength := 12
+    shootRange := 200.0
 
     shape: CpShape
     body: CpBody
@@ -281,7 +282,7 @@ Enemy: abstract class extends Entity {
 
     spawnTear: func (pos, dir: Vec2, fireSpeed: Float) {
         vel := dir mul(fireSpeed)
-        tear := Tear new(level, pos, vel, TearType ENEMY, 1)
+        tear := Tear new(level, pos, vel, TearType ENEMY, 1, shootRange)
         level add(tear)
     }
 

@@ -22,17 +22,20 @@ import isaac/[level, hero, splash, enemy, fire, tiles, tnt, game]
 
 Tear: class extends Entity {
 
-    range := 100.0
-    radius := 1.0
-
-    damage: Float
-
+    // state
     vel: Vec2
+    travelled := 0.0
+    prevPos := vec2(0, 0)
 
     body: CpBody
     shape: CpShape
 
     sprite: GlSprite
+
+    // adjustable properties
+    range := 100.0
+    radius := 1.0
+    damage: Float
 
     type: TearType
 
@@ -40,7 +43,7 @@ Tear: class extends Entity {
 
     heroHandler, enemyHandler, blockHandler, fireHandler, ignoreHandler: static CollisionHandler
 
-    init: func (.level, .pos, .vel, =type, =damage) {
+    init: func (.level, .pos, .vel, =type, =damage, =range) {
         super(level, pos)
 
         this vel = vec2(vel)
@@ -58,6 +61,8 @@ Tear: class extends Entity {
         if (type == TearType HERO) {
             playEmit()
         }
+
+        prevPos set!(pos)
     }
 
     playEmit: func {
@@ -65,12 +70,18 @@ Tear: class extends Entity {
     }
 
     update: func -> Bool {
-        sprite sync(body)
+        pos set!(body getPos())
+        sprite pos set!(pos)
 
-        if (hit) {
+        // keep count of how far we've travelled to splash when over
+        travelled += prevPos dist(pos)
+
+        if (hit || travelled >= range) {
             level add(Splash new(level, sprite pos))
             return false
         }
+
+        prevPos set!(pos)
 
         true
     }
