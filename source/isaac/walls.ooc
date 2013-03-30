@@ -163,6 +163,7 @@ Door: class extends Entity {
         group add(closedSprite)
 
         holeSprite = GlSprite new("assets/png/door-hole.png")
+        holeSprite color set!(128, 128, 128)
         holeSprite angle = dir toAngle()
         holeSprite pos set!(pos)
         holeSprite opacity = 0.0

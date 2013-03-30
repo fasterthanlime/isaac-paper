@@ -47,5 +47,9 @@ Horf: class extends Mob {
         super()
     }
 
+    hitBack: func (tear: Tear) {
+        // nuh-huh.
+    }
+
 }
 
