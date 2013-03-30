@@ -18,6 +18,10 @@ A clone of Binding of Isaac for #1GAM March, roguelike month!
   * Nstens1117: music
   * FamilyJules7x: music
   * Scise: music
+  * FieryNugget: music
+  * Scamper205: music
+  * Jeremy Clark (geckojsc): music
+  * Melania Valverde (marbletonemedia): music
   
 ### Links
 
