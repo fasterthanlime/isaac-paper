@@ -1,7 +1,7 @@
 [isaac:master]
-[dye:gles] (<= isaac)
+[dye:master] (<= isaac)
 [bleep:master] (<= isaac)
-[gnaar:gles] (<= isaac)
+[gnaar:master] (<= isaac)
 [sdl2:master] (<= dye)
 [stb-image:master] (<= dye)
 [freetype2:master] (<= dye)
