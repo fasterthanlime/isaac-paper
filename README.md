@@ -10,18 +10,21 @@ A clone of Binding of Isaac for #1GAM March, roguelike month!
 
 ### Credits
 
-  * Amos Wenger (nddrylliog): code, art
-  * Myriam Bechikh: art, floor layout
+  * Amos Wenger (nddrylliog): code, art, music
+  * Myriam Bechikh: art, floor layouts
   * Einat Schlagmann: art, music
-  * Ridvan Duzey: music
-  * Benjamin Barrows (BMBGuitar): music
+  * Nick Vecellio (beardsounds): SFX
   * Nstens1117: music
+  * Benjamin Barrows (BMBGuitar): music
+  * Ridvan Duzey: music
+  * Daniel Griffiths (Bubblegum Balloon): music
+  * Melania Valverde (marbletonemedia): music
   * FamilyJules7x: music
   * Scise: music
   * FieryNugget: music
   * Scamper205: music
-  * Jeremy Clark (geckojsc): music
-  * Melania Valverde (marbletonemedia): music
+  * Jeremy Clarke (geckojsc): music
+  * Enzo (Silver102938): music
   
 ### Links
 
