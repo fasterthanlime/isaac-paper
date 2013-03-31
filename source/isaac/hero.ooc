@@ -56,7 +56,7 @@ Hero: class extends Entity {
     init: func (.level, .pos, =stats) {
         super(level, pos)
 
-        shadow = Shadow new(level, 30)
+        shadow = Shadow new(level, 40)
 
         group = GlGroup new()
         group scale set!(0.3, 0.3)
@@ -70,8 +70,7 @@ Hero: class extends Entity {
     }
 
     setOpacity: func (opacity: Float) {
-        // TODO: opacity/color
-        //group opacity = opacity
+        bodyDeck group opacity = opacity
         shadow setOpacity(opacity)
     }
 

@@ -135,8 +135,6 @@ Door: class extends Entity {
 
     opacityIncr := 0.075
 
-    scale := 1.0
-
     padding := 30
 
     init: func (=level, =dir) {
@@ -159,21 +157,18 @@ Door: class extends Entity {
         closedSprite angle = dir toAngle()
         closedSprite pos set!(pos)
         closedSprite opacity = 1.0
-        closedSprite scale set!(scale, scale)
         group add(closedSprite)
 
         holeSprite = GlSprite new("assets/png/door-hole.png")
-        holeSprite color set!(128, 128, 128)
+        holeSprite color set!(80, 80, 80)
         holeSprite angle = dir toAngle()
         holeSprite pos set!(pos)
         holeSprite opacity = 0.0
-        holeSprite scale set!(scale, scale)
         group add(holeSprite)
 
         fgSprite = GlSprite new(getFgSpritePath())
         fgSprite angle = dir toAngle()
         fgSprite pos set!(pos)
-        fgSprite scale set!(scale, scale)
         group add(fgSprite)
 
         initPhysx()
