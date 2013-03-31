@@ -8,10 +8,10 @@ use chipmunk
 import chipmunk
 
 use dye
-import dye/[core, sprite, primitives, math]
+import dye/[core, sprite, primitives, math, anim]
 
 use gnaar
-import gnaar/[utils]
+import gnaar/[utils, deck]
 
 // our stuff
 import isaac/[game, level, tear, shadow, bomb, collectible, options,
@@ -24,8 +24,10 @@ Hero: class extends Entity {
 
     logger := static Log getLogger(This name)
 
-    sprite: GlSprite
-    spriteYOffset := 20
+    group: GlGroup
+    bodyDelta := 1
+    bodyDeck: Deck
+    spriteYOffset := 10
 
     shape: CpShape
     body: CpBody
@@ -54,20 +56,22 @@ Hero: class extends Entity {
     init: func (.level, .pos, =stats) {
         super(level, pos)
 
-        sprite = GlSprite new("assets/png/isaac-down.png")
-        scale := 0.8
-        sprite scale set!(scale, scale)
-        shadow = Shadow new(level, sprite width * scale * shadowFactor)
+        shadow = Shadow new(level, 30)
 
-        level charGroup add(sprite)
+        group = GlGroup new()
+        group scale set!(0.3, 0.3)
+        level charGroup add(group)
 
-        sprite pos set!(pos)
+        bodyDeck = Deck new("assets/decks/body.yml")
+        group add(bodyDeck group)
+        bodyDeck play("walk-side")
 
         initPhysx()
     }
 
     setOpacity: func (opacity: Float) {
-        sprite opacity = opacity
+        // TODO: opacity/color
+        //group opacity = opacity
         shadow setOpacity(opacity)
     }
 
@@ -77,9 +81,9 @@ Hero: class extends Entity {
         }
 
         bodyPos := body getPos()
-        sprite pos set!(bodyPos x, bodyPos y + spriteYOffset)
-        pos set!(body getPos())
+        pos set!(bodyPos)
         shadow setPos(pos x, pos y - shadowYOffset)
+        group pos set!(bodyPos x, bodyPos y + spriteYOffset)
 
         setOpacity(1.0)
         if (invicibilityCount > 0) {
@@ -94,13 +98,21 @@ Hero: class extends Entity {
             shootCount -= 1
         }
 
+        bodyVel := vec2(body getVel())
+        threshold := 10.0
+        if (bodyVel norm() > threshold) {
+            bodyDeck update()
+        } else {
+            bodyDeck group current rewind()
+        }
+
         true
     }
 
     setPos: func (.pos) {
         this pos set!(pos)
         body setPos(cpv(pos))
-        sprite pos set!(pos x, pos y + spriteYOffset)
+        group pos set!(pos x, pos y + spriteYOffset)
         shadow setPos(pos x, pos y - shadowYOffset)
     }
 
@@ -128,7 +140,8 @@ Hero: class extends Entity {
         shape free()
         level space removeBody(body)
         body free()
-        level charGroup remove(sprite)
+
+        level charGroup remove(bodyDeck group)
     }
 
     move: func (dir: Vec2) {
@@ -141,6 +154,25 @@ Hero: class extends Entity {
         currVel interpolate!(vel, 1 - 0.8)
         body setVel(cpv(currVel))
 
+        epsilon := 0.1
+        if (dir x > epsilon) {
+            bodyDeck group scale x = 1.0
+            bodyDeck play("walk-side")
+            bodyDelta = 1
+        } else if (dir x < -epsilon) {
+            bodyDeck group scale x = -1.0
+            bodyDeck play("walk-side")
+            bodyDelta = 1
+        } else if (dir y > epsilon) {
+            bodyDeck group scale x = 1.0
+            bodyDeck play("walk-front")
+            bodyDelta = 1
+        } else {
+            bodyDeck play("walk-front")
+            bodyDeck group scale x = 1.0
+            bodyDelta = -1
+        }
+
         if (door) {
             if (door dir along?(dir)) {
                 // pressing against a door
@@ -150,11 +182,13 @@ Hero: class extends Entity {
     }
 
     getSpeed: func -> Float {
+        result := stats actualSpeed
+
         if (webCount > 0 && !flying?()) {
-            stats speed * 0.5
-        } else {
-            stats speed
+            result *= 0.5
         }
+
+        result
     }
 
     flying?: func -> Bool {
@@ -218,7 +252,8 @@ Hero: class extends Entity {
 
 HeroStats: class {
 
-    speed := 250.0
+    speed := 2
+    actualSpeed : Float { get { 150.0 * speed } }
 
     shotSpeed := 350.0
 

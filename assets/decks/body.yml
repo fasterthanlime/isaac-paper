@@ -1,0 +1,12 @@
+walk-side:
+  source: assets/png/body-walk-side.png
+  numRows: 1
+  numFrames: 13
+  frameDuration: 3
+
+walk-front:
+  source: assets/png/body-walk-front.png
+  numRows: 1
+  numFrames: 10
+  frameDuration: 3
+
