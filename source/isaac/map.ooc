@@ -31,7 +31,7 @@ RoomType: enum {
     MINIBOSS
     LIBRARY
     CURSE
-    ARENA
+    CHALLENGE
     ARCADE
 
     ANGEL
@@ -52,7 +52,7 @@ RoomType: enum {
             case This MINIBOSS     => "miniboss"
             case This LIBRARY      => "library"
             case This CURSE        => "curse"
-            case This ARENA        => "arena"
+            case This CHALLENGE    => "challenge"
             case This ARCADE       => "arcade"
             
             case This ANGEL        => "angel"
@@ -142,7 +142,7 @@ Map: class {
         if (specialRoomBudget > 0) {
             // pick other specials from a pool of all the other ones:
             arr := [RoomType SHOP, RoomType MINIBOSS, RoomType LIBRARY,
-                RoomType CURSE, RoomType ARENA]
+                RoomType CURSE, RoomType CHALLENGE]
             pool := ArrayList<RoomType> new(arr data, arr length)
 
             while (specialRoomBudget > 0 && pool size > 0) {
@@ -534,7 +534,7 @@ GlMapTile: class extends GlGroup {
                     fill color set!(Color new(210, 180, 140)) // tan
                 case RoomType CURSE =>
                     fill color set!(Color new(170, 0, 0)) // dark red
-                case RoomType ARENA =>
+                case RoomType CHALLENGE =>
                     fill color set!(Color new(255, 0, 255)) // magenta
 
                 case =>

@@ -174,7 +174,7 @@ Game: class {
             case FloorType BASEMENT =>
                 "sacrificial"
             case FloorType CELLAR =>
-                "sacrificial" // filler, should be penance
+                "penance"
             case FloorType CAVES =>
                 "repentant"
             case FloorType CATACOMBS =>
@@ -208,10 +208,10 @@ Game: class {
                 "tomes"
             case RoomType SHOP =>
                 "tomes" // filler, should be greed
-            case RoomType ARENA =>
+            case RoomType CHALLENGE =>
                 "burning-ambush"
             case RoomType ARCADE =>
-                "sacrificial" // filler, should be $4cR1f1c14|_
+                "$4cR1F1c14"
             case =>
                 name
         }

@@ -221,6 +221,12 @@ Door: class extends Entity {
                             "treasure"
                         case RoomType CURSE =>
                             "spikes"
+                        case RoomType CHALLENGE =>
+                            "challenge"
+                        case RoomType DEVIL =>
+                            "devil"
+                        case RoomType ANGEL =>
+                            "angel"
                         case =>
                             "regular"
                     }
