@@ -12,7 +12,7 @@ A clone of Binding of Isaac for #1GAM March, roguelike month!
 
   * Amos Wenger (nddrylliog): code, art
   * Myriam Bechikh: art, floor layout
-  * Einat Schlagmann: art
+  * Einat Schlagmann: art, music
   * Ridvan Duzey: music
   * Benjamin Barrows (BMBGuitar): music
   * Nstens1117: music
