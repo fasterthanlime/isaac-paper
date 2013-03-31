@@ -494,6 +494,7 @@ CollisionGroups: enum from Int {
     COLLECTIBLE
     MAGGOT
     GAPER
+    HOPPER
 }
 
 CollisionHandler: abstract class extends CpCollisionHandler {

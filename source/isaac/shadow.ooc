@@ -28,7 +28,7 @@ Shadow: class extends Entity {
     scale, baseScale: Float
 
     opacity := 1.0
-    baseOpacity := 0.8
+    baseOpacity := 0.45
 
     init: func (.level, =width) {
         super(level, vec2(0, 0))

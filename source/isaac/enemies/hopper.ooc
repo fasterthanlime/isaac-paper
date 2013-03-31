@@ -24,19 +24,22 @@ import isaac/[level, game, paths, shadow, enemy, hero, utils, tiles]
  */
 Hopper: class extends Mob {
 
+    baseSpeed := 230.0
     speed := 230.0
 
-    jumpCount := 60
-    jumpCountMax := 100
-    jumpGracePeriod := 40
+    jumpCount := 30
+    jumpCountMax := 35
+    jumpCountWiggle := 5
+    chosenJumpCountMax := 0
+
     jumpHeight := 90.0
     radius := 250
 
     damage := 4.0
-    scale := 0.65
+    scale := 0.8
 
     // parabola for jump
-    parabola := Parabola new(1, 1)
+    parabola: Parabola
 
     init: func (.level, .pos) {
         super(level, pos)
@@ -44,32 +47,35 @@ Hopper: class extends Mob {
         life = 10.0
 
         loadSprite(getSpriteName(), level charGroup, scale)
-        spriteYOffset = 12
+        spriteYOffset = 16
 
-        createShadow(30)
+        createShadow(41)
 
-        createBox(24, 24, 10.0)
+        createCircle(15, 10.0)
+        shape setGroup(CollisionGroups HOPPER)
     }
 
     getSpriteName: func -> String {
         "hopper"
     }
 
-    grounded?: func -> Bool {
-        super() && jumpCount < (jumpCountMax - jumpGracePeriod)
-    }
-
     update: func -> Bool {
         // handle height
-        z = parabola eval(jumpCountMax - jumpCount)
-        if (jumpCount > 0) {
-            jumpCount -= 1
+        if (parabola) {
+            z = parabola eval()
+            if (parabola done?()) {
+                parabola = null
+            }
         } else {
-            jump()
+            if (jumpCount > 0) {
+                jumpCount -= 1
+            } else {
+                jump()
+            }
         }
 
-        sprite scale x = (0.6 + (0.4 * (1.0 - (z / jumpHeight))))
-        sprite scale y = (1.3 - (0.3 * (1.0 - (z / jumpHeight))))
+        sprite scale x = scale * (0.6 + (0.4 * (1.0 - (z / jumpHeight))))
+        sprite scale y = scale * (1.3 - (0.3 * (1.0 - (z / jumpHeight))))
 
         // friction
         if (grounded?()) {
@@ -101,11 +107,23 @@ Hopper: class extends Mob {
     }
 
     jump: func {
-        jumpCount = jumpCountMax
+        jumpCount = jumpCountMax + Random randInt(0, jumpCountWiggle)
+        chosenJumpCountMax = jumpCount
         target := Target choose(pos, level, radius)
-        body setVel(cpv(target sub(pos) normalized() mul(speed)))
+        target add!(Vec2 random(20))
 
-        parabola = Parabola new(jumpHeight, jumpCountMax * 0.5)
+        jumpSpeed := speed
+
+        diff := target sub(pos)
+        norm := diff norm()
+        if (norm < speed) {
+            jumpSpeed *= (norm / speed)
+        }
+
+        body setVel(cpv(diff normalized() mul(jumpSpeed)))
+
+        parabola = Parabola new(jumpHeight, 60.0 / baseSpeed * speed)
+        parabola incr = 1.0
     }
 
 }

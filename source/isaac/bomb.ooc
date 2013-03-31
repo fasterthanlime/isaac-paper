@@ -37,6 +37,9 @@ Bomb: class extends Entity {
         sprite = GlSprite new("assets/png/bomb.png")
         level charGroup add(sprite)
 
+        scale := 0.8
+        sprite scale set!(scale, scale)
+
         countdown = maxCountdown
 
         initPhysx()
