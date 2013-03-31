@@ -22,6 +22,7 @@ Each possible level is separated by a blank line
   * `f` - fire
   * `F` - orange fire (evil)
   * `x` - spikes
+  * `=` - Eternal poop 
  
 ### Basement
 
@@ -64,13 +65,21 @@ Each possible level is separated by a blank line
   * `|` - maggot
   * `!` - charger
   * `$` - spity
-  * `@` - host and red host
+  * `@` - host 
+  * `6` - red host
   * `0` - (zero) Maw and Red Maw and Psychic Maw
   * `K` - Knight and Selfless Knight
   * `W` - Mr. Maw
   
 ### Catacombs
 
+  * `v` - Chubber 
+  * `%` - Gurgle 
+  * `Q` - Buttlicker
+  * `y` - Keeper
+  * `6` - Walking Gut Sack Boil
+  * `(` - Gut
+  
 ### Necropolis
 
   * `&` - swarmer
