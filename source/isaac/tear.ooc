@@ -76,7 +76,7 @@ Tear: class extends Entity {
 
         match type {
             case TearType HERO =>
-                sprite color set!(214, 238, 244)
+                sprite color set!(224, 248, 254)
             case TearType ENEMY =>
                 sprite color set!(198, 108, 108)
         }

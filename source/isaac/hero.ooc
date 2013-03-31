@@ -63,6 +63,7 @@ Hero: class extends Entity {
         level charGroup add(group)
 
         bodyDeck = Deck new("assets/decks/body.yml")
+        bodyDeck group color set!(255, 208, 201)
         group add(bodyDeck group)
         bodyDeck play("walk-side")
 
