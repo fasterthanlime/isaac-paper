@@ -45,7 +45,7 @@ Spider: class extends Mob {
 
         life = 8.0
 
-        loadSprite(getSpriteName(), level charGroup, 0.8)
+        loadSprite(getSpriteName(), level charGroup, 0.75)
         spriteYOffset = 4
 
         createShadow(30)

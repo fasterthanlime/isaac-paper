@@ -41,7 +41,7 @@ Fly: class extends Mob {
     radius := 600.0
     speedyRadius := 280.0
 
-    scale := 0.8
+    scale := 0.7
 
     mover: Mover
 
@@ -93,7 +93,7 @@ Fly: class extends Mob {
             shadowSize = 40
         }
         createShadow(shadowSize)
-        shadowYOffset = 3
+        shadowYOffset = 13
 
         createBox(15, 15, 15.0)
         shape setSensor(true)

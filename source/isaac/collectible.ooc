@@ -44,7 +44,7 @@ Collectible: abstract class extends Entity {
 
     shadow: Shadow
     shadowYOffset := 10
-    shadowFactor := 0.5
+    shadowFactor := 0.45
 
     parabola: Parabola
     z := 0
@@ -154,6 +154,9 @@ CollectibleCoin: class extends Collectible {
         super(level, pos)
 
         shadowYOffset = 3
+
+        scale := 0.9
+        sprite scale set!(scale, scale)
     }
 
     getWorth: func -> Int {
@@ -204,7 +207,7 @@ CollectibleBomb: class extends Collectible {
     worth: Int
 
     init: func (.level, .pos, type := BombType ONE) {
-        shadowFactor = 0.7
+        shadowFactor = 0.6
         this type = type
         worth = match type {
             case BombType TWO => 2
@@ -213,7 +216,7 @@ CollectibleBomb: class extends Collectible {
 
         super(level, pos)
 
-        scale := 0.9
+        scale := 0.8
         sprite scale set!(scale, scale)
     }
 
@@ -255,6 +258,11 @@ CollectibleHeart: class extends Collectible {
     init: func (.level, .pos, =type, =value) {
         super(level, pos)
         updateGfx()
+
+        shadowYOffset = 8
+
+        scale := 0.9
+        sprite scale set!(scale, scale)
     }
 
     getSpritePath: func -> String {
@@ -336,6 +344,9 @@ CollectibleKey: class extends Collectible {
 
     init: func (.level, .pos) {
         super(level, pos)
+
+        scale := 0.9
+        sprite scale set!(scale, scale)
     }
 
     getSpritePath: func -> String {

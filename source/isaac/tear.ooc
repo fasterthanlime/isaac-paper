@@ -73,6 +73,13 @@ Tear: class extends Entity {
         if (type == TearType HERO) {
             playEmit()
         }
+
+        match type {
+            case TearType HERO =>
+                sprite color set!(214, 238, 244)
+            case TearType ENEMY =>
+                sprite color set!(198, 108, 108)
+        }
     }
 
     playEmit: func {

@@ -33,7 +33,7 @@ Hopper: class extends Mob {
     radius := 250
 
     damage := 4.0
-    scale := 0.8
+    scale := 0.65
 
     // parabola for jump
     parabola := Parabola new(1, 1)
