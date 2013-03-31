@@ -220,6 +220,8 @@ Level: class {
             hero shoot(Direction UP)
         } else if (input isPressed(KeyCode LEFT)) {
             hero shoot(Direction LEFT)
+        } else {
+            hero noshot()
         }
     }
 
@@ -275,7 +277,6 @@ Level: class {
     update: func {
         updatePhysics()
         updateEvents()
-
         updateEntities()
     }
 

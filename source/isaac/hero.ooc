@@ -24,10 +24,19 @@ Hero: class extends Entity {
 
     logger := static Log getLogger(This name)
 
-    group: GlGroup
+    group, headGroup: GlGroup
     bodyDelta := 1
     bodyDeck: Deck
+    bodyBaseScale := 0.3
     spriteYOffset := 10
+
+    headBaseScale := 0.32
+    faceIndex := 0
+    winkCount := 0
+    faceWinkOffset := 2
+
+    headSprite: GlSprite
+    faceSet: GlSet
 
     shape: CpShape
     body: CpBody
@@ -59,19 +68,39 @@ Hero: class extends Entity {
         shadow = Shadow new(level, 40)
 
         group = GlGroup new()
-        group scale set!(0.3, 0.3)
         level charGroup add(group)
 
+        pink := Color new(255, 208, 201)
+
         bodyDeck = Deck new("assets/decks/body.yml")
-        bodyDeck group color set!(255, 208, 201)
+        bodyDeck group color set!(pink)
+        bodyDeck group scale set!(bodyBaseScale, bodyBaseScale)
         group add(bodyDeck group)
         bodyDeck play("walk-side")
+
+        headGroup = GlGroup new()
+        headGroup pos set!(0, 15)
+        headGroup scale set!(headBaseScale, headBaseScale)
+        group add(headGroup)
+
+        headSprite = GlSprite new("assets/png/isaac-head.png")
+        headSprite color set!(pink)
+        headGroup add(headSprite)
+
+        faceSet = GlSet new()
+        faceSet add(GlSprite new("assets/png/isaac-face-open.png"))
+        faceSet add(GlSprite new("assets/png/isaac-left-open.png"))
+        faceSet add(GlSprite new("assets/png/isaac-face-wink.png"))
+        faceSet add(GlSprite new("assets/png/isaac-left-wink.png"))
+        headGroup add(faceSet)
 
         initPhysx()
     }
 
     setOpacity: func (opacity: Float) {
         bodyDeck group opacity = opacity
+        headSprite opacity = opacity
+        faceSet opacity = opacity
         shadow setOpacity(opacity)
     }
 
@@ -105,6 +134,8 @@ Hero: class extends Entity {
         } else {
             bodyDeck group current rewind()
         }
+
+        faceSet current = faceIndex + (winkCount > 0 ? faceWinkOffset : 0)
 
         true
     }
@@ -156,20 +187,20 @@ Hero: class extends Entity {
 
         epsilon := 0.1
         if (dir x > epsilon) {
-            bodyDeck group scale x = 1.0
+            bodyDeck group scale x = bodyBaseScale
             bodyDeck play("walk-side")
             bodyDelta = 1
         } else if (dir x < -epsilon) {
-            bodyDeck group scale x = -1.0
+            bodyDeck group scale x = -bodyBaseScale
             bodyDeck play("walk-side")
             bodyDelta = 1
         } else if (dir y > epsilon) {
-            bodyDeck group scale x = 1.0
+            bodyDeck group scale x = bodyBaseScale
             bodyDeck play("walk-front")
             bodyDelta = 1
         } else {
             bodyDeck play("walk-front")
-            bodyDeck group scale x = 1.0
+            bodyDeck group scale x = bodyBaseScale
             bodyDelta = -1
         }
 
@@ -196,11 +227,50 @@ Hero: class extends Entity {
         false
     }
 
+    noshot: func {
+        faceSet visible = true
+        faceSet scale x = 1
+        faceIndex = 0
+        decreaseWink()
+    }
+
+    decreaseWink: func {
+        if (winkCount > 0) {
+            winkCount -= 1
+        }
+    }
+
+    resetWink: func {
+        winkCount = 10
+    }
+
     shoot: func (dir: Direction) {
+        faceIndex = match (dir) {
+            case Direction RIGHT =>
+                faceSet visible = true
+                faceSet scale x = -1
+                1
+            case Direction LEFT =>
+                faceSet visible = true
+                faceSet scale x = 1
+                1
+            case Direction UP =>
+                faceSet visible = false
+                faceSet scale x = 1
+                0
+            case Direction DOWN =>
+                faceSet visible = true
+                faceSet scale x = 1
+                0
+        }
+
         if (shootCount > 0) {
+            decreaseWink()
             return
         }
         bodyVel := body getVel()
+
+        resetWink()
 
         skew := 0.3
 
