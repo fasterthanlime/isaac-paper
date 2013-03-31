@@ -24,7 +24,7 @@ A clone of Binding of Isaac for #1GAM March, roguelike month!
   * FieryNugget: music
   * Scamper205: music
   * Jeremy Clarke (geckojsc): music
-  * Enzo (Silver102938): music
+  * Enzo Casamassima (silver102938): music
   
 ### Links
 
