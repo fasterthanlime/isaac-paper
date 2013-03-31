@@ -441,3 +441,8 @@ EnemyCollectibleHandler: class extends CollisionHandler {
 
 }
 
+TargetType: enum {
+    RANDOM
+    HERO
+}
+

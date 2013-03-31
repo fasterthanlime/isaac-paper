@@ -62,8 +62,3 @@ FireBehavior: class {
 
 }
 
-TargetType: enum {
-    RANDOM
-    HERO
-}
-
