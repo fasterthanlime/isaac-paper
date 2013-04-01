@@ -42,7 +42,7 @@ Horf: class extends Mob {
         fireBehavior targetType = TargetType HERO
 
         fireBehavior onFire(||
-            level game playSound("horf-attack")
+            level game playRandomSound("horf-attack", 2)
         )
     }
 
