@@ -407,6 +407,7 @@ Game: class {
                 level update()
                 updateLabels()
                 if (heroStats totalHealth() <= 0) {
+                    playSound("hero-death")
                     reset()
                 }
                 if (level input isPressed(KeyCode R)) {

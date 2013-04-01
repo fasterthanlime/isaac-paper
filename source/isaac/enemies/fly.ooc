@@ -145,6 +145,7 @@ Fly: class extends Mob {
                 // spawn tears in the shape of a '+'
                 spawnPlusTears(fireSpeed)
         }
+        super()
     }
 
     update: func -> Bool {

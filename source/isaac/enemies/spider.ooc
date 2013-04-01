@@ -72,6 +72,7 @@ Spider: class extends Mob {
             spawnChild()
             spawnChild()
         }
+        super()
     }
 
     spawnChild: func {

@@ -97,6 +97,7 @@ Mulli: class extends Mob {
             case MulliType MULLIGOON =>
                 spawnBombAndTears()
         }
+        super()
     }
 
     spawnBombAndTears: func {

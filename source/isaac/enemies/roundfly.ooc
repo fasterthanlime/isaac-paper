@@ -80,6 +80,7 @@ RoundFly: class extends Mob {
                 // spawn tears in 6 directions
                 spawnSixTears(fireSpeed)
         }
+        super()
     }
 
     update: func -> Bool {

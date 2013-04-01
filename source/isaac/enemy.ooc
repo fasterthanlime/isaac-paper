@@ -79,6 +79,7 @@ Enemy: abstract class extends Entity {
 
     onDeath: func {
         // normally, die in peace
+        level game playRandomSound("creep-death", 2)
     }
 
     /* UPDATE STUFF

@@ -125,6 +125,7 @@ Gaper: class extends Mob {
                 child := Gaper new(level, pos, type)
                 level add(child)
         }
+        super()
     }
 
     checkFire: func {

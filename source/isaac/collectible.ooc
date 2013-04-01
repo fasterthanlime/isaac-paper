@@ -420,6 +420,7 @@ CollectibleChest: class extends Collectible {
 
     collect: func {
         level hero hitBack(pos)
+        level game playSound("chest-open")
     }
 
     spill: func {

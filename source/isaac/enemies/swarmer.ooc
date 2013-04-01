@@ -66,6 +66,7 @@ Swarmer: class extends Mob {
         roundFly := RoundFly new(level, pos, RoundFlyType BOOM)
         roundFly behavior setDir(behavior dir)
         level add(roundFly)
+        super()
     }
 
     update: func -> Bool {

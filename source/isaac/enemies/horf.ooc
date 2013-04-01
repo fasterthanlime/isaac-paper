@@ -36,7 +36,7 @@ Horf: class extends Mob {
         createShadow(30)
         shadowYOffset = 10
 
-        createCircle(20, 50.0)
+        createCircle(20, 80.0)
 
         fireBehavior = FireBehavior new(this)
         fireBehavior targetType = TargetType HERO
