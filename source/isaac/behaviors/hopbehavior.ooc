@@ -40,8 +40,14 @@ HopBehavior: class {
     jumpHeight := 90.0
     radius := 250.0
 
+    landListener: LandListener
+
     init: func (=enemy) {
         level = enemy level
+    }
+
+    onLand: func (f: Func) {
+        landListener = LandListener new(f)
     }
 
     update: func {
@@ -50,6 +56,9 @@ HopBehavior: class {
             enemy z = parabola eval()
             if (parabola done?()) {
                 parabola = null
+                if (landListener) {
+                    landListener call()
+                }
             }
         } else {
             if (jumpCount > 0) {
@@ -70,6 +79,8 @@ HopBehavior: class {
             vel y *= friction
             enemy body setVel(vel)
         }
+
+        enemy pos set!(enemy body getPos())
     }
 
     jump: func {
@@ -105,6 +116,16 @@ HopBehavior: class {
         parabola = Parabola new(jumpHeight, 60.0 * baseSpeed / speed)
         parabola incr = 1.0
     }
+
+}
+
+LandListener: class {
+
+    f: Func
+
+    init: func (=f)
+
+    call: func { f() }
 
 }
 

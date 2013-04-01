@@ -97,6 +97,10 @@ Hero: class extends Entity {
         initPhysx()
     }
 
+    aimPos: func -> Vec2 {
+        pos sub(0, 23)
+    }
+
     setOpacity: func (opacity: Float) {
         bodyDeck group opacity = opacity
         headSprite opacity = opacity

@@ -28,6 +28,9 @@ Keeper: class extends Mob {
 
     behavior: HopBehavior
 
+    fireRadius := 280.0
+    fireSpeed := 260.0
+
     init: func (.level, .pos) {
         super(level, pos)
 
@@ -48,6 +51,22 @@ Keeper: class extends Mob {
         behavior speed = 280.0
         behavior jumpHeight = 50.0
         behavior jumpDistance = 80.0
+
+        behavior onLand(||
+            maybeFire()
+        )
+    }
+
+    maybeFire: func {
+        number := Random randInt(0, 100)
+        if (number > 60) {
+            return
+        }
+
+        diff := level hero aimPos() sub(pos)
+        if (diff norm() < fireRadius) {
+            spawnTwoTears(pos, diff, fireSpeed)
+        }
     }
 
     tearVulnerable?: func -> Bool {

@@ -291,7 +291,7 @@ Enemy: abstract class extends Entity {
         spread := PI / 10.0
         a1 := angle += spread
         a2 := angle -= spread
-        offset := 4.0
+        offset := 8.0
 
         pos1 := pos add(Vec2 fromAngle(a1 + PI / 2.0) mul(offset))
         spawnTear(pos1, Vec2 fromAngle(a1), fireSpeed)
