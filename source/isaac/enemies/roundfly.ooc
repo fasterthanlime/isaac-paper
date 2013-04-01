@@ -44,9 +44,6 @@ RoundFly: class extends Mob {
         life = 20.0
 
         loadSprite(getSpriteName(), level charGroup, scale)
-        if (type == RoundFlyType RED) {
-            baseColor = Color new(255, 140, 140)
-        }
 
         shadowYOffset = 3
         createShadow(30)

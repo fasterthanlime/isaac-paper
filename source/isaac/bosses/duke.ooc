@@ -186,7 +186,7 @@ DukePart: class extends Mob {
     }
 
     bombHarm: func (explosion: Explosion) {
-        harm(explosion damage * 5)
+        forceHarm(explosion damage * 5)
     }
 
 }

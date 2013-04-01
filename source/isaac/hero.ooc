@@ -148,7 +148,7 @@ Hero: class extends Entity {
     }
 
     initPhysx: func {
-        radius := 20.0
+        radius := 21.0
         mass := 10.0
         moment := cpMomentForCircle(mass, 0, radius, cpv(radius, radius))
 
@@ -275,6 +275,11 @@ Hero: class extends Entity {
         skew := 0.3
 
         shootCount = stats shootRateInv
+        tearType := stats tearType()
+        if (tearType != TearType HERO) {
+            shootCount += shootCount
+        }
+
         vel := match (dir) {
             case Direction RIGHT =>
                 vec2( 1, bodyVel y > 20 ? skew : (bodyVel y < -20 ? -skew : 0))
@@ -287,7 +292,8 @@ Hero: class extends Entity {
         }
         vel = vel normalized() mul(stats shotSpeed)
 
-        tear := Tear new(level, pos add(0, 10), vel, stats tearType(), stats actualDamage, stats actualShootRange)
+        tearPos := pos add(0, 8)
+        tear := Tear new(level, tearPos, vel, tearType, stats actualDamage, stats actualShootRange)
         level add(tear)
     }
 

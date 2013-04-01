@@ -118,7 +118,7 @@ MaggotSprite: class extends GlDrawable {
     xswap := false
 
     init: func (=level, =type) {
-        factor := 0.9
+        factor := 0.83
         scale set!(factor, factor)
 
         match type {
@@ -133,8 +133,8 @@ MaggotSprite: class extends GlDrawable {
                 front = loadSprite("charger-front")
                 left = loadSprite("charger-left")
                 back = loadSprite("maggot-back") // they look similar
-                frontCharging = loadSprite("charger-front")
-                leftCharging = loadSprite("charger-left-charging") // filler
+                frontCharging = loadSprite("charger-front-charging")
+                leftCharging = loadSprite("charger-left-charging")
                 backCharging = loadSprite("maggot-back")
         }
     }

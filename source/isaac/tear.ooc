@@ -33,6 +33,7 @@ Tear: class extends Entity {
 
     sprite: GlSprite
 
+    contactLevel := 14.0
     z := 12.0
     zInitial := 12.0
     zIncrement := 0.4
@@ -62,12 +63,12 @@ Tear: class extends Entity {
 
         if (type == TearType IPECAC) {
             range *= 0.8
-            parabola = Parabola new(30, range)
+            parabola = Parabola new(40, range)
         }
 
         scale := 0.17
         if (type == TearType IPECAC) {
-            scale = 0.26
+            scale = 0.31
         }
 
         sprite scale set!(scale, scale)
@@ -89,7 +90,7 @@ Tear: class extends Entity {
             case TearType HERO =>
                 sprite color set!(224, 248, 254)
             case TearType IPECAC =>
-                sprite color set!(158, 248, 158)
+                sprite color set!(153, 235, 155)
             case TearType ENEMY =>
                 sprite color set!(255, 168, 168)
         }
@@ -150,7 +151,7 @@ Tear: class extends Entity {
         body setVel(cpv(vel))
         level space addBody(body)
 
-        shape = CpCircleShape new(body, radius, cpv(0, 0))
+        shape = CpCircleShape new(body, 2.0, cpv(0, 0))
         shape setUserData(this)
         shape setCollisionType(CollisionTypes TEAR)
         shape setGroup(CollisionGroups TEAR)
@@ -249,6 +250,13 @@ EnemyTearHandler: class extends CollisionHandler {
             return false
         }
 
+        if (tear type == TearType IPECAC) {
+            if (tear z < tear contactLevel) {
+                tear hit = true
+            }
+            return false
+        }
+
         entity := shape2 getUserData() as Entity
 
         match (tear type) {
@@ -285,7 +293,7 @@ BlockTearHandler: class extends CollisionHandler {
         bounce := true
         
         tear := shape1 getUserData() as Tear
-        if (tear z < 14.0) {
+        if (tear z < tear contactLevel) {
             tear hit = true
         } else {
             return false

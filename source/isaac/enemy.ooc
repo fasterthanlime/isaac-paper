@@ -51,6 +51,11 @@ Enemy: abstract class extends Entity {
     /* DAMAGE STUFF
     ===========================*/
 
+    forceHarm: func (damage: Float) {
+        damageCount = 0
+        harm(damage)
+    }
+
     harm: func (damage: Float) {
         if (damageCount <= 0) {
             damageCount = damageLength
@@ -59,8 +64,7 @@ Enemy: abstract class extends Entity {
     }
 
     bombHarm: func (explosion: Explosion) {
-        damageCount = 0
-        harm(explosion damage)            
+        forceHarm(explosion damage)
     }
 
     hitBack: func (tear: Tear) {
