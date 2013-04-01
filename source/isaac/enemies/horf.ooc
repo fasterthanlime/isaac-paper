@@ -40,6 +40,10 @@ Horf: class extends Mob {
 
         fireBehavior = FireBehavior new(this)
         fireBehavior targetType = TargetType HERO
+
+        fireBehavior onFire(||
+            level game playSound("horf-attack")
+        )
     }
 
     update: func -> Bool {

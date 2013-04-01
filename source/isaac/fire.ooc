@@ -70,6 +70,7 @@ Fire: class extends Entity {
         if (Random randInt(0, 100) < 20) {
             level tile room spawnCollectible(pos, level)
         }
+        level game playSound("fire-extinguish")
     }
 
     update: func -> Bool {

@@ -35,7 +35,7 @@ FlyType: enum {
  */
 Fly: class extends Mob {
 
-    buzzCount := 0
+    buzzCount := static 0
 
     moveCount := 0
     moveCountMax := 30
@@ -244,7 +244,7 @@ Fly: class extends Mob {
 
     updateTarget: func {
         if (buzzes?()) {
-            buzzCount += 12
+            buzzCount += 8
             level game playRandomSound("fly-bzz", 5)
         }
 

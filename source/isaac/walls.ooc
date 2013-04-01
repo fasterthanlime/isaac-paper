@@ -284,6 +284,7 @@ Door: class extends Entity {
             if (connection locked) {
                 level game heroStats useKey()
                 connection locked = false
+                level game playSound("door-unlock")
             }
             level game changeRoom(dir)
         }
