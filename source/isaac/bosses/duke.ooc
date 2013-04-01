@@ -39,6 +39,7 @@ DukeOfFlies: class extends Boss {
 
     onDeath: func {
         part releaseFlies()
+        super()
     }
 
 }

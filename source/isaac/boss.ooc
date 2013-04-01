@@ -160,6 +160,7 @@ Boss: abstract class extends Entity {
 
     onDeath: func {
         // override to do stuff on death
+        level game playSound("boss-death")
     }
 
 }
