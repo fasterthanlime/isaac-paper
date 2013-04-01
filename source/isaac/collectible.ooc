@@ -157,6 +157,15 @@ CollectibleCoin: class extends Collectible {
 
         scale := 0.9
         sprite scale set!(scale, scale)
+
+        match type {
+            case CoinType PENNY =>
+                sprite color set!(244, 238, 131)
+            case CoinType NICKEL =>
+                sprite color set!(178, 178, 178)
+            case CoinType DIME =>
+                sprite color set!(220, 220, 220)
+        }
     }
 
     getWorth: func -> Int {
