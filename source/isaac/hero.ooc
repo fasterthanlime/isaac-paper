@@ -287,7 +287,7 @@ Hero: class extends Entity {
         }
         vel = vel normalized() mul(stats shotSpeed)
 
-        tear := Tear new(level, pos add(0, 10), vel, TearType HERO, stats actualDamage, stats actualShootRange)
+        tear := Tear new(level, pos add(0, 10), vel, stats tearType(), stats actualDamage, stats actualShootRange)
         level add(tear)
     }
 
@@ -481,6 +481,13 @@ HeroStats: class {
             redLife += 2
             healthChanged = true
         }
+    }
+
+    tearType: func -> TearType {
+        //TearType HERO
+
+        // just testing:
+        TearType IPECAC
     }
 
 }

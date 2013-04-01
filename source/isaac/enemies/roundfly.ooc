@@ -88,14 +88,19 @@ RoundFly: class extends Mob {
         super()
     }
 
-    grounded?: func -> Bool {
-        // kinda..
+    tearVulnerable?: func -> Bool {
+        // always!
         true
     }
 
-    touchBlock: func (tile: Tile) -> Bool {
-        // most enemies are constrained by blocks.. but not us!
+    grounded?: func -> Bool {
+        // nevar!
         false
+    }
+
+    touchBlock: func (tile: Tile) -> Bool {
+        // round flies can't pass blocks, swarmer can
+        true
     }
 
     destroy: func {

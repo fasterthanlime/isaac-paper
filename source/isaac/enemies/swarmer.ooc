@@ -88,9 +88,14 @@ Swarmer: class extends Mob {
         super()
     }
 
-    grounded?: func -> Bool {
-        // kinda..
+    tearVulnerable?: func -> Bool {
+        // always!
         true
+    }
+
+    grounded?: func -> Bool {
+        // nevar!
+        false
     }
 
     touchBlock: func (tile: Tile) -> Bool {

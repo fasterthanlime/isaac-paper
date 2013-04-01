@@ -18,7 +18,8 @@ import structs/[ArrayList]
 import math/Random
 
 // our stuff
-import isaac/[level, hero, splash, enemy, fire, tiles, tnt, game, shadow]
+import isaac/[level, hero, splash, enemy, fire, tiles, tnt, game, shadow,
+    explosion, paths]
 
 Tear: class extends Entity {
 
@@ -48,6 +49,7 @@ Tear: class extends Entity {
     hit := false
 
     shadow: Shadow
+    parabola: Parabola
 
     heroHandler, enemyHandler, blockHandler, fireHandler, ignoreHandler: static CollisionHandler
 
@@ -58,7 +60,16 @@ Tear: class extends Entity {
 
         sprite = GlSprite new("assets/png/tears-1.png")
 
+        if (type == TearType IPECAC) {
+            range *= 0.8
+            parabola = Parabola new(30, range)
+        }
+
         scale := 0.17
+        if (type == TearType IPECAC) {
+            scale = 0.26
+        }
+
         sprite scale set!(scale, scale)
         radius = scale * (sprite width as Float) * 0.5
 
@@ -77,6 +88,8 @@ Tear: class extends Entity {
         match type {
             case TearType HERO =>
                 sprite color set!(224, 248, 254)
+            case TearType IPECAC =>
+                sprite color set!(158, 248, 158)
             case TearType ENEMY =>
                 sprite color set!(255, 168, 168)
         }
@@ -92,21 +105,39 @@ Tear: class extends Entity {
         // keep count of how far we've travelled to splash when over
         travelled += prevPos dist(pos)
 
-        if (travelled >= (range - zInitial / zIncrement)) {
-            z -= zIncrement
+        if (parabola) {
+            z = parabola eval(travelled)
+        } else {
+            if (travelled >= (range - zInitial / zIncrement)) {
+                z -= zIncrement
+            }
         }
 
         sprite pos set!(pos x, pos y + z)
         shadow setPos(pos x, pos y - shadowYOffset)
 
-        if (hit || z <= 0.0) {
-            level add(Splash new(level, sprite pos))
+        due := (z <= 0.1)
+        if (parabola && !parabola done?()) {
+            due = false
+        }
+
+        if (hit || due) {
+            onDeath()
             return false
         }
 
         prevPos set!(pos)
 
         true
+    }
+
+    onDeath: func {
+        match type {
+            case TearType IPECAC =>
+                level add(Explosion new(level, sprite pos))
+            case =>
+                level add(Splash new(level, sprite pos))
+        }
     }
 
     initPhysx: func {
@@ -171,6 +202,7 @@ Tear: class extends Entity {
 TearType: enum {
     HERO
     ENEMY
+    IPECAC
 }
 
 HeroTearHandler: class extends CollisionHandler {
@@ -187,7 +219,7 @@ HeroTearHandler: class extends CollisionHandler {
         }
 
         match (tear type) {
-            case TearType HERO =>
+            case TearType HERO || TearType IPECAC =>
                 bounce = false 
             case =>
                 hero := shape2 getUserData() as Hero
@@ -253,7 +285,11 @@ BlockTearHandler: class extends CollisionHandler {
         bounce := true
         
         tear := shape1 getUserData() as Tear
-        tear hit = true
+        if (tear z < 14.0) {
+            tear hit = true
+        } else {
+            return false
+        }
 
         tile := shape2 getUserData() as Tile
         match tile {

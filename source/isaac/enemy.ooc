@@ -59,6 +59,7 @@ Enemy: abstract class extends Entity {
     }
 
     bombHarm: func (explosion: Explosion) {
+        damageCount = 0
         harm(explosion damage)            
     }
 
