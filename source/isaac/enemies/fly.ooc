@@ -224,6 +224,8 @@ Fly: class extends Mob {
     }
 
     updateTarget: func {
+        level game playRandomSound("fly-bzz", 5)
+
         if (aggressive?()) {
             tracks := true
             if (Random randInt(0, 8) < 3) {
