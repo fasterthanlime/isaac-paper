@@ -187,7 +187,14 @@ CollectibleCoin: class extends Collectible {
 
     collect: func {
         level game heroStats pickupCoin(this)
-        level game playSound("penny-pickup")
+        match type {
+            case CoinType PENNY =>
+                level game playSound("penny-pickup")
+            case CoinType NICKEL =>
+                level game playSound("nickel-pickup")
+            case CoinType DIME =>
+                level game playSound("dime-pickup")
+        }
     }
 
     shouldFreeze: func -> Bool {
