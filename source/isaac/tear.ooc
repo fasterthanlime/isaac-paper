@@ -225,7 +225,7 @@ EnemyTearHandler: class extends CollisionHandler {
             case =>
                 match entity {
                     case enemy: Enemy =>
-                        if (enemy grounded?()) {
+                        if (enemy tearVulnerable?()) {
                             tear hit = true
                             enemy harm(tear damage)
                             enemy hitBack(tear)
@@ -314,7 +314,6 @@ IgnoreTearHandler: class extends CollisionHandler {
     add: func (f: Func (Int, Int)) {
         f(CollisionTypes TEAR, CollisionTypes COLLECTIBLE)
         f(CollisionTypes TEAR, CollisionTypes TRAP_DOOR)
-        logger warn("adding for hole")
         f(CollisionTypes TEAR, CollisionTypes HOLE)
         f(CollisionTypes TEAR, CollisionTypes SPIKES)
     }

@@ -91,7 +91,7 @@ DukePart: class extends Mob {
 
         number := Random randInt(0, 100)
         type := match number {
-            case number < 20 =>
+            case (number < 20) =>
                 FlyType BIG_ATTACK_FLY
             case =>
                 FlyType ATTACK_FLY

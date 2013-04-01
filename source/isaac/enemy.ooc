@@ -40,7 +40,7 @@ Enemy: abstract class extends Entity {
     redish: Bool
     baseColor := Color white()
 
-    heroHandler, wallsHandler, blockHandler, collectibleHandler: static CollisionHandler
+    heroHandler, wallsHandler, blockHandler, holeHandler, collectibleHandler: static CollisionHandler
 
     init: func (.level, .pos) {
         super(level, pos)
@@ -129,6 +129,10 @@ Enemy: abstract class extends Entity {
         z < level groundLevel
     }
 
+    tearVulnerable?: func -> Bool {
+        grounded?()
+    }
+
     /* COLLISION STUFF
     ===================== */
 
@@ -148,6 +152,11 @@ Enemy: abstract class extends Entity {
     touchBlock: func (tile: Tile) -> Bool {
         // most enemies are constrained by blocks
         true
+    }
+
+    touchHole: func (tile: Tile) -> Bool {
+        // some enemies are constrained by holes
+        grounded?()
     }
 
     touchCollectible: func (collectible: Collectible) -> Bool {
@@ -170,6 +179,11 @@ Enemy: abstract class extends Entity {
             blockHandler = EnemyBlockHandler new()
         }
         blockHandler ensure(level)
+
+        if (!holeHandler) {
+            holeHandler = EnemyHoleHandler new()
+        }
+        holeHandler ensure(level)
 
         if (!collectibleHandler) {
             collectibleHandler = EnemyCollectibleHandler new()
@@ -420,6 +434,24 @@ EnemyBlockHandler: class extends CollisionHandler {
 
     add: func (f: Func (Int, Int)) {
         f(CollisionTypes ENEMY, CollisionTypes BLOCK)
+    }
+
+}
+
+EnemyHoleHandler: class extends CollisionHandler {
+
+    begin: func (arbiter: CpArbiter, space: CpSpace) -> Bool {
+        shape1, shape2: CpShape
+        arbiter getShapes(shape1&, shape2&)
+
+        enemy := shape1 getUserData() as Enemy
+        tile := shape2 getUserData() as Tile
+
+        enemy touchHole(tile)
+    }
+
+    add: func (f: Func (Int, Int)) {
+        f(CollisionTypes ENEMY, CollisionTypes HOLE)
     }
 
 }
