@@ -18,17 +18,21 @@ Each possible level is separated by a blank line
   * `p` - poop
   * `T` - TNT
   * `c` - collectible (bomb, key, money, chest)
-  * `C` - chest
+  * `C` - chFest
   * `f` - fire
   * `F` - orange fire (evil)
   * `x` - spikes
   * `=` - Eternal poop 
- 
+  * `2` - coins 
+  * `5` - Stone Grimace 
+  * `7` - Vomite Grimace
+  * `9` - Machine  
+  * `L` - Slide  
+  
 ### Basement
 
   * `e` - embryo (little blastocyst)
   * `q` - pacer
-  * `Q` - gurgle
   * `g` - gaper
   * `G` - gusher
   * `u` - sucker
@@ -79,10 +83,13 @@ Each possible level is separated by a blank line
   * `y` - Keeper
   * `6` - Walking Gut Sack Boil
   * `(` - Gut
+  * `k` - Sack  
   
 ### Necropolis
 
+
   * `&` - swarmer
+  * `l` - hanger
 
 ### Womb
 
