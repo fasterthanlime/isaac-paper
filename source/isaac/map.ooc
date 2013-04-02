@@ -234,6 +234,22 @@ Map: class {
             bounds _, bounds width, bounds height)
     }
 
+    reveal: func {
+        currentTile revealed = true
+
+        maybeReveal := func (col, row: Int) {
+            if (grid contains?(col, row)) {
+                tile := grid get(col, row)
+                tile revealAsNeighbor()
+            }
+        }
+
+        maybeReveal(currentTile pos x - 1, currentTile pos y)
+        maybeReveal(currentTile pos x + 1, currentTile pos y)
+        maybeReveal(currentTile pos x, currentTile pos y - 1)
+        maybeReveal(currentTile pos x, currentTile pos y + 1)
+    }
+
     setup: func {
         group clear()
 
@@ -386,6 +402,7 @@ MapTile: class {
     frozenRoom: FrozenRoom
     bossType := BossType NONE
 
+    revealed := false
     active := false
     locked := false
 
@@ -400,6 +417,23 @@ MapTile: class {
                     // past Basement 1/Cellar 1, all item rooms are locked
                     locked = true 
                 }
+        }
+    }
+
+    revealAsNeighbor: func {
+        if (secret?()) {
+            return
+        }
+
+        revealed = true
+    }
+
+    secret?: func -> Bool {
+        match type {
+            case RoomType SECRET || RoomType SUPERSECRET =>
+                true
+            case =>
+                false
         }
     }
 
@@ -431,6 +465,10 @@ MapTile: class {
     }
 
     setup: func (col, row: Int, tileSize: Vec2, gridOffset: Vec2i, centerOffset: Vec2) {
+        if (!revealed) {
+            return // NO MAP FOR YOU.
+        }
+
         diff := vec2(
             (col - gridOffset x) * tileSize x + centerOffset x,
             (row - gridOffset y) * tileSize y + centerOffset y

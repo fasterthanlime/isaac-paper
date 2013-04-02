@@ -159,7 +159,9 @@ Game: class {
     loadRoom: func {
         dumpRoomInfo()
 
+        map reveal()
         map setup()
+
         initLevel()
         loadMusic()
     }
