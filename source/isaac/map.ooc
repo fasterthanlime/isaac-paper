@@ -302,7 +302,8 @@ Map: class {
         realWidth := tileSize x * gWidth
         realHeight := tileSize y * gHeight
 
-        if (realWidth > screenSize x || realHeight > screenSize y) {
+        if (realWidth > screenSize x || realHeight > screenSize y ||
+                (tileSize x > idealTileSize x && tileSize y > idealTileSize y)) {
             // our tiles are too big - use ideal tile size, and center
             // properly
 
@@ -650,14 +651,17 @@ GlMapTile: class extends GlGroup {
     fill: GlRectangle
     tile: MapTile
 
+    bgSprite: GlSprite
+
+    group: GlGroup
+
+    baseScale := 0.35
+    tileScale: Float
+
     init: func (size: Vec2, =tile) {
         super()
 
-        outline = GlRectangle new(size)
-        outline color set!(Color new(10, 10, 10))
-        outline lineWidth = 4.0
-        outline center = false
-        add(outline)
+        tileScale = size x / 25.0 
 
         fill = GlRectangle new(size sub(2, 2))
         fill pos set!(1, 1)
@@ -688,12 +692,32 @@ GlMapTile: class extends GlGroup {
             }
         }
         fill center = false
-        add(fill)
+        fill opacity = 0.5
+        //add(fill)
+
+        group = GlGroup new()
+        add(group)
+
+        bgState := match {
+            case tile active =>
+                "white"
+            case tile cleared?() =>
+                "light"
+            case =>
+                "dark"
+        }
+        bgSprite = GlSprite new("assets/png/cell-%s.png" format(bgState))
+        group add(bgSprite)
+
+        realScale := baseScale * tileScale
+        group scale set!(realScale, realScale)
     }
 
     setPos: func (pos: Vec2) {
+        offset := vec2(25, 12) mul(0.5 * tileScale)
+        group pos set!(pos add(offset))
+
         fill pos set!(pos)
-        outline pos set!(pos)
     }
     
 }

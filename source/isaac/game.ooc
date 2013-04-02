@@ -311,7 +311,7 @@ Game: class {
         uiBg := GlRectangle new(vec2(800, 105))
         uiBg center = false
         uiBg pos set!(0, 495)
-        uiBg color set!(Color new(20, 20, 20))
+        uiBg color set!(Color new(26, 24, 24))
         uiGroup add(uiBg)
 
         labelLeft := 340
