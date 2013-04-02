@@ -226,28 +226,20 @@ Map: class {
                 // this is gonna be a bit hard
                 for (l in shuffled) {
                     if (neighborCount(l pos) == 1) {
-                        // we're golden
-                        pos1 := vec2i(l pos)
-                        room1 := add(pos1, special)
-                        adjacencyMap update(l pos x, l pos y, false)
+                        path := getPath(l pos, null, 3)
+                        if (path) {
+                            logger error("Found path: ")
+                            for (p in path) {
+                                logger error(" - %s", p toString())
 
-                        pos2 := vec2i(room1 pos)
-                        match {
-                            case room1 hasTop?() =>
-                                pos2 y -= 1
-                            case room1 hasBottom?() =>
-                                pos2 y += 1
-                            case room1 hasLeft?() =>
-                                pos2 x += 1
-                            case =>
-                                pos2 x -= 1
+                                add(p, special)
+                                adjacencyMap update(p x, p y, false)
+                            }
+
+                            lonelies = adjacencyMap getLonelies()
+
+                            break // we're done looking
                         }
-                        room2 := add(pos2, special)
-                        adjacencyMap update(pos2 x, pos2 y, false)
-
-                        lonelies = adjacencyMap getLonelies()
-
-                        break // we're done looking
                     }
                 }
             } else {
@@ -308,7 +300,7 @@ Map: class {
             tileSize toString(), idealTileSize toString())
 
         realWidth := tileSize x * gWidth
-        realHeight := tileSize x * gHeight
+        realHeight := tileSize y * gHeight
 
         if (realWidth > screenSize x || realHeight > screenSize y) {
             // our tiles are too big - use ideal tile size, and center
@@ -455,6 +447,54 @@ Map: class {
         }
 
         tile
+    }
+
+    getPath: func (current, previous: Vec2i, length: Int) -> List<Vec2i> {
+        // here's what this method should do:
+        // given a lonely tile that has only 1 neighbor..
+        // we'll try to find a path that's made entirely of
+        // lonelies
+
+        threshold := previous == null ? 1 : 0
+        if (neighborCount(current) > threshold) {
+            return null
+        }
+
+        if (length <= 1) {
+            list := ArrayList<Vec2i> new()
+            list add(current)
+            return list
+        } else {
+            tryPath := func (pos: Vec2i) -> List<Vec2i> {
+                if (previous &&
+                        (previous x == pos x && previous y == pos y)) {
+                    // disregard
+                    return null
+                }
+
+                path := getPath(pos, current, length - 1)
+                if (path) {
+                    path add(0, current)
+                }
+                return path
+            }
+
+            tries := ArrayList<Vec2i> new()
+            tries add(current add(0, 1))
+            tries add(current add(0, -1))
+            tries add(current add(-1, 0))
+            tries add(current add(1, 0))
+            tries = tries shuffle()
+
+            "tries = %s" printfln(tries map(|x| x toString()) join(", "))
+
+            for (t in tries) {
+                list := tryPath(t)
+                if (list) return list
+            }
+        }
+
+        null
     }
 }
 

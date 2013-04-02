@@ -13,7 +13,7 @@ import chipmunk
 import structs/[ArrayList, List, HashMap]
 
 // our stuff
-import isaac/[level, game, map, bomb, plan, explosion, hero]
+import isaac/[level, game, map, bomb, plan, explosion, hero, options]
 
 Walls: class extends Entity {
 
@@ -184,6 +184,10 @@ Door: class extends Entity {
     }
 
     walkable?: func -> Bool {
+        if (level game options openDoors && connection) {
+            return true
+        }
+
         if (!open) {
             // closed? (ie. in combat) - no good
             return false

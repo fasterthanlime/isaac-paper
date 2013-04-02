@@ -30,6 +30,9 @@ Options: class {
     // always spawn XL floors
     permaXL := false
 
+    // all doors are always open
+    openDoors := false
+
     init: func {
         load()
     }
@@ -56,6 +59,8 @@ Options: class {
                     mapCheat = value toBool()
                 case "permaXL" =>
                     permaXL = value toBool()
+                case "openDoors" =>
+                    openDoors = value toBool()
             }
         )
     }
