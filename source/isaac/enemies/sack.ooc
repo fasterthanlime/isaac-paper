@@ -16,36 +16,46 @@ import gnaar/[utils]
 import math, math/Random
 
 // our stuff
-import isaac/[level, shadow, enemy, hero, utils, paths]
+import isaac/[level, shadow, enemy, hero, utils, paths, tear]
 import isaac/enemies/[spider]
 
 /*
- * Spiderer.
+ * Spiderer. Among other things..
  */
 Sack: class extends Mob {
 
-    spawnCount := 200
-    spawnCountMax := 140
-    radius := 180
+    spawnCount := 80
+    spawnCountMax := 120
+    radius := 250
 
     damage := 4.0
 
     maxLife := 30.0
     lifeIncr := 0.04
 
-    init: func (.level, .pos) {
+    type: SackType
+
+    init: func (.level, .pos, =type) {
         super(level, pos)
 
         life = maxLife
 
-        loadSprite("sack", level charGroup)
+        loadSprite(getSpriteName(), level charGroup)
         createShadow(30)
 
         createBox(20, 20, INFINITY, INFINITY)
     }
 
     getSpriteName: func -> String {
-        "sack"
+        match type {
+            case SackType SACK =>
+                "sack"
+            case SackType BOIL =>
+                "boil"
+            // otherwise, gut
+            case =>
+                "gut"
+        }
     }
 
     fixed?: func -> Bool {
@@ -53,11 +63,13 @@ Sack: class extends Mob {
     }
 
     touchHero: func (hero: Hero) -> Bool {
-        // we only spawn spiders, we don't hurt per se
+        // we only spawn stuff, we don't hurt per se
         true
     }
 
     update: func -> Bool {
+        pos set!(body getPos())
+
         if (life < maxLife) {
            if (damageCount <= 0) {
                 life += lifeIncr
@@ -85,10 +97,34 @@ Sack: class extends Mob {
     }
 
     spawn: func {
+        match type {
+            case SackType SACK =>
+                spawnSpider()
+            case SackType BOIL =>
+                spawnShots()
+            case SackType GUT =>
+                spawnIpecac()
+        }
+        resetSpawnCount()
+    }
+
+    spawnSpider: func {
         spider := Spider new(level, pos, SpiderType SMALL)
         spider catapult()
         level add(spider)
-        resetSpawnCount()
+    }
+
+    spawnShots: func {
+        // TODO:
+    }
+
+    spawnIpecac: func {
+        diff := level hero aimPos() sub(pos)
+        shotSpeed := 200
+        vel := diff normalized() mul(shotSpeed)
+        range := diff norm() + 30
+
+        level add(Tear new(level, pos, vel, TearType IPECAC, 1, range))
     }
 
     resetSpawnCount: func {
@@ -104,5 +140,11 @@ Sack: class extends Mob {
         resetSpawnCount()
     }
 
+}
+
+SackType: enum {
+    SACK
+    BOIL
+    GUT
 }
 

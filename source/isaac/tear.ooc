@@ -63,12 +63,12 @@ Tear: class extends Entity {
 
         if (type == TearType IPECAC) {
             range *= 0.8
-            parabola = Parabola new(40, range)
+            parabola = Parabola new(60, range)
         }
 
-        scale := 0.17
+        scale := 0.23
         if (type == TearType IPECAC) {
-            scale = 0.31
+            scale = 0.29
         }
 
         sprite scale set!(scale, scale)
@@ -251,9 +251,6 @@ EnemyTearHandler: class extends CollisionHandler {
         }
 
         if (tear type == TearType IPECAC) {
-            if (tear z < tear contactLevel) {
-                tear hit = true
-            }
             return false
         }
 

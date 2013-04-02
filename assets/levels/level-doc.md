@@ -54,7 +54,6 @@ Each possible level is separated by a blank line
   * `m` - mulliboom
   * `M` - mulligan or mulligoon
   * `k` - sack
-
   
 ### Cave
 
@@ -71,22 +70,21 @@ Each possible level is separated by a blank line
   * `$` - spity
   * `@` - host 
   * `6` - red host
-  * `0` - (zero) Maw and Red Maw and Psychic Maw
-  * `K` - Knight and Selfless Knight
-  * `W` - Mr. Maw
+  * `0` - (zero) maw and red maw and psychic maw
+  * `K` - knight and selfless knight
+  * `W` - mr. maw
   
 ### Catacombs
 
-  * `v` - Chubber 
-  * `%` - Gurgle 
-  * `Q` - Buttlicker
-  * `y` - Keeper
-  * `6` - Walking Gut Sack Boil
-  * `(` - Gut
-  * `k` - Sack  
+  * `v` - chubber 
+  * `%` - gurgle 
+  * `Q` - buttlicker
+  * `y` - keeper
+  * `6` - walking gut/sack/boil
+  * `(` - gut
+  * `r` - boil
   
 ### Necropolis
-
 
   * `&` - swarmer
   * `l` - hanger

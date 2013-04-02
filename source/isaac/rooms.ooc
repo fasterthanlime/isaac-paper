@@ -173,7 +173,11 @@ Room: class {
             case 'S' =>
                 level add(Spider new(level, level gridPos(x, y), SpiderType BIG))
             case 'k' =>
-                level add(Sack new(level, level gridPos(x, y)))
+                level add(Sack new(level, level gridPos(x, y), SackType SACK))
+            case '(' =>
+                level add(Sack new(level, level gridPos(x, y), SackType GUT))
+            case 'r' =>
+                level add(Sack new(level, level gridPos(x, y), SackType BOIL))
             case 'o' =>
                 level add(Fly new(level, level gridPos(x, y), FlyType BLACK_FLY))
             case 'O' =>

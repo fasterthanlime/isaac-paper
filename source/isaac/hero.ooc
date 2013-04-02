@@ -494,10 +494,10 @@ HeroStats: class {
     }
 
     tearType: func -> TearType {
-        //TearType HERO
+        TearType HERO
 
         // just testing:
-        TearType IPECAC
+        //TearType IPECAC
     }
 
 }
