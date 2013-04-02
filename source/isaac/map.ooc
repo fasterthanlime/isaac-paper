@@ -647,11 +647,11 @@ MapTile: class {
 
 GlMapTile: class extends GlGroup {
 
-    outline: GlRectangle
-    fill: GlRectangle
     tile: MapTile
 
     bgSprite: GlSprite
+    roomSprite: GlSprite
+    itemSprite: GlSprite
 
     group: GlGroup
 
@@ -663,40 +663,12 @@ GlMapTile: class extends GlGroup {
 
         tileScale = size x / 25.0 
 
-        fill = GlRectangle new(size sub(2, 2))
-        fill pos set!(1, 1)
-        if (tile active) {
-            fill color set!(Color new(255, 255, 255))
-        } else if (tile cleared?()) {
-            fill color set!(Color new(160, 160, 160))
-        } else {
-            match (tile type) {
-                case RoomType BOSS =>
-                    fill color set!(Color new(255, 0, 0)) // red
-                case RoomType TREASURE =>
-                    fill color set!(Color new(255, 255, 0)) // yellow
-
-                case RoomType SHOP =>
-                    fill color set!(Color new(72, 60, 50)) // taupe
-                case RoomType MINIBOSS =>
-                    fill color set!(Color new(255, 128, 128)) // pink
-                case RoomType LIBRARY =>
-                    fill color set!(Color new(210, 180, 140)) // tan
-                case RoomType CURSE =>
-                    fill color set!(Color new(170, 0, 0)) // dark red
-                case RoomType CHALLENGE =>
-                    fill color set!(Color new(255, 0, 255)) // magenta
-
-                case =>
-                    fill color set!(Color new(60, 60, 60)) // gray
-            }
-        }
-        fill center = false
-        fill opacity = 0.5
-        //add(fill)
-
         group = GlGroup new()
+        realScale := baseScale * tileScale
+        group scale set!(realScale, realScale)
         add(group)
+
+        /* Background */
 
         bgState := match {
             case tile active =>
@@ -709,15 +681,41 @@ GlMapTile: class extends GlGroup {
         bgSprite = GlSprite new("assets/png/cell-%s.png" format(bgState))
         group add(bgSprite)
 
-        realScale := baseScale * tileScale
-        group scale set!(realScale, realScale)
+        /* Tile sprite (crown, etc.) */
+
+        
+        roomSpriteName := match (tile type) {
+            case RoomType BOSS =>
+                "big-skull"
+            case RoomType MINIBOSS =>
+                "small-skull"
+            case RoomType TREASURE =>
+                "treasure"
+            case RoomType SHOP =>
+                "shop"
+            case RoomType CURSE =>
+                "curse"
+            case RoomType CHALLENGE =>
+                "challenge"
+            case RoomType ARCADE =>
+                "dice"
+            case RoomType SECRET || RoomType SUPERSECRET =>
+                "question"
+            case =>
+                ""
+        }
+
+        if (roomSpriteName != "") {
+            roomSpritePath := "assets/png/room-%s.png" format(roomSpriteName)
+            roomSprite = GlSprite new(roomSpritePath)
+            group add(roomSprite)
+        }
+        
     }
 
     setPos: func (pos: Vec2) {
         offset := vec2(25, 12) mul(0.5 * tileScale)
         group pos set!(pos add(offset))
-
-        fill pos set!(pos)
     }
     
 }
