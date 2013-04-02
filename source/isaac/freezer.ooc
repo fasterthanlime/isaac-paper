@@ -64,6 +64,16 @@ FrozenRoom: class {
         }
     }
 
+    contains?: func (type: String) -> Bool {
+        for (e in entities) {
+            if (e type == type) {
+                return true
+            }
+        }
+
+        false
+    }
+
 }
 
 FrozenTile: class {

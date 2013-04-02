@@ -76,7 +76,7 @@ Map: class {
 
     grid := SparseGrid<MapTile> new()
 
-    group, outlineGroup, roomGroup: GlGroup
+    group, outlineGroup, roomGroup, itemGroup: GlGroup
 
     currentTile: MapTile
 
@@ -93,6 +93,9 @@ Map: class {
 
         roomGroup = GlGroup new()
         group add(roomGroup)
+
+        itemGroup = GlGroup new()
+        group add(itemGroup)
     }
 
     destroy: func {
@@ -282,6 +285,7 @@ Map: class {
     setup: func {
         outlineGroup clear()
         roomGroup clear()
+        itemGroup clear()
 
         grid each(|col, row, tile|
             tile reset()
@@ -668,11 +672,9 @@ GlMapTile: class {
 
     tile: MapTile
 
-    bgSprite: GlSprite
-    roomSprite: GlSprite
-    itemSprite: GlSprite
+    bgSprite, roomSprite, itemSprite: GlSprite
 
-    group, roomGroup: GlGroup
+    group, roomGroup, itemGroup: GlGroup
 
     baseScale := 0.35
     tileScale: Float
@@ -688,6 +690,10 @@ GlMapTile: class {
         roomGroup = GlGroup new()
         roomGroup scale set!(realScale, realScale)
         tile map roomGroup add(roomGroup)
+
+        itemGroup = GlGroup new()
+        itemGroup scale set!(realScale, realScale)
+        tile map itemGroup add(itemGroup)
 
         /* Background */
 
@@ -730,7 +736,30 @@ GlMapTile: class {
             roomSprite = GlSprite new(roomSpritePath)
             roomGroup add(roomSprite)
         }
+
+        /* Item sprite (key, coin, etc.) */
         
+        room := tile frozenRoom
+        if (room) {
+            itemSpriteName := match {
+                case (room contains?("CollectibleHeart")) =>
+                    "heart"
+                case (room contains?("CollectibleKey")) =>
+                    "key"
+                case (room contains?("CollectibleChest")) =>
+                    "chest"
+                case (room contains?("CollectibleCoin")) =>
+                    "coin"
+                case =>
+                    ""
+            }
+
+            if (itemSpriteName != "") {
+                itemSpritePath := "assets/png/room-item-%s.png" format(itemSpriteName)
+                itemSprite = GlSprite new(itemSpritePath)
+                itemGroup add(itemSprite)
+            }
+        }
     }
 
     setPos: func (pos: Vec2) {
@@ -739,11 +768,13 @@ GlMapTile: class {
 
         group pos set!(ourPos)
         roomGroup pos set!(ourPos)
+        itemGroup pos set!(ourPos)
     }
 
     destroy: func {
         tile map outlineGroup remove(group)
         tile map roomGroup remove(roomGroup)
+        tile map itemGroup remove(itemGroup)
     }
     
 }
