@@ -239,7 +239,7 @@ Game: class {
     }
 
     generatePlan: func {
-        plan = Plan generate()
+        plan = Plan generate(this)
         logger info("Generated plan: %s", plan toString())
     }
 

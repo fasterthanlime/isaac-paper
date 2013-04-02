@@ -307,7 +307,7 @@ Map: class {
         }
 
         grid each(|col, row, tile|
-            if (tile revealed || game options mapCheat) {
+            if (tile revealed) {
                 tile setup(col, row, tileSize, gridOffset, centerOffset)
             }
         )
@@ -446,6 +446,10 @@ MapTile: class {
                     // past Basement 1/Cellar 1, all item rooms are locked
                     locked = true 
                 }
+        }
+
+        if (map game options mapCheat) {
+            revealed = true // duh.
         }
     }
 
