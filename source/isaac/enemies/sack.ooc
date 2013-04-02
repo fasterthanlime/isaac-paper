@@ -24,8 +24,9 @@ import isaac/enemies/[spider]
  */
 Sack: class extends Mob {
 
-    spawnCount := 80
-    spawnCountMax := 120
+    spawnCount := 120
+    spawnCountMax := 160
+    spawnCountWiggle := 80
     radius := 250
 
     damage := 4.0
@@ -46,6 +47,11 @@ Sack: class extends Mob {
         createBox(20, 20, INFINITY, INFINITY)
 
         ownBombImmune = true
+
+        match type {
+            case SackType GUT =>
+                radius = 180
+        }
     }
 
     getSpriteName: func -> String {
@@ -117,12 +123,15 @@ Sack: class extends Mob {
     }
 
     spawnShots: func {
-        // TODO:
+        target := level hero aimPos()
+        diff := target sub(pos)
+        shotSpeed := 240
+        splurt(Random randInt(3, 5), pos, diff, shotSpeed)
     }
 
     spawnIpecac: func {
         diff := level hero aimPos() sub(pos)
-        shotSpeed := 200
+        shotSpeed := 280
         vel := diff normalized() mul(shotSpeed)
         range := diff norm() + 30
 
@@ -132,7 +141,7 @@ Sack: class extends Mob {
     }
 
     resetSpawnCount: func {
-        spawnCount = spawnCountMax + Random randInt(-20, 120)
+        spawnCount = spawnCountMax + Random randInt(0, spawnCountWiggle)
     }
 
     destroy: func {

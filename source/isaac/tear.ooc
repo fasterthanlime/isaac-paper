@@ -65,12 +65,16 @@ Tear: class extends Entity {
 
         if (type == TearType IPECAC) {
             range *= 0.8
-            parabola = Parabola new(60, range)
+            lob(60)
         }
 
-        scale := 0.23
+        scale := 0.21
         if (type == TearType IPECAC) {
             scale = 0.29
+        }
+
+        if (type == TearType ENEMY && damage > 1) {
+            scale *= 1.4
         }
 
         sprite scale set!(scale, scale)
@@ -96,6 +100,10 @@ Tear: class extends Entity {
             case TearType ENEMY =>
                 sprite color set!(255, 168, 168)
         }
+    }
+
+    lob: func (height: Float) {
+        parabola = Parabola new(height, range)
     }
 
     playEmit: func {

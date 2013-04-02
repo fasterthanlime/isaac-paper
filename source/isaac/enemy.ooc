@@ -277,6 +277,37 @@ Enemy: abstract class extends Entity {
     /* SPAWN STUFF
      ======================*/
 
+    spawnTear: func (pos, dir: Vec2, fireSpeed: Float) -> Tear {
+        spawnTear(pos, dir, fireSpeed, 1)
+    }
+
+    spawnTear: func ~withDamage (pos, dir: Vec2, fireSpeed, damage: Float) -> Tear {
+        vel := dir mul(fireSpeed)
+        tear := Tear new(level, pos, vel, TearType ENEMY, damage, shootRange)
+        level add(tear)
+        tear
+    }
+
+    splurt: func (numTears: Int, pos, diff: Vec2, fireSpeed: Float) {
+        for (i in 0..numTears) {
+            dir := diff add(Vec2 random(15)) normalized()
+
+            number := Random randInt(0, 100)
+            damage := match number {
+                case number > 50 =>
+                    2
+                case =>
+                    1
+            }
+
+            actualFireSpeed := fireSpeed + (Random randInt(-30, 30) as Float)
+            actualPos := pos add(Vec2 random(15))
+
+            tear := spawnTear(actualPos, dir, actualFireSpeed, damage)
+            tear lob(50)
+        }
+    }
+
     spawnSixTears: func (fireSpeed: Float) {
         angle := (Random randInt(0, 360) as Float) toRadians()
         for (i in 0..6) {
@@ -304,12 +335,6 @@ Enemy: abstract class extends Entity {
 
         pos2 := pos add(Vec2 fromAngle(a2 - PI / 2.0) mul(offset))
         spawnTear(pos2, Vec2 fromAngle(a2), fireSpeed)
-    }
-
-    spawnTear: func (pos, dir: Vec2, fireSpeed: Float) {
-        vel := dir mul(fireSpeed)
-        tear := Tear new(level, pos, vel, TearType ENEMY, 1, shootRange)
-        level add(tear)
     }
 
 }
