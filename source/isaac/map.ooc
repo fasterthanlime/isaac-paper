@@ -76,7 +76,7 @@ Map: class {
 
     grid := SparseGrid<MapTile> new()
 
-    group: GlGroup
+    group, outlineGroup, roomGroup: GlGroup
 
     currentTile: MapTile
 
@@ -87,6 +87,12 @@ Map: class {
     init: func (=game) {
         group = GlGroup new()
         game mapGroup add(group)
+
+        outlineGroup = GlGroup new()
+        group add(outlineGroup)
+
+        roomGroup = GlGroup new()
+        group add(roomGroup)
     }
 
     destroy: func {
@@ -274,7 +280,8 @@ Map: class {
     }
 
     setup: func {
-        group clear()
+        outlineGroup clear()
+        roomGroup clear()
 
         grid each(|col, row, tile|
             tile reset()
@@ -337,12 +344,6 @@ Map: class {
 
         logger warn("In the end: tileSize = %s, centerOffset = %s",
             tileSize toString(), centerOffset toString())
-
-        //grid each(|col, row, tile|
-        //    if (tile revealed) {
-        //        tile setup(col, row, tileSize, gridOffset, centerOffset)
-        //    }
-        //)
 
         {
             y := bounds yMax
@@ -591,7 +592,7 @@ MapTile: class {
 
     reset: func {
         if (rect) {
-            map group remove(rect)            
+            rect destroy()
             rect = null
         }
     }
@@ -604,7 +605,6 @@ MapTile: class {
         offset := map offset add(diff)
         rect = GlMapTile new(tileSize, this)
         rect setPos(offset)
-        map group add(rect)
     }
 
     neighbor: func (deltaCol, deltaRow: Int) -> This {
@@ -664,7 +664,7 @@ MapTile: class {
     
 }
 
-GlMapTile: class extends GlGroup {
+GlMapTile: class {
 
     tile: MapTile
 
@@ -672,20 +672,22 @@ GlMapTile: class extends GlGroup {
     roomSprite: GlSprite
     itemSprite: GlSprite
 
-    group: GlGroup
+    group, roomGroup: GlGroup
 
     baseScale := 0.35
     tileScale: Float
 
     init: func (size: Vec2, =tile) {
-        super()
-
         tileScale = size x / 25.0 
+        realScale := baseScale * tileScale
 
         group = GlGroup new()
-        realScale := baseScale * tileScale
         group scale set!(realScale, realScale)
-        add(group)
+        tile map outlineGroup add(group)
+
+        roomGroup = GlGroup new()
+        roomGroup scale set!(realScale, realScale)
+        tile map roomGroup add(roomGroup)
 
         /* Background */
 
@@ -700,8 +702,7 @@ GlMapTile: class extends GlGroup {
         bgSprite = GlSprite new("assets/png/cell-%s.png" format(bgState))
         group add(bgSprite)
 
-        /* Tile sprite (crown, etc.) */
-
+        /* Room sprite (crown, etc.) */
         
         roomSpriteName := match (tile type) {
             case RoomType BOSS =>
@@ -727,14 +728,22 @@ GlMapTile: class extends GlGroup {
         if (roomSpriteName != "") {
             roomSpritePath := "assets/png/room-%s.png" format(roomSpriteName)
             roomSprite = GlSprite new(roomSpritePath)
-            group add(roomSprite)
+            roomGroup add(roomSprite)
         }
         
     }
 
     setPos: func (pos: Vec2) {
         offset := vec2(25, 12) mul(0.5 * tileScale)
-        group pos set!(pos add(offset))
+        ourPos := pos add(offset)
+
+        group pos set!(ourPos)
+        roomGroup pos set!(ourPos)
+    }
+
+    destroy: func {
+        tile map outlineGroup remove(group)
+        tile map roomGroup remove(roomGroup)
     }
     
 }
