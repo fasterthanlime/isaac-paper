@@ -11,6 +11,7 @@ Options: class {
     music := true
     mute := false
     testLevel := false
+    mapCheat := false
 
     init: func {
         load()
@@ -34,6 +35,8 @@ Options: class {
                     mute = value toBool()
                 case "testLevel" =>
                     testLevel = value toBool()
+                case "mapCheat" =>
+                    mapCheat = value toBool()
             }
         )
     }

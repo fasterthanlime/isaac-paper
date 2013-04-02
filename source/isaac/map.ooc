@@ -14,7 +14,7 @@ import math/Random
 import structs/[HashMap, List, ArrayList]
 
 // our stuff
-import isaac/[level, plan, rooms, game, boss, freezer, options, boss]
+import isaac/[level, plan, rooms, game, boss, freezer, options, boss, options]
 import isaac/bosses/[duke]
 
 RoomType: enum {
@@ -307,7 +307,7 @@ Map: class {
         }
 
         grid each(|col, row, tile|
-            if (tile revealed) {
+            if (tile revealed || game options mapCheat) {
                 tile setup(col, row, tileSize, gridOffset, centerOffset)
             }
         )
