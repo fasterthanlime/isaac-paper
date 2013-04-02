@@ -16,7 +16,7 @@ Trite: class extends Hopper {
 
         spriteYOffset = 8
 
-        baseScale = 0.85
+        baseScale = 0.94
     }
 
     getSpriteName: func -> String {

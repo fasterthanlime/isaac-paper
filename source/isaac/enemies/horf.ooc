@@ -19,7 +19,7 @@ import structs/[ArrayList, List, HashMap]
 // our stuff
 import isaac/[level, shadow, enemy, hero, utils, paths, pathfinding,
     explosion, tear]
-import isaac/behaviors/[firebehavior]
+import isaac/behaviors/[firebehavior, frictionbehavior]
 
 /**
  * Just standing there
@@ -27,6 +27,7 @@ import isaac/behaviors/[firebehavior]
 Horf: class extends Mob {
     
     fireBehavior: FireBehavior
+    frictionBehavior: FrictionBehavior
 
     init: func (=level, =pos) {
         super(level, pos)
@@ -44,10 +45,15 @@ Horf: class extends Mob {
         fireBehavior onFire(||
             level game playRandomSound("horf-attack", 2)
         )
+
+        frictionBehavior = FrictionBehavior new(this)
+        frictionBehavior alwaysApplies = true
     }
 
     update: func -> Bool {
         fireBehavior update()
+        frictionBehavior update()
+
         super()
     }
 

@@ -122,9 +122,7 @@ Map: class {
 
         // boss rooms are a must
         room(RoomType BOSS)
-        if (game floor xl) {
-            room(RoomType BOSS)
-        }
+        // second XL room will be placed accordingly
 
         // so are treasure rooms, up to depths/necropolis
         if (game floor type level() < 3) {
@@ -221,11 +219,44 @@ Map: class {
 
         while (!lonelies empty?() && !specials empty?()) {
             special := specials removeAt(0)
-            lonely := Random choice(lonelies)
-            add(lonely pos, special)
 
-            adjacencyMap update(lonely pos x, lonely pos y, false)
-            lonelies = adjacencyMap getLonelies()
+            if (special == RoomType BOSS && game floor xl) {
+                shuffled := lonelies shuffle()
+
+                // this is gonna be a bit hard
+                for (l in shuffled) {
+                    if (neighborCount(l pos) == 1) {
+                        // we're golden
+                        pos1 := vec2i(l pos)
+                        room1 := add(pos1, special)
+                        adjacencyMap update(l pos x, l pos y, false)
+
+                        pos2 := vec2i(room1 pos)
+                        match {
+                            case room1 hasTop?() =>
+                                pos2 y -= 1
+                            case room1 hasBottom?() =>
+                                pos2 y += 1
+                            case room1 hasLeft?() =>
+                                pos2 x += 1
+                            case =>
+                                pos2 x -= 1
+                        }
+                        room2 := add(pos2, special)
+                        adjacencyMap update(pos2 x, pos2 y, false)
+
+                        lonelies = adjacencyMap getLonelies()
+
+                        break // we're done looking
+                    }
+                }
+            } else {
+                lonely := Random choice(lonelies)
+                add(lonely pos, special)
+
+                adjacencyMap update(lonely pos x, lonely pos y, false)
+                lonelies = adjacencyMap getLonelies()
+            }
         }
 
         bounds := grid getBounds()
@@ -271,17 +302,22 @@ Map: class {
         )
 
         idealTileSize := vec2(25, 12)
-
         centerOffset := vec2(0, 0)
 
-        if (tileSize x > idealTileSize x || tileSize y > idealTileSize y) {
+        logger warn("tileSize = %s, idealTileSize = %s",
+            tileSize toString(), idealTileSize toString())
+
+        realWidth := tileSize x * gWidth
+        realHeight := tileSize x * gHeight
+
+        if (realWidth > screenSize x || realHeight > screenSize y) {
             // our tiles are too big - use ideal tile size, and center
             // properly
 
             tileSize set!(idealTileSize)
 
-            realWidth := tileSize x * gWidth
-            realHeight := tileSize y * gHeight
+            realWidth = tileSize x * gWidth
+            realHeight = tileSize y * gHeight
 
             centerOffset x = (screenSize x / 2.0 - realWidth / 2.0)
             centerOffset y = (screenSize y / 2.0 - realHeight / 2.0)
@@ -305,6 +341,9 @@ Map: class {
                 centerOffset x += screenSize x * 0.5 - realWidth * 0.5
             }
         }
+
+        logger warn("In the end: tileSize = %s, centerOffset = %s",
+            tileSize toString(), centerOffset toString())
 
         grid each(|col, row, tile|
             if (tile revealed) {
