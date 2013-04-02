@@ -272,23 +272,38 @@ Map: class {
 
         idealTileSize := vec2(25, 12)
 
-        ratio := tileSize x / tileSize y
-        idealRatio := idealTileSize x / idealTileSize y
-
         centerOffset := vec2(0, 0)
 
-        // compute best size with ideal ratio, then re-center map
-        // by adjusting offset
-        if (ratio < idealRatio) {
-            tileSize y = tileSize x / idealRatio
+        if (tileSize x > idealTileSize x || tileSize y > idealTileSize y) {
+            // our tiles are too big - use ideal tile size, and center
+            // properly
 
-            realHeight := tileSize y * gHeight
-            centerOffset y += screenSize y * 0.5 - realHeight * 0.5
-        } else {
-            tileSize x = tileSize y * idealRatio
+            tileSize set!(idealTileSize)
 
             realWidth := tileSize x * gWidth
-            centerOffset x += screenSize x * 0.5 - realWidth * 0.5
+            realHeight := tileSize y * gHeight
+
+            centerOffset x = (screenSize x / 2.0 - realWidth / 2.0)
+            centerOffset y = (screenSize y / 2.0 - realHeight / 2.0)
+        } else {
+            // our tiles are too small - make sure they're the right aspect
+            // ratio, and center properly
+            ratio := tileSize x / tileSize y
+            idealRatio := idealTileSize x / idealTileSize y
+
+            // compute best size with ideal ratio, then re-center map
+            // by adjusting offset
+            if (ratio < idealRatio) {
+                tileSize y = tileSize x / idealRatio
+
+                realHeight := tileSize y * gHeight
+                centerOffset y += screenSize y * 0.5 - realHeight * 0.5
+            } else {
+                tileSize x = tileSize y * idealRatio
+
+                realWidth := tileSize x * gWidth
+                centerOffset x += screenSize x * 0.5 - realWidth * 0.5
+            }
         }
 
         grid each(|col, row, tile|
