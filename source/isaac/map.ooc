@@ -338,11 +338,30 @@ Map: class {
         logger warn("In the end: tileSize = %s, centerOffset = %s",
             tileSize toString(), centerOffset toString())
 
-        grid each(|col, row, tile|
-            if (tile revealed) {
-                tile setup(col, row, tileSize, gridOffset, centerOffset)
+        //grid each(|col, row, tile|
+        //    if (tile revealed) {
+        //        tile setup(col, row, tileSize, gridOffset, centerOffset)
+        //    }
+        //)
+
+        {
+            y := bounds yMax
+            while (y >= bounds yMin) {
+                x := bounds xMin
+                while (x <= bounds xMax) {
+                    if (grid contains?(x, y)) {
+                        tile := grid get(x, y)
+                        if (tile revealed) {
+                            tile setup(x, y, tileSize, gridOffset, centerOffset)
+                        }
+                    }
+
+                    x += 1
+                }
+
+                y -= 1
             }
-        )
+        }
     }
 
     getRevealedBounds: func -> AABB2i {
