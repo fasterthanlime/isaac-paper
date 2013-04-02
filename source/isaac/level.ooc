@@ -90,6 +90,9 @@ Level: class {
 
         // bypass the onClear callback if just spawned
         updateClearedCondition()
+        if (!cleared) {
+            game playSound("doors-close")
+        }
 
         // update once without drawing to set up everything correctly
         updateEntities()

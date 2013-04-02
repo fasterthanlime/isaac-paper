@@ -44,9 +44,6 @@ RoundFly: class extends Mob {
         life = 20.0
 
         loadSprite(getSpriteName(), level charGroup, scale)
-        if (type == RoundFlyType RED) {
-            baseColor = Color new(255, 140, 140)
-        }
 
         shadowYOffset = 3
         createShadow(30)
@@ -80,6 +77,7 @@ RoundFly: class extends Mob {
                 // spawn tears in 6 directions
                 spawnSixTears(fireSpeed)
         }
+        super()
     }
 
     update: func -> Bool {
@@ -87,14 +85,19 @@ RoundFly: class extends Mob {
         super()
     }
 
-    grounded?: func -> Bool {
-        // kinda..
+    tearVulnerable?: func -> Bool {
+        // always!
         true
     }
 
-    touchBlock: func (tile: Tile) -> Bool {
-        // most enemies are constrained by blocks.. but not us!
+    grounded?: func -> Bool {
+        // nevar!
         false
+    }
+
+    touchBlock: func (tile: Tile) -> Bool {
+        // round flies can't pass blocks, swarmer can
+        true
     }
 
     destroy: func {

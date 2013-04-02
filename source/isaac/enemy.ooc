@@ -40,7 +40,10 @@ Enemy: abstract class extends Entity {
     redish: Bool
     baseColor := Color white()
 
-    heroHandler, wallsHandler, blockHandler, collectibleHandler: static CollisionHandler
+    heroHandler, wallsHandler, blockHandler, holeHandler, collectibleHandler: static CollisionHandler
+
+    // some enemies spawn ipecac shots and are immune to them
+    ownBombImmune := false
 
     init: func (.level, .pos) {
         super(level, pos)
@@ -51,6 +54,11 @@ Enemy: abstract class extends Entity {
     /* DAMAGE STUFF
     ===========================*/
 
+    forceHarm: func (damage: Float) {
+        damageCount = 0
+        harm(damage)
+    }
+
     harm: func (damage: Float) {
         if (damageCount <= 0) {
             damageCount = damageLength
@@ -59,7 +67,10 @@ Enemy: abstract class extends Entity {
     }
 
     bombHarm: func (explosion: Explosion) {
-        harm(explosion damage)            
+        if (ownBombImmune && explosion fromEnemy) {
+            return
+        }
+        forceHarm(explosion damage)
     }
 
     hitBack: func (tear: Tear) {
@@ -79,6 +90,7 @@ Enemy: abstract class extends Entity {
 
     onDeath: func {
         // normally, die in peace
+        level game playRandomSound("creep-death", 2)
     }
 
     /* UPDATE STUFF
@@ -128,6 +140,10 @@ Enemy: abstract class extends Entity {
         z < level groundLevel
     }
 
+    tearVulnerable?: func -> Bool {
+        grounded?()
+    }
+
     /* COLLISION STUFF
     ===================== */
 
@@ -147,6 +163,11 @@ Enemy: abstract class extends Entity {
     touchBlock: func (tile: Tile) -> Bool {
         // most enemies are constrained by blocks
         true
+    }
+
+    touchHole: func (tile: Tile) -> Bool {
+        // some enemies are constrained by holes
+        grounded?()
     }
 
     touchCollectible: func (collectible: Collectible) -> Bool {
@@ -169,6 +190,11 @@ Enemy: abstract class extends Entity {
             blockHandler = EnemyBlockHandler new()
         }
         blockHandler ensure(level)
+
+        if (!holeHandler) {
+            holeHandler = EnemyHoleHandler new()
+        }
+        holeHandler ensure(level)
 
         if (!collectibleHandler) {
             collectibleHandler = EnemyCollectibleHandler new()
@@ -251,6 +277,37 @@ Enemy: abstract class extends Entity {
     /* SPAWN STUFF
      ======================*/
 
+    spawnTear: func (pos, dir: Vec2, fireSpeed: Float) -> Tear {
+        spawnTear(pos, dir, fireSpeed, 1)
+    }
+
+    spawnTear: func ~withDamage (pos, dir: Vec2, fireSpeed, damage: Float) -> Tear {
+        vel := dir mul(fireSpeed)
+        tear := Tear new(level, pos, vel, TearType ENEMY, damage, shootRange)
+        level add(tear)
+        tear
+    }
+
+    splurt: func (numTears: Int, pos, diff: Vec2, fireSpeed: Float) {
+        for (i in 0..numTears) {
+            dir := diff add(Vec2 random(15)) normalized()
+
+            number := Random randInt(0, 100)
+            damage := match number {
+                case number > 50 =>
+                    2
+                case =>
+                    1
+            }
+
+            actualFireSpeed := fireSpeed + (Random randInt(-30, 30) as Float)
+            actualPos := pos add(Vec2 random(15))
+
+            tear := spawnTear(actualPos, dir, actualFireSpeed, damage)
+            tear lob(50)
+        }
+    }
+
     spawnSixTears: func (fireSpeed: Float) {
         angle := (Random randInt(0, 360) as Float) toRadians()
         for (i in 0..6) {
@@ -271,19 +328,13 @@ Enemy: abstract class extends Entity {
         spread := PI / 10.0
         a1 := angle += spread
         a2 := angle -= spread
-        offset := 4.0
+        offset := 8.0
 
         pos1 := pos add(Vec2 fromAngle(a1 + PI / 2.0) mul(offset))
         spawnTear(pos1, Vec2 fromAngle(a1), fireSpeed)
 
         pos2 := pos add(Vec2 fromAngle(a2 - PI / 2.0) mul(offset))
         spawnTear(pos2, Vec2 fromAngle(a2), fireSpeed)
-    }
-
-    spawnTear: func (pos, dir: Vec2, fireSpeed: Float) {
-        vel := dir mul(fireSpeed)
-        tear := Tear new(level, pos, vel, TearType ENEMY, 1, shootRange)
-        level add(tear)
     }
 
 }
@@ -419,6 +470,24 @@ EnemyBlockHandler: class extends CollisionHandler {
 
     add: func (f: Func (Int, Int)) {
         f(CollisionTypes ENEMY, CollisionTypes BLOCK)
+    }
+
+}
+
+EnemyHoleHandler: class extends CollisionHandler {
+
+    begin: func (arbiter: CpArbiter, space: CpSpace) -> Bool {
+        shape1, shape2: CpShape
+        arbiter getShapes(shape1&, shape2&)
+
+        enemy := shape1 getUserData() as Enemy
+        tile := shape2 getUserData() as Tile
+
+        enemy touchHole(tile)
+    }
+
+    add: func (f: Func (Int, Int)) {
+        f(CollisionTypes ENEMY, CollisionTypes HOLE)
     }
 
 }

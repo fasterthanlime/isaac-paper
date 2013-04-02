@@ -39,6 +39,7 @@ DukeOfFlies: class extends Boss {
 
     onDeath: func {
         part releaseFlies()
+        super()
     }
 
 }
@@ -91,7 +92,7 @@ DukePart: class extends Mob {
 
         number := Random randInt(0, 100)
         type := match number {
-            case number < 20 =>
+            case (number < 20) =>
                 FlyType BIG_ATTACK_FLY
             case =>
                 FlyType ATTACK_FLY
@@ -185,7 +186,7 @@ DukePart: class extends Mob {
     }
 
     bombHarm: func (explosion: Explosion) {
-        harm(explosion damage * 5)
+        forceHarm(explosion damage * 5)
     }
 
 }

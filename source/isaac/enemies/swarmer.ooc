@@ -66,6 +66,7 @@ Swarmer: class extends Mob {
         roundFly := RoundFly new(level, pos, RoundFlyType BOOM)
         roundFly behavior setDir(behavior dir)
         level add(roundFly)
+        super()
     }
 
     update: func -> Bool {
@@ -87,9 +88,14 @@ Swarmer: class extends Mob {
         super()
     }
 
-    grounded?: func -> Bool {
-        // kinda..
+    tearVulnerable?: func -> Bool {
+        // always!
         true
+    }
+
+    grounded?: func -> Bool {
+        // nevar!
+        false
     }
 
     touchBlock: func (tile: Tile) -> Bool {

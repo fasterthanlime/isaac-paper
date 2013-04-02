@@ -8,9 +8,30 @@ import gnaar/[utils]
 
 Options: class {
 
+    // legit options
     music := true
     mute := false
+
+    /*===========================
+     * cheats
+     */
+
+    // NOTE: If you're reading the code and came here for
+    // cheats, it's really cheap of you and I'm equal parts
+    // proud and disappointed. But seriously, the game is
+    // more fun without cheating.
+
+    // use "assets/levels/test.yml" for room layouts
     testLevel := false
+
+    // reveal whole map all the time
+    mapCheat := false
+
+    // always spawn XL floors
+    permaXL := false
+
+    // all doors are always open
+    openDoors := false
 
     init: func {
         load()
@@ -34,6 +55,12 @@ Options: class {
                     mute = value toBool()
                 case "testLevel" =>
                     testLevel = value toBool()
+                case "mapCheat" =>
+                    mapCheat = value toBool()
+                case "permaXL" =>
+                    permaXL = value toBool()
+                case "openDoors" =>
+                    openDoors = value toBool()
             }
         )
     }

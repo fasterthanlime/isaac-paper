@@ -3,6 +3,8 @@
 import structs/[ArrayList, List, HashMap]
 import math/Random
 
+import isaac/[game, options]
+
 Plan: class {
 
     // cf. http://bindingofisaac.wikia.com/wiki/Curses#Chances_for_a_Curse_to_happen
@@ -13,10 +15,10 @@ Plan: class {
 
     init: func
 
-    generate: static func -> This {
+    generate: static func (game: Game) -> This {
         floorPair := func (plan: This, a, b: FloorType) {
             // xl or not?
-            if (Random randInt(0, 100) < XL_CHANCE) {
+            if (Random randInt(0, 100) < XL_CHANCE || game options permaXL) {
                 // a xl or b xl ?
                 type := a
                 if (Random randInt(0, 100) < 50) {

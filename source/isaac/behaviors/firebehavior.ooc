@@ -26,10 +26,16 @@ FireBehavior: class {
     fireSpeed := 200
     fireRadius := 300.0
 
+    listener: FireListener
+
     targetType := TargetType RANDOM
 
     init: func (=enemy) {
         level = enemy level
+    }
+
+    onFire: func (f: Func) {
+        listener = FireListener new(f)
     }
 
     update: func {
@@ -38,8 +44,11 @@ FireBehavior: class {
         } else {
             if (fire()) {
                 fireCount = fireCountMax + Random randInt(0, fireCountWiggle)
-                // else, wait for whatever we're shooting at to be in range
+                if (listener) {
+                    listener call()
+                }
             }
+            // else, wait for whatever we're shooting at to be in range
         }
     }
 
@@ -59,6 +68,16 @@ FireBehavior: class {
         enemy spawnTear(enemy pos, dir, fireSpeed)
         true
     }
+
+}
+
+FireListener: class {
+
+    f: Func
+
+    init: func (=f)
+
+    call: func { f() }
 
 }
 

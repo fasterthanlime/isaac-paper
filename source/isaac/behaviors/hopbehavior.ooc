@@ -34,12 +34,20 @@ HopBehavior: class {
     jumpCountWiggle := 5
     chosenJumpCountMax := 0
 
-    jumpHeight := 90.0
-    radius := 250
+    jumpDistance := 180.0
+    jumpDistanceWiggle := 10.0
 
+    jumpHeight := 90.0
+    radius := 250.0
+
+    landListener: LandListener
 
     init: func (=enemy) {
         level = enemy level
+    }
+
+    onLand: func (f: Func) {
+        landListener = LandListener new(f)
     }
 
     update: func {
@@ -48,6 +56,9 @@ HopBehavior: class {
             enemy z = parabola eval()
             if (parabola done?()) {
                 parabola = null
+                if (landListener) {
+                    landListener call()
+                }
             }
         } else {
             if (jumpCount > 0) {
@@ -68,18 +79,30 @@ HopBehavior: class {
             vel y *= friction
             enemy body setVel(vel)
         }
+
+        enemy pos set!(enemy body getPos())
     }
 
     jump: func {
         jumpCount = jumpCountMax + Random randInt(0, jumpCountWiggle)
         chosenJumpCountMax = jumpCount
-        target := Target choose(enemy pos, level, radius)
-        target add!(Vec2 random(20))
 
+        number := Random randInt(0, 100)
+        target := match {
+            case (number < 50) =>
+                Target choose(enemy pos, level, radius) add(Vec2 random(2))
+            case =>
+                enemy pos add(Vec2 random(100))
+        }
         jumpSpeed := speed
 
         diff := target sub(enemy pos)
         norm := diff norm()
+
+        if (norm > jumpDistanceWiggle) {
+            norm = jumpDistance + Random randInt(0, jumpDistanceWiggle)
+            diff = diff normalized() mul(norm)
+        }
 
         factor := 0.7
         distSpeed := speed * factor
@@ -93,6 +116,16 @@ HopBehavior: class {
         parabola = Parabola new(jumpHeight, 60.0 * baseSpeed / speed)
         parabola incr = 1.0
     }
+
+}
+
+LandListener: class {
+
+    f: Func
+
+    init: func (=f)
+
+    call: func { f() }
 
 }
 

@@ -18,7 +18,8 @@ import structs/[ArrayList]
 import math/Random
 
 // our stuff
-import isaac/[level, hero, splash, enemy, fire, tiles, tnt, game, shadow]
+import isaac/[level, hero, splash, enemy, fire, tiles, tnt, game, shadow,
+    explosion, paths]
 
 Tear: class extends Entity {
 
@@ -32,6 +33,7 @@ Tear: class extends Entity {
 
     sprite: GlSprite
 
+    contactLevel := 14.0
     z := 12.0
     zInitial := 12.0
     zIncrement := 0.4
@@ -48,8 +50,11 @@ Tear: class extends Entity {
     hit := false
 
     shadow: Shadow
+    parabola: Parabola
 
     heroHandler, enemyHandler, blockHandler, fireHandler, ignoreHandler: static CollisionHandler
+
+    fromEnemy := false
 
     init: func (.level, .pos, .vel, =type, =damage, =range) {
         super(level, pos)
@@ -58,7 +63,20 @@ Tear: class extends Entity {
 
         sprite = GlSprite new("assets/png/tears-1.png")
 
-        scale := 0.17
+        if (type == TearType IPECAC) {
+            range *= 0.8
+            lob(60)
+        }
+
+        scale := 0.21
+        if (type == TearType IPECAC) {
+            scale = 0.29
+        }
+
+        if (type == TearType ENEMY && damage > 1) {
+            scale *= 1.4
+        }
+
         sprite scale set!(scale, scale)
         radius = scale * (sprite width as Float) * 0.5
 
@@ -77,9 +95,15 @@ Tear: class extends Entity {
         match type {
             case TearType HERO =>
                 sprite color set!(224, 248, 254)
+            case TearType IPECAC =>
+                sprite color set!(153, 235, 155)
             case TearType ENEMY =>
                 sprite color set!(255, 168, 168)
         }
+    }
+
+    lob: func (height: Float) {
+        parabola = Parabola new(height, range)
     }
 
     playEmit: func {
@@ -92,21 +116,41 @@ Tear: class extends Entity {
         // keep count of how far we've travelled to splash when over
         travelled += prevPos dist(pos)
 
-        if (travelled >= (range - zInitial / zIncrement)) {
-            z -= zIncrement
+        if (parabola) {
+            z = parabola eval(travelled)
+        } else {
+            if (travelled >= (range - zInitial / zIncrement)) {
+                z -= zIncrement
+            }
         }
 
         sprite pos set!(pos x, pos y + z)
         shadow setPos(pos x, pos y - shadowYOffset)
 
-        if (hit || z <= 0.0) {
-            level add(Splash new(level, sprite pos))
+        due := (z <= 0.1)
+        if (parabola && !parabola done?()) {
+            due = false
+        }
+
+        if (hit || due) {
+            onDeath()
             return false
         }
 
         prevPos set!(pos)
 
         true
+    }
+
+    onDeath: func {
+        match type {
+            case TearType IPECAC =>
+                explosion := Explosion new(level, sprite pos)
+                explosion fromEnemy = fromEnemy
+                level add(explosion)
+            case =>
+                level add(Splash new(level, sprite pos))
+        }
     }
 
     initPhysx: func {
@@ -119,7 +163,7 @@ Tear: class extends Entity {
         body setVel(cpv(vel))
         level space addBody(body)
 
-        shape = CpCircleShape new(body, radius, cpv(0, 0))
+        shape = CpCircleShape new(body, 2.0, cpv(0, 0))
         shape setUserData(this)
         shape setCollisionType(CollisionTypes TEAR)
         shape setGroup(CollisionGroups TEAR)
@@ -171,6 +215,7 @@ Tear: class extends Entity {
 TearType: enum {
     HERO
     ENEMY
+    IPECAC
 }
 
 HeroTearHandler: class extends CollisionHandler {
@@ -187,7 +232,7 @@ HeroTearHandler: class extends CollisionHandler {
         }
 
         match (tear type) {
-            case TearType HERO =>
+            case TearType HERO || TearType IPECAC =>
                 bounce = false 
             case =>
                 hero := shape2 getUserData() as Hero
@@ -217,6 +262,10 @@ EnemyTearHandler: class extends CollisionHandler {
             return false
         }
 
+        if (tear type == TearType IPECAC) {
+            return false
+        }
+
         entity := shape2 getUserData() as Entity
 
         match (tear type) {
@@ -225,7 +274,7 @@ EnemyTearHandler: class extends CollisionHandler {
             case =>
                 match entity {
                     case enemy: Enemy =>
-                        if (enemy grounded?()) {
+                        if (enemy tearVulnerable?()) {
                             tear hit = true
                             enemy harm(tear damage)
                             enemy hitBack(tear)
@@ -253,7 +302,11 @@ BlockTearHandler: class extends CollisionHandler {
         bounce := true
         
         tear := shape1 getUserData() as Tear
-        tear hit = true
+        if (tear z < tear contactLevel) {
+            tear hit = true
+        } else {
+            return false
+        }
 
         tile := shape2 getUserData() as Tile
         match tile {
@@ -314,7 +367,6 @@ IgnoreTearHandler: class extends CollisionHandler {
     add: func (f: Func (Int, Int)) {
         f(CollisionTypes TEAR, CollisionTypes COLLECTIBLE)
         f(CollisionTypes TEAR, CollisionTypes TRAP_DOOR)
-        logger warn("adding for hole")
         f(CollisionTypes TEAR, CollisionTypes HOLE)
         f(CollisionTypes TEAR, CollisionTypes SPIKES)
     }

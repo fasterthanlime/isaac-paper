@@ -35,6 +35,8 @@ FlyType: enum {
  */
 Fly: class extends Mob {
 
+    buzzCount := static 0
+
     moveCount := 0
     moveCountMax := 30
 
@@ -107,8 +109,10 @@ Fly: class extends Mob {
                 "pooter"
             case FlyType FAT_FLY =>
                 "fat-fly"
-            case FlyType SUCKER || FlyType SPIT =>
-                "sucker-spit"
+            case FlyType SUCKER =>
+                "sucker"
+            case FlyType SPIT =>
+                "spit"
             case FlyType MOTER =>
                 "moter"
             case FlyType ATTACK_FLY || FlyType BIG_ATTACK_FLY =>
@@ -145,6 +149,7 @@ Fly: class extends Mob {
                 // spawn tears in the shape of a '+'
                 spawnPlusTears(fireSpeed)
         }
+        super()
     }
 
     update: func -> Bool {
@@ -185,6 +190,12 @@ Fly: class extends Mob {
             baseColor set!(255, 255, 255)
         }
 
+        if (level hero pos x > pos x) {
+            sprite scale x = -scale
+        } else {
+            sprite scale x = scale
+        }
+
         super()
     }
 
@@ -222,7 +233,21 @@ Fly: class extends Mob {
         type == FlyType ATTACK_FLY || FlyType BIG_ATTACK_FLY
     }
 
+    buzzes?: func -> Bool {
+        if (!aggressive?()) {
+            return false
+        }
+
+        buzzCount -= 1
+        return (buzzCount < 40)
+    }
+
     updateTarget: func {
+        if (buzzes?()) {
+            buzzCount += 8
+            level game playRandomSound("fly-bzz", 5)
+        }
+
         if (aggressive?()) {
             tracks := true
             if (Random randInt(0, 8) < 3) {

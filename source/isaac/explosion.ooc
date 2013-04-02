@@ -26,6 +26,8 @@ Explosion: class extends Splash {
     explosionRadius := 105.0
     damage := 30
 
+    fromEnemy := false
+
     init: func (.level, .pos) {
         super(level, pos)
 

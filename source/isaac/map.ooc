@@ -14,7 +14,7 @@ import math/Random
 import structs/[HashMap, List, ArrayList]
 
 // our stuff
-import isaac/[level, plan, rooms, game, boss, freezer, options, boss]
+import isaac/[level, plan, rooms, game, boss, freezer, options, boss, options]
 import isaac/bosses/[duke]
 
 RoomType: enum {
@@ -122,9 +122,7 @@ Map: class {
 
         // boss rooms are a must
         room(RoomType BOSS)
-        if (game floor xl) {
-            room(RoomType BOSS)
-        }
+        // second XL room will be placed accordingly
 
         // so are treasure rooms, up to depths/necropolis
         if (game floor type level() < 3) {
@@ -221,17 +219,58 @@ Map: class {
 
         while (!lonelies empty?() && !specials empty?()) {
             special := specials removeAt(0)
-            lonely := Random choice(lonelies)
-            add(lonely pos, special)
 
-            adjacencyMap update(lonely pos x, lonely pos y, false)
-            lonelies = adjacencyMap getLonelies()
+            if (special == RoomType BOSS && game floor xl) {
+                shuffled := lonelies shuffle()
+
+                // this is gonna be a bit hard
+                for (l in shuffled) {
+                    if (neighborCount(l pos) == 1) {
+                        path := getPath(l pos, null, 3)
+                        if (path) {
+                            logger error("Found path: ")
+                            for (p in path) {
+                                logger error(" - %s", p toString())
+
+                                add(p, special)
+                                adjacencyMap update(p x, p y, false)
+                            }
+
+                            lonelies = adjacencyMap getLonelies()
+
+                            break // we're done looking
+                        }
+                    }
+                }
+            } else {
+                lonely := Random choice(lonelies)
+                add(lonely pos, special)
+
+                adjacencyMap update(lonely pos x, lonely pos y, false)
+                lonelies = adjacencyMap getLonelies()
+            }
         }
 
         bounds := grid getBounds()
         mapSize = vec2i(bounds width, bounds height)
         logger info("Generated a map with bounds %s. Size = %dx%d",
             bounds _, bounds width, bounds height)
+    }
+
+    reveal: func {
+        currentTile revealed = true
+
+        maybeReveal := func (col, row: Int) {
+            if (grid contains?(col, row)) {
+                tile := grid get(col, row)
+                tile revealAsNeighbor()
+            }
+        }
+
+        maybeReveal(currentTile pos x - 1, currentTile pos y)
+        maybeReveal(currentTile pos x + 1, currentTile pos y)
+        maybeReveal(currentTile pos x, currentTile pos y - 1)
+        maybeReveal(currentTile pos x, currentTile pos y + 1)
     }
 
     setup: func {
@@ -243,7 +282,7 @@ Map: class {
         )
         currentTile active = true
 
-        bounds := grid getBounds()
+        bounds := getRevealedBounds()
         gridOffset := vec2i(bounds xMin, bounds yMin)
 
         gWidth := (bounds width + 1)
@@ -255,29 +294,66 @@ Map: class {
         )
 
         idealTileSize := vec2(25, 12)
-
-        ratio := tileSize x / tileSize y
-        idealRatio := idealTileSize x / idealTileSize y
-
         centerOffset := vec2(0, 0)
 
-        // compute best size with ideal ratio, then re-center map
-        // by adjusting offset
-        if (ratio < idealRatio) {
-            tileSize y = tileSize x / idealRatio
+        logger warn("tileSize = %s, idealTileSize = %s",
+            tileSize toString(), idealTileSize toString())
 
-            realHeight := tileSize y * gHeight
-            centerOffset y += screenSize y * 0.5 - realHeight * 0.5
+        realWidth := tileSize x * gWidth
+        realHeight := tileSize y * gHeight
+
+        if (realWidth > screenSize x || realHeight > screenSize y) {
+            // our tiles are too big - use ideal tile size, and center
+            // properly
+
+            tileSize set!(idealTileSize)
+
+            realWidth = tileSize x * gWidth
+            realHeight = tileSize y * gHeight
+
+            centerOffset x = (screenSize x / 2.0 - realWidth / 2.0)
+            centerOffset y = (screenSize y / 2.0 - realHeight / 2.0)
         } else {
-            tileSize x = tileSize y * idealRatio
+            // our tiles are too small - make sure they're the right aspect
+            // ratio, and center properly
+            ratio := tileSize x / tileSize y
+            idealRatio := idealTileSize x / idealTileSize y
 
-            realWidth := tileSize x * gWidth
-            centerOffset x += screenSize x * 0.5 - realWidth * 0.5
+            // compute best size with ideal ratio, then re-center map
+            // by adjusting offset
+            if (ratio < idealRatio) {
+                tileSize y = tileSize x / idealRatio
+
+                realHeight := tileSize y * gHeight
+                centerOffset y += screenSize y * 0.5 - realHeight * 0.5
+            } else {
+                tileSize x = tileSize y * idealRatio
+
+                realWidth := tileSize x * gWidth
+                centerOffset x += screenSize x * 0.5 - realWidth * 0.5
+            }
         }
 
+        logger warn("In the end: tileSize = %s, centerOffset = %s",
+            tileSize toString(), centerOffset toString())
+
         grid each(|col, row, tile|
-            tile setup(col, row, tileSize, gridOffset, centerOffset)
+            if (tile revealed) {
+                tile setup(col, row, tileSize, gridOffset, centerOffset)
+            }
         )
+    }
+
+    getRevealedBounds: func -> AABB2i {
+        result := AABB2i new()
+
+        grid each(|col, row, tile|
+            if (tile revealed) {
+                result expand!(tile pos)
+            }
+        )
+
+        result
     }
 
     neighborCount: func (pos: Vec2i) -> Int {
@@ -372,6 +448,54 @@ Map: class {
 
         tile
     }
+
+    getPath: func (current, previous: Vec2i, length: Int) -> List<Vec2i> {
+        // here's what this method should do:
+        // given a lonely tile that has only 1 neighbor..
+        // we'll try to find a path that's made entirely of
+        // lonelies
+
+        threshold := previous == null ? 1 : 0
+        if (neighborCount(current) > threshold) {
+            return null
+        }
+
+        if (length <= 1) {
+            list := ArrayList<Vec2i> new()
+            list add(current)
+            return list
+        } else {
+            tryPath := func (pos: Vec2i) -> List<Vec2i> {
+                if (previous &&
+                        (previous x == pos x && previous y == pos y)) {
+                    // disregard
+                    return null
+                }
+
+                path := getPath(pos, current, length - 1)
+                if (path) {
+                    path add(0, current)
+                }
+                return path
+            }
+
+            tries := ArrayList<Vec2i> new()
+            tries add(current add(0, 1))
+            tries add(current add(0, -1))
+            tries add(current add(-1, 0))
+            tries add(current add(1, 0))
+            tries = tries shuffle()
+
+            "tries = %s" printfln(tries map(|x| x toString()) join(", "))
+
+            for (t in tries) {
+                list := tryPath(t)
+                if (list) return list
+            }
+        }
+
+        null
+    }
 }
 
 MapTile: class {
@@ -386,6 +510,7 @@ MapTile: class {
     frozenRoom: FrozenRoom
     bossType := BossType NONE
 
+    revealed := false
     active := false
     locked := false
 
@@ -400,6 +525,27 @@ MapTile: class {
                     // past Basement 1/Cellar 1, all item rooms are locked
                     locked = true 
                 }
+        }
+
+        if (map game options mapCheat) {
+            revealed = true // duh.
+        }
+    }
+
+    revealAsNeighbor: func {
+        if (secret?()) {
+            return
+        }
+
+        revealed = true
+    }
+
+    secret?: func -> Bool {
+        match type {
+            case RoomType SECRET || RoomType SUPERSECRET =>
+                true
+            case =>
+                false
         }
     }
 

@@ -44,6 +44,9 @@ StrollBehavior: class {
     // adjustable stuff
     speed := 80.0
     chargeSpeed := 200.0
+
+    chargeDist := 4
+    frontChargeDist := 6
     canCharge := true
     backSight := false
     flies := false
@@ -86,9 +89,13 @@ StrollBehavior: class {
                 return
             }
 
-            threshold := 3
-            if (diffX > threshold || diffX < -threshold || \
-                diffY > threshold || diffY < -threshold) {
+            threshold := chargeDist
+            if (oppDir == dir) {
+                threshold = frontChargeDist
+            }
+
+            if (diffX > chargeDist || diffX < -chargeDist || \
+                diffY > chargeDist || diffY < -chargeDist) {
                 return
             }
 

@@ -159,7 +159,9 @@ Game: class {
     loadRoom: func {
         dumpRoomInfo()
 
+        map reveal()
         map setup()
+
         initLevel()
         loadMusic()
     }
@@ -237,7 +239,7 @@ Game: class {
     }
 
     generatePlan: func {
-        plan = Plan generate()
+        plan = Plan generate(this)
         logger info("Generated plan: %s", plan toString())
     }
 
@@ -407,6 +409,7 @@ Game: class {
                 level update()
                 updateLabels()
                 if (heroStats totalHealth() <= 0) {
+                    playSound("hero-death")
                     reset()
                 }
                 if (level input isPressed(KeyCode R)) {

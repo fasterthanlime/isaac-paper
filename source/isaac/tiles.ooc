@@ -137,6 +137,7 @@ Block: class extends Tile {
         if (itemRock?()) {
             spawnPickups()
         }
+        level game playSound("block-shatters")
     }
 
     spawnPickups: func {

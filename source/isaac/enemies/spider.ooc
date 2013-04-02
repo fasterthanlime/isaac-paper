@@ -51,7 +51,7 @@ Spider: class extends Mob {
         createShadow(30)
         shadowYOffset = 8
 
-        createBox(10, 10, 15.0)
+        createCircle(10, 15.0)
 
         mover = Mover new(level, body, 280.0)
         mover alpha = 0.8
@@ -72,6 +72,7 @@ Spider: class extends Mob {
             spawnChild()
             spawnChild()
         }
+        super()
     }
 
     spawnChild: func {
