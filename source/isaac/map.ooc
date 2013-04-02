@@ -259,7 +259,7 @@ Map: class {
         )
         currentTile active = true
 
-        bounds := grid getBounds()
+        bounds := getRevealedBounds()
         gridOffset := vec2i(bounds xMin, bounds yMin)
 
         gWidth := (bounds width + 1)
@@ -292,8 +292,22 @@ Map: class {
         }
 
         grid each(|col, row, tile|
-            tile setup(col, row, tileSize, gridOffset, centerOffset)
+            if (tile revealed) {
+                tile setup(col, row, tileSize, gridOffset, centerOffset)
+            }
         )
+    }
+
+    getRevealedBounds: func -> AABB2i {
+        result := AABB2i new()
+
+        grid each(|col, row, tile|
+            if (tile revealed) {
+                result expand!(tile pos)
+            }
+        )
+
+        result
     }
 
     neighborCount: func (pos: Vec2i) -> Int {
@@ -465,10 +479,6 @@ MapTile: class {
     }
 
     setup: func (col, row: Int, tileSize: Vec2, gridOffset: Vec2i, centerOffset: Vec2) {
-        if (!revealed) {
-            return // NO MAP FOR YOU.
-        }
-
         diff := vec2(
             (col - gridOffset x) * tileSize x + centerOffset x,
             (row - gridOffset y) * tileSize y + centerOffset y
