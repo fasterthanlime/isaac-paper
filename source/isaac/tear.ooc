@@ -54,6 +54,8 @@ Tear: class extends Entity {
 
     heroHandler, enemyHandler, blockHandler, fireHandler, ignoreHandler: static CollisionHandler
 
+    fromEnemy := false
+
     init: func (.level, .pos, .vel, =type, =damage, =range) {
         super(level, pos)
 
@@ -135,7 +137,9 @@ Tear: class extends Entity {
     onDeath: func {
         match type {
             case TearType IPECAC =>
-                level add(Explosion new(level, sprite pos))
+                explosion := Explosion new(level, sprite pos)
+                explosion fromEnemy = fromEnemy
+                level add(explosion)
             case =>
                 level add(Splash new(level, sprite pos))
         }

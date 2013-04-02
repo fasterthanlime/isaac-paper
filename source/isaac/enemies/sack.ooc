@@ -44,6 +44,8 @@ Sack: class extends Mob {
         createShadow(30)
 
         createBox(20, 20, INFINITY, INFINITY)
+
+        ownBombImmune = true
     }
 
     getSpriteName: func -> String {
@@ -124,7 +126,9 @@ Sack: class extends Mob {
         vel := diff normalized() mul(shotSpeed)
         range := diff norm() + 30
 
-        level add(Tear new(level, pos, vel, TearType IPECAC, 1, range))
+        tear := Tear new(level, pos, vel, TearType IPECAC, 1, range)
+        tear fromEnemy = true
+        level add(tear)
     }
 
     resetSpawnCount: func {

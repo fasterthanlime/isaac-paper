@@ -42,6 +42,9 @@ Enemy: abstract class extends Entity {
 
     heroHandler, wallsHandler, blockHandler, holeHandler, collectibleHandler: static CollisionHandler
 
+    // some enemies spawn ipecac shots and are immune to them
+    ownBombImmune := false
+
     init: func (.level, .pos) {
         super(level, pos)
 
@@ -64,6 +67,9 @@ Enemy: abstract class extends Entity {
     }
 
     bombHarm: func (explosion: Explosion) {
+        if (ownBombImmune && explosion fromEnemy) {
+            return
+        }
         forceHarm(explosion damage)
     }
 
