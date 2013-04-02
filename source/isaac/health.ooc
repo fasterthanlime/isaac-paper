@@ -110,23 +110,28 @@ Heart: class extends GlSprite {
     init: func (pos: Vec2, =value, =type) {
         super(getSpritePath())
         this pos set!(pos)
-
-        match type {
-            case HeartType RED =>
-                color set!(220, 0, 0)
-            case HeartType SPIRIT =>
-                color set!(130, 130, 130)
-        }
     }
 
     getSpritePath: func -> String {
         match value {
             case HeartValue FULL =>
-                "assets/png/heart-full.png"
+                match type {
+                    case HeartType SPIRIT =>
+                        "assets/png/heart-full-spirit.png"
+                    case => // otherwise, red
+                        "assets/png/heart-full-red.png"
+                }
             case HeartValue HALF =>
-                "assets/png/heart-half.png"
+                match type {
+                    case HeartType SPIRIT =>
+                        "assets/png/heart-half-spirit.png"
+                    case HeartType ETERNAL =>
+                        "assets/png/heart-half.png"
+                    case => // otherwise, red
+                        "assets/png/heart-half-red.png"
+                }
             case =>
-                "assets/png/heart-empty.png"
+                "assets/png/heart-empty-red.png"
         }
     }
 
