@@ -19,9 +19,10 @@ import structs/[HashMap, List, ArrayList]
 // our stuff
 import isaac/[logging, level, bomb, hero, rooms, collectible, health, plan, map,
     music, options, trapdoor, spikes]
+import isaac/ui/[menu]
 
 // debugging for fun
-import isaac/[tear, enemy]
+import isaac/[tear, enemy, hole]
 
 /*
  * The game, duh.
@@ -35,10 +36,11 @@ Game: class {
 
     bleep: Bleep
     music: Music
+    menu: Menu
 
     loop: FixedLoop
 
-    uiGroup, mapGroup, levelGroup: GlGroup
+    uiGroup, mapGroup, levelGroup, menuGroup: GlGroup
 
     level, oldLevel: Level
 
@@ -96,6 +98,8 @@ Game: class {
             classes add(td)
             sp := Spikes
             classes add(sp)
+            ho := Hole
+            classes add(ho)
         }
 
         Logging setup()
@@ -116,10 +120,11 @@ Game: class {
         initEvents()
         initGfx()
         initUI()
+        initMenu()
         map = Map new(this)
 
         bleep = Bleep new()
-        bleep setVolume(0.2) // SFX are too loud otherwise
+        bleep setVolume(0.4) // SFX are too loud otherwise
 
         music = Music new(this)
         startGame()
@@ -249,7 +254,14 @@ Game: class {
 
     initEvents: func {
         scene input onKeyPress(KeyCode ESC, |kp|
-            quit()
+            match state {
+                case GameState PLAY =>
+                    menu setEnabled(true)
+                    state = GameState PAUSE
+                case GameState PAUSE =>
+                    menu setEnabled(false)
+                    state = GameState PLAY
+            }
         )
 
         scene input onExit(||
@@ -395,6 +407,13 @@ Game: class {
         uiGroup add(lifeLabel)
     }
 
+    initMenu: func {
+        menuGroup = GlGroup new()
+        scene add(menuGroup)
+
+        menu = Menu new(this)
+    }
+
     initGfx: func {
         levelGroup = GlGroup new()
         scene add(levelGroup)
@@ -405,28 +424,33 @@ Game: class {
 
     update: func {
         match state {
+            case GameState PAUSE =>
+                menu update()
             case GameState PLAY =>
-                level update()
-                updateLabels()
-                if (heroStats totalHealth() <= 0) {
-                    playSound("hero-death")
-                    reset()
-                }
-                if (level input isPressed(KeyCode R)) {
-                    resetCount += 1
-                    if (resetCount >= resetCountThreshold) {
-                        resetCount = 0
-                        reset()
-                    }
-                } else {
-                    resetCount = 0
-                }
-
+                updatePlay()
             case GameState CHANGEROOM =>
                 updateChangeRoom()
 
             case GameState CHANGEFLOOR =>
                 updateChangeFloor()
+        }
+    }
+
+    updatePlay: func {
+        level update()
+        updateLabels()
+        if (heroStats totalHealth() <= 0) {
+            playSound("hero-death")
+            reset()
+        }
+        if (level input isPressed(KeyCode R)) {
+            resetCount += 1
+            if (resetCount >= resetCountThreshold) {
+                resetCount = 0
+                reset()
+            }
+        } else {
+            resetCount = 0
         }
     }
 
@@ -567,6 +591,7 @@ Game: class {
 
 GameState: enum {
     PLAY
+    PAUSE
     CHANGEROOM
     CHANGEFLOOR
 }
