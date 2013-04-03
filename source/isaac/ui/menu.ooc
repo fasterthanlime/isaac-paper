@@ -186,3 +186,64 @@ Clickable: class {
 
 }
 
+Stat: class {
+
+    game: Game
+
+    ticks := ArrayList<GlSprite> new()
+    
+    group: GlGroup
+
+    init: func (=game) {
+        group = GlGroup new()
+
+        currentPos := vec2(20, 0)
+        offsetX := 10
+
+        for (i in 0..7) {
+            path := "assets/png/stat-tick%d.png" printfln()
+            sprite := GlSprite new(path)
+            sprite pos set!(currentPos)
+
+            group add(sprite)
+            ticks add(sprite)
+        }
+    }
+    
+    update: func {
+        stat := getStat()
+        for (i in 0..7) {
+            highlight := stat >= i
+            ticks[i] opacity = highlight ? 0.8 : 0.6
+
+            scale := highlight? 1.2 : 1.0
+            ticks[i] scale set!(scale, scale)
+        }
+    }
+
+    getStat: func -> Int {
+        stats := game heroStats
+
+        match type {
+            case StatType SPEED =>
+                stats speed
+            case StatType DAMAGE =>
+                stats damage
+            case StatType FIRESPEED =>
+                stats 
+            case StatType RANGE =>
+                
+            case =>
+                0
+        }
+    }
+
+}
+
+StatType: enum {
+    SPEED
+    DAMAGE
+    FIRESPEED     
+    RANGE
+}
+
