@@ -34,7 +34,7 @@ Gaper: class extends Mob {
 
     fireCount := 20
     fireCountMax := 60
-    fireSpeed := 120
+    fireSpeed := 140
 
     frownRadius := 160.0
 
@@ -57,6 +57,8 @@ Gaper: class extends Mob {
 
         // gapers go through each other
         shape setGroup(CollisionGroups GAPER)
+
+        shootRange = 80.0
     }
 
     getSpriteName: func -> String {
