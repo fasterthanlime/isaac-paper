@@ -32,6 +32,7 @@ Menu: class {
     center: Vec2
 
     clickables := ArrayList<Clickable> new()
+    stats := ArrayList<Stat> new()
 
     input: Input
 
@@ -80,6 +81,15 @@ Menu: class {
             clickable size set!(280, 40)
             addClickable(clickable)
         }
+
+        /* Stats */
+
+        addStat(-160, StatType SPEED)
+        addStat(-50, StatType FIRESPEED)
+        addStat(50, StatType DAMAGE)
+        addStat(160, StatType RANGE)
+
+        /* Events */
 
         input onMousePress(MouseButton LEFT, |mp|
             logger info("Got mouse click") 
@@ -130,9 +140,23 @@ Menu: class {
         group add(clickable group)
     }
 
+    addStat: func (xOffset: Float, type: StatType) {
+        pos := vec2(center x + xOffset - 35, center y + 80)
+        stat := Stat new(this, type, pos)
+
+        stats add(stat)
+        group add(stat group)
+    }
+
     setEnabled: func (=enabled) {
         group visible = enabled
         input enabled = enabled
+
+        if (enabled) {
+            for (stat in stats) {
+                stat update()
+            }
+        }
     }
 
     update: func {
@@ -194,36 +218,67 @@ Stat: class {
     menu: Menu
     type: StatType
 
+    sprite: GlSprite
     ticks := ArrayList<GlSprite> new()
     
     group: GlGroup
+    pos: Vec2
 
-    init: func (=menu) {
+    dark := 0.9
+    light := 0.5
+
+    init: func (=menu, =type, =pos) {
+        "New stat at pos %s" printfln(pos toString())
+
         group = GlGroup new()
+        group pos set!(pos)
 
-        currentPos := vec2(20, 0)
-        offsetX := 10
+        spritePath := "assets/png/stat-%s.png" format(getSpriteName())
+        sprite = GlSprite new(spritePath)
+        group add(sprite)
+
+        currentPos := vec2(25, 0)
+        offsetX := 8
 
         for (i in 0..7) {
             path := "assets/png/stat-tick%d.png" format(i)
             sprite := GlSprite new(path)
             sprite pos set!(currentPos)
+            sprite opacity = dark
+
+            currentPos x += offsetX
 
             group add(sprite)
             ticks add(sprite)
+        }
+    }
+
+    getSpriteName: func -> String {
+        match type {
+            case StatType SPEED =>
+                "speed"
+            case StatType FIRESPEED =>
+                "firespeed"
+            case StatType DAMAGE =>
+                "damage"
+            case =>
+                "range"
         }
     }
     
     update: func {
         stat := getStat()
         for (i in 0..7) {
-            highlight := stat >= i
-            ticks[i] opacity = highlight ? 0.8 : 0.6
+            highlight := stat > i
+            ticks[i] opacity = highlight ? dark : light
         }
     }
 
     getStat: func -> Int {
         stats := menu game heroStats
+        if (!stats) {
+            return 0
+        }
 
         match type {
             case StatType SPEED =>
@@ -243,8 +298,8 @@ Stat: class {
 
 StatType: enum {
     SPEED
-    DAMAGE
     FIRESPEED     
+    DAMAGE
     RANGE
 }
 
