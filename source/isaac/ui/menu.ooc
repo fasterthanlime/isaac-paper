@@ -22,7 +22,7 @@ Menu: class {
     group: GlGroup
     bg: GlRectangle
 
-    lightBg: GlRectangle
+    lightBg: GlSprite
 
     enabled := false
 
@@ -56,8 +56,7 @@ Menu: class {
         menuSize = vec2(460, 330)
         bottomLeft = screenSize mul(0.5) sub(menuSize mul(0.5))
 
-        lightBg = GlRectangle new(menuSize)
-        lightBg color set!(226, 221, 220)
+        lightBg = GlSprite new("assets/png/menu-bg.png")
         lightBg pos set!(screenSize mul(0.5))
         group add(lightBg)
 
@@ -70,7 +69,14 @@ Menu: class {
 
         {
             clickable := Clickable new(this, "exit-to-main-menu",
-                vec2(0, 70))
+                vec2(0, 80))
+            clickable size set!(280, 40)
+            addClickable(clickable)
+        }
+
+        {
+            clickable := Clickable new(this, "back",
+                vec2(menuSize x * 0.5 - 55, 30))
             clickable size set!(280, 40)
             addClickable(clickable)
         }
@@ -175,7 +181,7 @@ Clickable: class {
         }
 
         hover = menu inside?(menu input getMousePos(), pos, size)
-        sprite opacity = hover ? 0.7 : 1.0
+        sprite opacity = hover ? 1.0 : 0.7
     }
 
 }
