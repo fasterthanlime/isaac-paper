@@ -279,6 +279,18 @@ Game: class {
         )
     }
 
+    onMenuEvent: func (event: String) {
+        match event {
+            case "exit-to-main-menu" =>
+                quit()
+            case "back" =>
+                menu setEnabled(false)
+                state = GameState PLAY
+            case =>
+                logger warn("Unhandled menu event: %s", event)
+        }
+    }
+
     dropBomb: func {
         if (heroStats bombCount <= 0) return
 

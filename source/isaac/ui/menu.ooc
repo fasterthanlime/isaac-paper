@@ -29,15 +29,23 @@ Menu: class {
     screenSize: Vec2
     menuSize: Vec2
     bottomLeft: Vec2
+    center: Vec2
 
     clickables := ArrayList<Clickable> new()
 
+    input: Input
+
+    logger := static Log getLogger(This name)
+
     init: func (=game) {
+        input = game scene input sub()
+
         group = GlGroup new()
         group visible = false
         game menuGroup add(group)
 
         screenSize = vec2(game dye size x, game dye size y)
+        center = screenSize mul(0.5)
 
         bg = GlRectangle new(screenSize)
         bg color set!(0, 0, 0)
@@ -63,8 +71,52 @@ Menu: class {
         {
             clickable := Clickable new(this, "exit-to-main-menu",
                 vec2(0, 70))
+            clickable size set!(280, 40)
             addClickable(clickable)
         }
+
+        input onMousePress(MouseButton LEFT, |mp|
+            logger info("Got mouse click") 
+
+            if (!inside?(mp pos, center, menuSize)) {
+                // just forget it man
+                logger info("Outside menu")
+            }
+
+            for (c in clickables) {
+                if (!c clickable) {
+                    continue
+                }
+
+                if (inside?(mp pos, c pos, c size)) {
+                    logger info("Clicked on %s", c name)
+                    game onMenuEvent(c name)
+                }
+            }
+        )
+
+        logger info("Menu created!")
+    }
+
+    /**
+     * :return: true if needle is inside a rectangle
+     * at position 'pos' of dimensions 'size', false
+     * otherwise
+     */
+    inside?: func (needle, pos, size: Vec2) -> Bool {
+        if (needle x > (pos x + size x * 0.5)) {
+            return false
+        }
+        if (needle x < (pos x - size x * 0.5)) {
+            return false
+        }
+        if (needle y > (pos y + size y * 0.5)) {
+            return false
+        }
+        if (needle y < (pos y - size y * 0.5)) {
+            return false
+        }
+        true
     }
 
     addClickable: func (clickable: Clickable) {
@@ -74,6 +126,7 @@ Menu: class {
 
     setEnabled: func (=enabled) {
         group visible = enabled
+        input enabled = enabled
     }
 
     update: func {
@@ -96,8 +149,10 @@ Clickable: class {
     menu: Menu
 
     pos: Vec2
+    size := vec2(100, 80)
 
     clickable := true
+    hover := false
 
     init: func (=menu, =name, offset: Vec2) {
         group = GlGroup new()
@@ -110,20 +165,17 @@ Clickable: class {
         path := "assets/png/menu-%s.png" format(name)
         sprite = GlSprite new(path)
         group add(sprite)
-
-        if (!clickable) {
-            sprite opacity = 0.6
-        }
-
         group pos set!(pos)
     }
 
     update: func {
         if (!clickable) {
+            sprite opacity = 0.4
             return
         }
 
-        // do stuff
+        hover = menu inside?(menu input getMousePos(), pos, size)
+        sprite opacity = hover ? 0.7 : 1.0
     }
 
 }
