@@ -53,11 +53,16 @@ Menu: class {
         lightBg pos set!(screenSize mul(0.5))
         group add(lightBg)
 
-        // paused!
         {
             clickable := Clickable new(this, "paused",
                 vec2(0, menuSize y - 30))
             clickable clickable = false
+            addClickable(clickable)
+        }
+
+        {
+            clickable := Clickable new(this, "exit-to-main-menu",
+                vec2(0, 70))
             addClickable(clickable)
         }
     }
@@ -105,6 +110,10 @@ Clickable: class {
         path := "assets/png/menu-%s.png" format(name)
         sprite = GlSprite new(path)
         group add(sprite)
+
+        if (!clickable) {
+            sprite opacity = 0.6
+        }
 
         group pos set!(pos)
     }
