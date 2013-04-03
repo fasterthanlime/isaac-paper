@@ -13,7 +13,7 @@ import gnaar/[grid, utils]
 import structs/[ArrayList, List]
 
 // our stuff
-import isaac/[game, options]
+import isaac/[game, options, hero]
 
 Menu: class {
 
@@ -181,27 +181,31 @@ Clickable: class {
         }
 
         hover = menu inside?(menu input getMousePos(), pos, size)
-        sprite opacity = hover ? 1.0 : 0.7
+        sprite opacity = hover ? 0.9 : 0.8
+
+        scale := hover ? 1.0 : 0.95
+        sprite scale set!(scale, scale)
     }
 
 }
 
 Stat: class {
 
-    game: Game
+    menu: Menu
+    type: StatType
 
     ticks := ArrayList<GlSprite> new()
     
     group: GlGroup
 
-    init: func (=game) {
+    init: func (=menu) {
         group = GlGroup new()
 
         currentPos := vec2(20, 0)
         offsetX := 10
 
         for (i in 0..7) {
-            path := "assets/png/stat-tick%d.png" printfln()
+            path := "assets/png/stat-tick%d.png" format(i)
             sprite := GlSprite new(path)
             sprite pos set!(currentPos)
 
@@ -215,14 +219,11 @@ Stat: class {
         for (i in 0..7) {
             highlight := stat >= i
             ticks[i] opacity = highlight ? 0.8 : 0.6
-
-            scale := highlight? 1.2 : 1.0
-            ticks[i] scale set!(scale, scale)
         }
     }
 
     getStat: func -> Int {
-        stats := game heroStats
+        stats := menu game heroStats
 
         match type {
             case StatType SPEED =>
@@ -230,9 +231,9 @@ Stat: class {
             case StatType DAMAGE =>
                 stats damage
             case StatType FIRESPEED =>
-                stats 
+                stats shootRate
             case StatType RANGE =>
-                
+                stats shootRange
             case =>
                 0
         }
