@@ -240,8 +240,15 @@ Stat: class {
         currentPos := vec2(25, 0)
         offsetX := 8
 
+        indices := ArrayList<Int> new()
         for (i in 0..7) {
-            path := "assets/png/stat-tick%d.png" format(i)
+            indices add(i)
+        }
+        indices = indices shuffle()
+
+        for (i in 0..7) {
+            index := indices[i]
+            path := "assets/png/stat-tick%d.png" format(index)
             sprite := GlSprite new(path)
             sprite pos set!(currentPos)
             sprite opacity = dark
