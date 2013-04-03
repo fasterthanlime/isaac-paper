@@ -14,7 +14,7 @@ BEGIN
       VALUE "LegalCopyright", "Amos Wenger"
       VALUE "OriginalFilename", "isaac.exe"
       VALUE "ProductName", "Paper Isaac"
-      VALUE "ProductVersion", "0.3.3"
+      VALUE "ProductVersion", "0.4.0"
     END
   END
 

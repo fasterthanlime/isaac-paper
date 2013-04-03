@@ -559,7 +559,7 @@ Game: class {
     }
 
     getVersion: func -> String {
-        "033"
+        "040"
     }
 
 }
