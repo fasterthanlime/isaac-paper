@@ -339,7 +339,7 @@ Game: class {
         uiGroup add(uiBg)
 
         labelLeft := 340
-        labelBottom := 500
+        labelBottom := 520
         labelFontSize := 14
         labelPadding := 28
 
@@ -359,18 +359,18 @@ Game: class {
         uiGroup add(keyLabel)
 
         fpsLabel = GlText new(FONT, "60FPS", labelFontSize)
-        fpsLabel pos set!(650, 0)
+        fpsLabel pos set!(650, 20)
         fpsLabel color set!(Color new(30, 30, 30))
         uiGroup add(fpsLabel)
 
         versionString := "Version %s" format(getVersion())
         versionLabel = GlText new(FONT, versionString, labelFontSize)
-        versionLabel pos set!(650, 20)
+        versionLabel pos set!(650, 40)
         versionLabel color set!(Color new(30, 30, 30))
         uiGroup add(versionLabel)
 
         floorLabel = GlText new(FONT, "", labelFontSize)
-        floorLabel pos set!(10, 0)
+        floorLabel pos set!(10, 20)
         floorLabel color set!(Color new(30, 30, 30))
         uiGroup add(floorLabel)
 
@@ -414,7 +414,7 @@ Game: class {
         uiGroup add(health)
 
         lifeLabel := GlText new(FONT, "LIFE", labelFontSize)
-        lifeLabel pos set!(650, 560)
+        lifeLabel pos set!(650, 580)
         lifeLabel color set!(255, 255, 255)
         uiGroup add(lifeLabel)
     }
