@@ -4,7 +4,7 @@ use yaml
 import yaml/[Document, Parser]
 
 use gnaar
-import gnaar/[utils]
+import gnaar/[utils, yaml]
 
 Options: class {
 

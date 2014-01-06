@@ -11,7 +11,7 @@ use dye
 import dye/[core, sprite, primitives, math]
 
 use gnaar
-import gnaar/[utils]
+import gnaar/[utils, physics]
 
 // sdk stuff
 import math, math/Random
@@ -160,12 +160,12 @@ MaggotSprite: class extends GlDrawable {
         }
     }
 
-    draw: func (dye: DyeContext, modelView: Matrix4) {
+    draw: func (pass: Pass, modelView: Matrix4) {
         if (current) {
             current opacity = opacity
             current color = color
             current scale x = xswap ? -1.0 : 1.0
-            current render(dye, modelView)
+            current render(pass, modelView)
         }
     }
 

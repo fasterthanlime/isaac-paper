@@ -11,7 +11,7 @@ use dye
 import dye/[core, sprite, primitives, math]
 
 use gnaar
-import gnaar/[utils]
+import gnaar/[utils, physics]
 
 // sdk stuff
 import math, math/Random

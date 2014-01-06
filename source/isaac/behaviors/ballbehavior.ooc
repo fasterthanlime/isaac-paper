@@ -10,7 +10,7 @@ use chipmunk
 import chipmunk
 
 use gnaar
-import gnaar/[utils]
+import gnaar/[utils, physics]
 
 // sdk stuff
 import math, math/Random
@@ -63,8 +63,8 @@ BallBehavior: class {
         }
 
         idealVel := dir mul(speed)
-        alpha := 0.85
-        bodyVel interpolate!(idealVel, 1 - alpha)
+        alpha := 0.85f
+        bodyVel lerp!(idealVel, 1.0f - alpha)
         enemy body setVel(cpv(bodyVel))
     }
 

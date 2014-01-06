@@ -11,7 +11,7 @@ use dye
 import dye/[core, sprite, primitives, math, anim]
 
 use gnaar
-import gnaar/[utils, deck]
+import gnaar/[utils, deck, physics]
 
 // our stuff
 import isaac/[game, level, tear, shadow, bomb, collectible, options,
@@ -186,7 +186,7 @@ Hero: class extends Entity {
 
         vel := dir mul(getSpeed())
         currVel := vec2(body getVel())
-        currVel interpolate!(vel, 1 - 0.8)
+        currVel lerp!(vel, 1.0f - 0.8f)
         body setVel(cpv(currVel))
 
         epsilon := 0.1

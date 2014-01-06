@@ -10,7 +10,7 @@ use dye
 import dye/[core, sprite, primitives, math]
 
 use gnaar
-import gnaar/[utils]
+import gnaar/[utils, physics]
 
 // sdk stuff
 import math, math/Random
@@ -49,10 +49,10 @@ DukePart: class extends Mob {
     scale := 0.8
 
     moveCount := 60
-    moveCountMax := 80
+    moveCountMax := 80.0f
 
     behavior: BallBehavior
-    maxLife := 80.0
+    maxLife := 80.0f
 
     maxFlies := 8
     flies := ArrayList<Fly> new()
@@ -60,9 +60,9 @@ DukePart: class extends Mob {
     flyCounter := 0
     flyCounterThreshold := 60
 
-    baseAngle := 0.0
-    baseAngleIncr := 1.2
-    flyRadius := 70.0
+    baseAngle := 0.0f
+    baseAngleIncr := 1.2f
+    flyRadius := 70.0f
     maxSpawns := 3
 
     init: func (.level, .pos) {
@@ -165,7 +165,7 @@ DukePart: class extends Mob {
         fliesCount = flies size
     
         baseAngle += baseAngleIncr
-        step := 360.0 / maxFlies as Float
+        step := 360.0f / maxFlies as Float
 
         angle := baseAngle
         for (f in flies) {

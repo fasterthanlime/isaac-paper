@@ -10,7 +10,7 @@ use dye
 import dye/[core, sprite, primitives, math]
 
 use gnaar
-import gnaar/[utils]
+import gnaar/[utils, physics]
 
 // sdk stuff
 import math, math/Random
@@ -422,6 +422,8 @@ Mob: class extends Enemy {
 
 EnemyHeroHandler: class extends CollisionHandler {
 
+    init: func
+
     preSolve: func (arbiter: CpArbiter, space: CpSpace) -> Bool {
         shape1, shape2: CpShape
         arbiter getShapes(shape1&, shape2&)
@@ -439,6 +441,8 @@ EnemyHeroHandler: class extends CollisionHandler {
 }
 
 EnemyWallsHandler: class extends CollisionHandler {
+
+    init: func
 
     begin: func (arbiter: CpArbiter, space: CpSpace) -> Bool {
         shape1, shape2: CpShape
@@ -458,6 +462,8 @@ EnemyWallsHandler: class extends CollisionHandler {
 
 EnemyBlockHandler: class extends CollisionHandler {
 
+    init: func
+
     begin: func (arbiter: CpArbiter, space: CpSpace) -> Bool {
         shape1, shape2: CpShape
         arbiter getShapes(shape1&, shape2&)
@@ -476,6 +482,8 @@ EnemyBlockHandler: class extends CollisionHandler {
 
 EnemyHoleHandler: class extends CollisionHandler {
 
+    init: func
+
     begin: func (arbiter: CpArbiter, space: CpSpace) -> Bool {
         shape1, shape2: CpShape
         arbiter getShapes(shape1&, shape2&)
@@ -493,6 +501,8 @@ EnemyHoleHandler: class extends CollisionHandler {
 }
 
 EnemyCollectibleHandler: class extends CollisionHandler {
+
+    init: func
 
     begin: func (arbiter: CpArbiter, space: CpSpace) -> Bool {
         shape1, shape2: CpShape

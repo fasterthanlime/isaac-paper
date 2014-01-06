@@ -10,7 +10,7 @@ use dye
 import dye/[core, sprite, primitives, math]
 
 use gnaar
-import gnaar/[utils]
+import gnaar/[utils, physics]
 
 // sdk stuff
 import math, math/Random
@@ -102,11 +102,12 @@ Spikes: class extends Entity {
 
 SpikesHeroHandler: class extends CollisionHandler {
 
+    init: func
+
     preSolve: func (arbiter: CpArbiter, space: CpSpace) -> Bool {
         shape1, shape2: CpShape
         arbiter getShapes(shape1&, shape2&)
 
-        spikes := shape1 getUserData() as Spikes
         hero := shape2 getUserData() as Hero
 
         hero harmHero(2)

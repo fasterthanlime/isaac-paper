@@ -10,7 +10,7 @@ use chipmunk
 import chipmunk
 
 use gnaar
-import gnaar/[utils]
+import gnaar/[utils, physics]
 
 // sdk stuff
 import math, math/Random

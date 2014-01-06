@@ -11,7 +11,7 @@ use dye
 import dye/[core, sprite, primitives, math]
 
 use gnaar
-import gnaar/[utils]
+import gnaar/[utils, physics]
 
 // sdk stuff
 import structs/[ArrayList]
@@ -220,6 +220,8 @@ TearType: enum {
 
 HeroTearHandler: class extends CollisionHandler {
 
+    init: func
+
     preSolve: func (arbiter: CpArbiter, space: CpSpace) -> Bool {
         shape1, shape2: CpShape
         arbiter getShapes(shape1&, shape2&)
@@ -250,6 +252,8 @@ HeroTearHandler: class extends CollisionHandler {
 }
 
 EnemyTearHandler: class extends CollisionHandler {
+
+    init: func
 
     preSolve: func (arbiter: CpArbiter, space: CpSpace) -> Bool {
         shape1, shape2: CpShape
@@ -295,12 +299,12 @@ EnemyTearHandler: class extends CollisionHandler {
 
 BlockTearHandler: class extends CollisionHandler {
 
+    init: func
+
     preSolve: func (arbiter: CpArbiter, space: CpSpace) -> Bool {
         shape1, shape2: CpShape
         arbiter getShapes(shape1&, shape2&)
 
-        bounce := true
-        
         tear := shape1 getUserData() as Tear
         if (tear z < tear contactLevel) {
             tear hit = true
@@ -328,12 +332,12 @@ BlockTearHandler: class extends CollisionHandler {
 
 FireTearHandler: class extends CollisionHandler {
 
+    init: func
+
     preSolve: func (arbiter: CpArbiter, space: CpSpace) -> Bool {
         shape1, shape2: CpShape
         arbiter getShapes(shape1&, shape2&)
 
-        bounce := true
-        
         tear := shape1 getUserData() as Tear
         entity := shape2 getUserData() as Entity
 
@@ -358,6 +362,8 @@ FireTearHandler: class extends CollisionHandler {
 }
 
 IgnoreTearHandler: class extends CollisionHandler {
+
+    init: func
 
     begin: func (arbiter: CpArbiter, space: CpSpace) -> Bool {
         logger warn("begin called in IgnoreTearHandler")

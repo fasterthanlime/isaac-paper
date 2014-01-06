@@ -7,7 +7,7 @@ use chipmunk
 import chipmunk
 
 use gnaar
-import gnaar/[utils]
+import gnaar/[utils, physics]
 
 // sdk stuff
 import math/Random
@@ -54,14 +54,14 @@ Mover: class {
 
     level: Level
 
-    radius := 20.0
+    radius := 20.0f
 
     target: Vec2
     body: CpBody
     speed: Float
-    alpha := 0.95
+    alpha := 0.95f
 
-    distSpeedFactor := 4.0
+    distSpeedFactor := 4.0f
 
     moving := false
 
@@ -81,7 +81,7 @@ Mover: class {
             effectiveSpeed := speed < dist ? speed : dist
 
             idealVel := diff normalized() mul(effectiveSpeed)
-            vel interpolate!(idealVel, 1 - alpha)
+            vel lerp!(idealVel, 1.0f - alpha)
             body setVel(cpv(vel))
         } else {
             if (cellPath) {

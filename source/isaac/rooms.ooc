@@ -265,7 +265,7 @@ Room: class {
         } else if (number < 12) {
             level add(CollectibleKey new(level, pos))
         } else {
-            level add(CollectibleChest new(level, pos))
+            level add(CollectibleChest new(level, pos, ChestType REGULAR))
         }
     }
 

@@ -4,7 +4,7 @@ use dye
 import dye/[sprite, math]
 
 use gnaar
-import gnaar/[utils]
+import gnaar/[utils, physics]
 
 use chipmunk
 import chipmunk
@@ -345,6 +345,8 @@ Door: class extends Entity {
 }
 
 IsaacDoorHandler: class extends CollisionHandler {
+
+    init: func
 
     preSolve: func (arbiter: CpArbiter, space: CpSpace) -> Bool {
         shape1, shape2: CpShape

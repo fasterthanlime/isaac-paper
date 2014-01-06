@@ -4,7 +4,7 @@ use dye
 import dye/[core, math]
 
 use gnaar
-import gnaar/[utils]
+import gnaar/[utils, physics]
 
 // sdk stuff
 import math, math/Random

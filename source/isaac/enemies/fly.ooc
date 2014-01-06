@@ -40,17 +40,17 @@ Fly: class extends Mob {
     moveCount := 0
     moveCountMax := 30
 
-    radius := 600.0
-    speedyRadius := 280.0
+    radius := 600.0f
+    speedyRadius := 280.0f
 
-    scale := 0.7
+    scale := 0.7f
 
     mover: Mover
 
     type: FlyType
 
-    fireRadius := 350.0
-    fireSpeed := 280.0
+    fireRadius := 350.0f
+    fireSpeed := 280.0f
 
     fireCount := 40
     maxFireCount := 60
@@ -63,30 +63,30 @@ Fly: class extends Mob {
 
     autonomous := true
 
-    moverSpeed := 80.0
+    moverSpeed := 80.0f
 
     init: func (.level, .pos, =type) {
         super(level, pos)
 
         match type {
             case FlyType BLACK_FLY =>
-                life = 2.0
+                life = 2.0f
             case FlyType ATTACK_FLY =>
-                life = 6.0
+                life = 6.0f
             case FlyType BIG_ATTACK_FLY =>
-                life = 12.0
-                scale := 1.4
+                life = 12.0f
+                scale = 1.4f
             case FlyType MOTER =>
-                life = 14.0
+                life = 14.0f
             case =>
-                life = 8.0
+                life = 8.0f
         }
 
         if (attackFly?()) {
-            moverSpeed = 110.0
+            moverSpeed = 110.0f
         }
 
-        sinus incr = 0.15
+        sinus incr = 0.15f
 
         loadSprite(getSpriteName(), level charGroup, scale)
 
@@ -97,10 +97,10 @@ Fly: class extends Mob {
         createShadow(shadowSize)
         shadowYOffset = 13
 
-        createBox(15, 15, 15.0)
+        createBox(15, 15, 15.0f)
         shape setSensor(true)
 
-        mover = Mover new(level, body, 70.0)
+        mover = Mover new(level, body, 70.0f)
     }
 
     getSpriteName: func -> String {
@@ -230,7 +230,7 @@ Fly: class extends Mob {
     }
 
     aggressive?: func -> Bool {
-        type == FlyType ATTACK_FLY || FlyType BIG_ATTACK_FLY
+        (type == FlyType ATTACK_FLY) || (type == FlyType BIG_ATTACK_FLY)
     }
 
     buzzes?: func -> Bool {

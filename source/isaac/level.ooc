@@ -7,7 +7,7 @@ use dye
 import dye/[core, math, input, sprite]
 
 use gnaar
-import gnaar/[utils]
+import gnaar/[utils, physics]
 
 use deadlogger
 import deadlogger/[Log, Logger]
