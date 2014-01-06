@@ -162,7 +162,7 @@ win32-package:
 
 ## Mac
 
-OSX32_LIBS="libGLEW libSDL2-2 libSDL2_mixer-2 libfreetype libgc libmxml libpng16 libyaml-0 libogg libvorbis libvorbisfile libchipmunk"
+OSX32_LIBS="libGLEW libSDL2-2 libSDL2_mixer-2 libfreetype libmxml libpng16 libogg libvorbis libvorbisfile libchipmunk"
 OSX32_NAME="isaac-$(VERSION)-osx32.app"
 OSX32_STAGE="stage/$(OSX32_NAME)"
 OSX32_FINAL_NAME="PaperIsaac.app"
@@ -185,7 +185,7 @@ osx32-package:
 	@mkdir -p $(OSX32_STAGE)/Contents/Resources
 	@cp -f art/isaac.icns $(OSX32_STAGE)/Contents/Resources
 	@mkdir -p $(OSX32_STAGE)/Contents/MacOS/game/libs
-	@./utils/osx/copy-libs.sh $(OSX32_STAGE)/Contents/MacOS/game/libs/ /usr/$(OSX32_TOOLCHAIN)/usr $(OSX32_LIBS)
+	@./utils/osx/copy-libs.sh $(OSX32_STAGE)/Contents/MacOS/libs/ /usr/$(OSX32_TOOLCHAIN)/usr $(OSX32_LIBS)
 	@test -f $(TESTER_LAIR) || (mkdir -p $(TESTER_LAIR)/isaac-osx32.app; cp -rf $(OSX32_STAGE)/* $(TESTER_LAIR)/isaac-osx32.app)
 	@cp -rf $(OSX32_STAGE)/* $(OSX32_DEST)/
 	#@rm -rf $(OSX32_STAGE)
