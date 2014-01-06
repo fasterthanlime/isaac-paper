@@ -272,6 +272,10 @@ Game: class {
             dropBomb()
         )
 
+        scene input onKeyPress(KeyCode F11, |kp|
+            dye setFullscreen(!dye fullscreen)
+        )
+
         scene input onKeyPress(KeyCode _1, |kp|
             if (cheats) {
                 changeFloor()
