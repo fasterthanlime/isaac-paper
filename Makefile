@@ -162,7 +162,7 @@ win32-package:
 
 ## Mac
 
-OSX32_LIBS="libGLEW libSDL2-2 libSDL2_mixer-2 libfreetype libgc libmxml libpng16 libyaml-0 libogg libvorbis libvorbisfile"
+OSX32_LIBS="libGLEW libSDL2-2 libSDL2_mixer-2 libfreetype libgc libmxml libpng16 libyaml-0 libogg libvorbis libvorbisfile libchipmunk"
 OSX32_NAME="isaac-$(VERSION)-osx32.app"
 OSX32_STAGE="stage/$(OSX32_NAME)"
 OSX32_FINAL_NAME="PaperIsaac.app"
@@ -177,16 +177,11 @@ osx32-package:
 	@mkdir -p $(OSX32_STAGE)
 	@mkdir -p $(OSX32_STAGE)/Contents/MacOS
 	@cp -f ./skeletons/osx32/Info.pList $(OSX32_STAGE)/Contents/
-	@cp -f ./skeletons/osx32/launcher-wrapper $(OSX32_STAGE)/Contents/MacOS/
-	@chmod +x $(OSX32_STAGE)/Contents/MacOS/launcher-wrapper
-	@mkdir -p $(OSX32_STAGE)/Contents/MacOS/launcher
-	@mkdir -p $(OSX32_STAGE)/Contents/MacOS/data
-	@cp -rf $(ASSETS) $(OSX32_STAGE)/Contents/MacOS/data/
-	@mkdir -p $(OSX32_STAGE)/Contents/MacOS/game
-	@cp -f ./skeletons/osx32/isaac.sh $(OSX32_STAGE)/Contents/MacOS/game
-	@cp -f stage/osx32/isaac-osx32 $(OSX32_STAGE)/Contents/MacOS/game
-	#@/usr/$(OSX32_TOOLCHAIN)/bin/$(OSX32_TOOLCHAIN)-strip $(OSX32_STAGE)/Contents/MacOS/game/isaac-osx32
-	@chmod +x $(OSX32_STAGE)/Contents/MacOS/game/isaac.sh
+	@cp -f ./skeletons/osx32/isaac.sh $(OSX32_STAGE)/Contents/MacOS/
+	@chmod +x $(OSX32_STAGE)/Contents/MacOS/isaac.sh
+	@cp -rf $(ASSETS) $(OSX32_STAGE)/Contents/MacOS/
+	@cp -f stage/osx32/isaac-osx32 $(OSX32_STAGE)/Contents/MacOS/
+	#@/usr/$(OSX32_TOOLCHAIN)/bin/$(OSX32_TOOLCHAIN)-strip $(OSX32_STAGE)/Contents/MacOS/isaac-osx32
 	@mkdir -p $(OSX32_STAGE)/Contents/Resources
 	@cp -f art/isaac.icns $(OSX32_STAGE)/Contents/Resources
 	@mkdir -p $(OSX32_STAGE)/Contents/MacOS/game/libs

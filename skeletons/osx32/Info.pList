@@ -5,7 +5,7 @@
   <key>CFBundleGetInfoString</key>
   <string>Paper Isaac</string>
   <key>CFBundleExecutable</key>
-  <string>wrapper</string>
+  <string>isaac.sh</string>
   <key>CFBundleIdentifier</key>
   <string>me.amos.paperisaac</string>
   <key>CFBundleName</key>
