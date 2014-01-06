@@ -184,7 +184,7 @@ osx32-package:
 	#@/usr/$(OSX32_TOOLCHAIN)/bin/$(OSX32_TOOLCHAIN)-strip $(OSX32_STAGE)/Contents/MacOS/isaac-osx32
 	@mkdir -p $(OSX32_STAGE)/Contents/Resources
 	@cp -f art/isaac.icns $(OSX32_STAGE)/Contents/Resources
-	@mkdir -p $(OSX32_STAGE)/Contents/MacOS/game/libs
+	@mkdir -p $(OSX32_STAGE)/Contents/MacOS/libs
 	@./utils/osx/copy-libs.sh $(OSX32_STAGE)/Contents/MacOS/libs/ /usr/$(OSX32_TOOLCHAIN)/usr $(OSX32_LIBS)
 	@test -f $(TESTER_LAIR) || (mkdir -p $(TESTER_LAIR)/isaac-osx32.app; cp -rf $(OSX32_STAGE)/* $(TESTER_LAIR)/isaac-osx32.app)
 	@cp -rf $(OSX32_STAGE)/* $(OSX32_DEST)/
