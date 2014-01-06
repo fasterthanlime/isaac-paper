@@ -13,6 +13,7 @@ config/settings.yml
 *.glc
 videos
 *.log
+log.txt
 callgrind.out.*
 *~
 

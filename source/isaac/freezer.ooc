@@ -156,6 +156,8 @@ FrozenEntity: class {
                 CollectibleCoin new(level, pos, CoinType PENNY)
             case "CollectibleChest" =>
                 CollectibleChest new(level, pos, ChestType REGULAR)
+            case "CollectibleItem" =>
+                CollectibleItem new(level, pos, ItemType IPECAC)
             case "TrapDoor" =>
                 TrapDoor new(level, pos)
             case "Spikes" =>

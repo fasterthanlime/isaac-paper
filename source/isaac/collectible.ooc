@@ -401,7 +401,7 @@ CollectibleItem: class extends Collectible {
         scale := 0.9
         sprite scale set!(scale, scale)
 
-        itemSprite = GlSprite new("assets/png/item-ipecac.png")
+        itemSprite = GlSprite new(getItemSpritePath())
         itemScale := 0.6
         itemSprite scale set!(scale, scale)
         itemSprite pos set!(0, 24)
@@ -409,6 +409,19 @@ CollectibleItem: class extends Collectible {
         itemGroup = GlGroup new()
         itemGroup add(itemSprite)
         level charGroup add(itemGroup)
+    }
+
+    updateItemGfx: func {
+        itemSprite setTexture(getItemSpritePath())
+    }
+
+    getItemSpritePath: func -> String {
+        // TODO: other items, duh.
+        "assets/png/item-ipecac.png"
+    }
+
+    getSpritePath: func -> String {
+        "assets/png/pedestal.png"
     }
 
     update: func -> Bool {
@@ -420,10 +433,6 @@ CollectibleItem: class extends Collectible {
         currentPos lerp!(initialPos, 0.4)
         body setPos(cpv(currentPos))
         res
-    }
-
-    getSpritePath: func -> String {
-        "assets/png/pedestal.png"
     }
 
     collect: func {
@@ -438,6 +447,15 @@ CollectibleItem: class extends Collectible {
 
     shouldFreeze: func -> Bool {
         !pickedUp
+    }
+
+    freeze: func (ent: FrozenEntity) {
+        ent put("type", type)
+    }
+
+    unfreeze: func (ent: FrozenEntity) {
+        type = ent attrs get("type", ItemType)
+        updateItemGfx()
     }
 
     destroy: func {

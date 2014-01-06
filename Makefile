@@ -147,16 +147,15 @@ win32-package:
 	@echo "[PACKAGE] Windows 32-bit..."
 	@rm -rf $(WIN32_STAGE)
 	@mkdir -p $(WIN32_STAGE)
-	@mkdir -p $(WIN32_STAGE)/data
-	@cp -rf $(ASSETS) $(WIN32_STAGE)/data/
-	@mkdir -p $(WIN32_STAGE)/launcher
-	@mkdir -p $(WIN32_STAGE)/game
-	@cp -f stage/win32/isaac-win32.exe $(WIN32_STAGE)/game
-	@./utils/win/copy-libs.sh $(WIN32_STAGE)/game $(WIN32_TOOLCHAIN) $(WIN32_LIBS)
+	@cp -rf $(ASSETS) $(WIN32_STAGE)
+	@cp -f stage/win32/isaac-win32.exe $(WIN32_STAGE)
+	@./utils/win/copy-libs.sh $(WIN32_STAGE) $(WIN32_TOOLCHAIN) $(WIN32_LIBS)
 	#@$(WIN32_TOOLCHAIN)-strip $(WIN32_STAGE)/game/*.dll $(WIN32_STAGE)/game/*.exe
-	@cp -rf skeletons/win32/*.dll $(WIN32_STAGE)/game
+	@cp -rf skeletons/win32/*.dll $(WIN32_STAGE)
 	@mkdir -p builds/$(VERSION)
 	@test -f $(TESTER_LAIR) || (mkdir -p $(TESTER_LAIR)/isaac-win32; cp -rf $(WIN32_STAGE)/* $(TESTER_LAIR)/isaac-win32)
+	@rm -rf $(WIN32_DEST)
+	@mkdir -p $(WIN32_DEST)
 	@cp -rf $(WIN32_STAGE)/* $(WIN32_DEST)/
 	@rm -rf $(WIN32_STAGE)
 	@echo "Windows build done!"
