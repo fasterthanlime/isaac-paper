@@ -105,8 +105,6 @@ linux-package:
 	@echo "[PACKAGE] Linux..."
 	@rm -rf $(LINUX_STAGE)
 	@mkdir -p $(LINUX_STAGE)
-	@mkdir -p $(LINUX_STAGE)/data
-	@cp -rf $(ASSETS) $(LINUX_STAGE)/data/
 	@mkdir -p $(LINUX_STAGE)/binaries
 	@cp -f stage/linux32/isaac-linux32 stage/linux64/isaac-linux64 \
 	  $(LINUX_STAGE)/binaries
