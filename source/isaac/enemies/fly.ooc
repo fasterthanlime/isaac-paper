@@ -75,7 +75,7 @@ Fly: class extends Mob {
                 life = 6.0f
             case FlyType BIG_ATTACK_FLY =>
                 life = 12.0f
-                scale = 1.4f
+                scale *= 1.2f
             case FlyType MOTER =>
                 life = 14.0f
             case =>
@@ -148,6 +148,9 @@ Fly: class extends Mob {
             case FlyType SUCKER =>
                 // spawn tears in the shape of a '+'
                 spawnPlusTears(fireSpeed)
+            case FlyType SPIT =>
+                // fire an ipecac shot
+                spawnIpecac()
         }
         super()
     }

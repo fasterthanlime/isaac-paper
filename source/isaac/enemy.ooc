@@ -337,6 +337,17 @@ Enemy: abstract class extends Entity {
         spawnTear(pos2, Vec2 fromAngle(a2), fireSpeed)
     }
 
+    spawnIpecac: func {
+        diff := level hero aimPos() sub(pos)
+        shotSpeed := 280
+        vel := diff normalized() mul(shotSpeed)
+        range := diff norm() + 30
+
+        tear := Tear new(level, pos, vel, TearType IPECAC, 1, range)
+        tear fromEnemy = true
+        level add(tear)
+    }
+
 }
 
 Mob: class extends Enemy {
