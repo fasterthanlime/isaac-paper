@@ -256,6 +256,9 @@ Level: class {
         if (tile trapDrop?()) {
             pos := gridPos(6, 5)
             tile room spawnTrapDoor(pos, this)
+
+            itemPos := gridPos(6, 3)
+            tile room spawnItem(itemPos, this)
             game loadMusic()
         }
     }

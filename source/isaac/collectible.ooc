@@ -18,7 +18,7 @@ import math/Random
 
 // our stuff
 import isaac/[game, hero, level, bomb, freezer, map, shadow, explosion,
-    paths]
+    paths, tear]
 
 /**
  * All that can be picked up
@@ -377,6 +377,72 @@ CollectibleKey: class extends Collectible {
 
     shouldFreeze: func -> Bool {
         true
+    }
+
+}
+
+ItemType: enum {
+    IPECAC
+}
+
+CollectibleItem: class extends Collectible {
+
+    itemSprite: GlSprite
+    itemGroup: GlGroup
+    type: ItemType
+    pickedUp := false
+    initialPos: Vec2
+
+    init: func (.level, .pos, =type) {
+        super(level, pos)
+
+        initialPos = vec2(pos)
+
+        scale := 0.9
+        sprite scale set!(scale, scale)
+
+        itemSprite = GlSprite new("assets/png/item-ipecac.png")
+        itemScale := 0.6
+        itemSprite scale set!(scale, scale)
+        itemSprite pos set!(0, 24)
+
+        itemGroup = GlGroup new()
+        itemGroup add(itemSprite)
+        level charGroup add(itemGroup)
+    }
+
+    update: func -> Bool {
+        res := super()
+        itemGroup pos set!(sprite pos)
+        itemGroup pos add!(0, -1)
+
+        currentPos := vec2(body getPos())
+        currentPos lerp!(initialPos, 0.4)
+        body setPos(cpv(currentPos))
+        res
+    }
+
+    getSpritePath: func -> String {
+        "assets/png/pedestal.png"
+    }
+
+    collect: func {
+        collected = false // the pedestal should still be there
+        if (pickedUp) return
+
+        level game heroStats setTearType(TearType IPECAC)
+        level game playSound("item-pickup")
+        itemGroup remove(itemSprite)
+        pickedUp = true
+    }
+
+    shouldFreeze: func -> Bool {
+        !pickedUp
+    }
+
+    destroy: func {
+        super()
+        level charGroup remove(itemGroup)
     }
 
 }

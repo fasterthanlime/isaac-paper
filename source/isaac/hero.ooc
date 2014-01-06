@@ -332,6 +332,8 @@ Hero: class extends Entity {
 
 HeroStats: class {
 
+    _tearType := TearType HERO
+
     speed := 2
     actualSpeed : Float { get { 150.0 * speed } }
 
@@ -494,11 +496,10 @@ HeroStats: class {
     }
 
     tearType: func -> TearType {
-        //TearType HERO
-
-        // just testing:
-        TearType IPECAC
+        _tearType
     }
+
+    setTearType: func (=_tearType)
 
 }
 

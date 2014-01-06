@@ -254,6 +254,11 @@ Room: class {
         level add(CollectibleChest new(level, pos, ChestType REGULAR))
     }
 
+    spawnItem: func (pos: Vec2, level: Level) {
+        // TODO: different item types
+        level add(CollectibleItem new(level, pos, ItemType IPECAC))
+    }
+
     spawnCollectible: func (pos: Vec2, level: Level) {
         number := Random randInt(0, 16)
         if (number < 4) {
