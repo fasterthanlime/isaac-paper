@@ -1,6 +1,7 @@
 
 DEBUG_FLAGS+=-pg -O0 +-w
-RELEASE_FLAGS+=-pg -O3 -q -j4 ../../isaac.use
+#RELEASE_FLAGS+=-pg -O3 -q -j4 ../../isaac.use
+RELEASE_FLAGS+=-pg -O3 -vv -j4 ../../isaac.use
 
 TESTER_LAIR=/home/amos/Dropbox/isaac/builds
 
