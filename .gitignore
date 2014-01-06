@@ -1,23 +1,33 @@
+.sam-cache
 .libs
 rock_tmp
+build
+launcher-build
 
-isaac
-isaac.exe
+stage
+builds
 
-log.txt
+config/settings.yml
 
-# OSX crap
-.DS_store
+/isaac
+*.glc
+videos
+*.log
+callgrind.out.*
+*~
+
+# win32 stuff
 *.dSYM
-
-# Windows crap
-*.dll
+*.exe
 *.res
+*.dll
+!skeletons/win32/*.dll
 
-# sam crap
-.sam-cache
+# GL debug stuff (apitrace)
+*.trace
 
-# Boehm crap
-isaac.gc.log
+# osx stuff
+.DS_store
 
-config/*
+# my stuff
+/videos

@@ -18,7 +18,7 @@ import structs/[HashMap, List, ArrayList]
 
 // our stuff
 import isaac/[logging, level, bomb, hero, rooms, collectible, health, plan, map,
-    music, options, trapdoor, spikes]
+    music, options, trapdoor, spikes, VERSION]
 import isaac/ui/[menu]
 
 // debugging for fun
@@ -103,7 +103,7 @@ Game: class {
         }
 
         Logging setup()
-        logger info("Starting up Paper Isaac v%s", getVersion())
+        logger info("Starting up Paper Isaac v%s", IsaacVersion VERSION)
         logger info("Compiled on %s", __BUILD_DATETIME__)
         logger info("=============================================")
 
@@ -363,7 +363,7 @@ Game: class {
         fpsLabel color set!(Color new(30, 30, 30))
         uiGroup add(fpsLabel)
 
-        versionString := "Version %s" format(getVersion())
+        versionString := "Version %s" format(IsaacVersion VERSION)
         versionLabel = GlText new(FONT, versionString, labelFontSize)
         versionLabel pos set!(650, 40)
         versionLabel color set!(Color new(30, 30, 30))
@@ -592,10 +592,6 @@ Game: class {
     playRandomSound: func (name: String, variants := 2, loops := 0) {
         variant := Random randInt(1, variants)
         playSound("%s%d" format(name, variant), loops)
-    }
-
-    getVersion: func -> String {
-        "040"
     }
 
 }
