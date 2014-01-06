@@ -504,11 +504,10 @@ CollisionGroups: enum from Int {
     HOPPER
 }
 
-ALL_COLLISION_HANDLERS := ArrayList<CollisionHandler> new()
-
 CollisionHandler: abstract class extends CpCollisionHandler {
 
     logger := static Log getLogger(This name)
+    ALL_COLLISION_HANDLERS := static ArrayList<CollisionHandler> new()
 
     cachedLevel: Level
 
