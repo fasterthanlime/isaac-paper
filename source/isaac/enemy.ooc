@@ -36,7 +36,7 @@ Enemy: abstract class extends Entity {
     rotateConstraint: CpConstraint
 
     hitbackSpeed := 200
-    
+
     redish: Bool
     baseColor := Color white()
 
@@ -230,7 +230,7 @@ Enemy: abstract class extends Entity {
     }
 
     createCircle: func ~withMoment (radius: Float, mass, moment: Float) {
-        createBody(mass, moment) 
+        createBody(mass, moment)
         setShape(CpCircleShape new(body, radius, cpv(0, 0)))
         createConstraint()
     }
@@ -311,7 +311,7 @@ Enemy: abstract class extends Entity {
     spawnSixTears: func (fireSpeed: Float) {
         angle := (Random randInt(0, 360) as Float) toRadians()
         for (i in 0..6) {
-            spawnTear(pos, Vec2 fromAngle(angle as Float), fireSpeed) 
+            spawnTear(pos, Vec2 fromAngle(angle as Float), fireSpeed)
             angle += (PI * 0.33)
         }
     }
@@ -424,7 +424,7 @@ EnemyHeroHandler: class extends CollisionHandler {
 
     init: func
 
-    preSolve: func (arbiter: CpArbiter, space: CpSpace) -> Bool {
+    begin: func (arbiter: CpArbiter, space: CpSpace) -> Bool {
         shape1, shape2: CpShape
         arbiter getShapes(shape1&, shape2&)
 
@@ -484,7 +484,7 @@ EnemyHoleHandler: class extends CollisionHandler {
 
     init: func
 
-    begin: func (arbiter: CpArbiter, space: CpSpace) -> Bool {
+    preSolve: func (arbiter: CpArbiter, space: CpSpace) -> Bool {
         shape1, shape2: CpShape
         arbiter getShapes(shape1&, shape2&)
 

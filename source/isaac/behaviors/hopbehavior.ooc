@@ -117,6 +117,10 @@ HopBehavior: class {
         parabola incr = 1.0
     }
 
+    jumping?: func -> Bool {
+        (parabola != null)
+    }
+
 }
 
 LandListener: class {

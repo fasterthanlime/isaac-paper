@@ -504,6 +504,8 @@ CollisionGroups: enum from Int {
     HOPPER
 }
 
+ALL_COLLISION_HANDLERS := ArrayList<CollisionHandler> new()
+
 CollisionHandler: abstract class extends CpCollisionHandler {
 
     logger := static Log getLogger(This name)
@@ -513,6 +515,7 @@ CollisionHandler: abstract class extends CpCollisionHandler {
     ensure: func (level: Level) {
         if (level != cachedLevel) {
             cachedLevel = level
+            ALL_COLLISION_HANDLERS add(this)
             add(|a, b|
                 //logger warn("adding between %d and %d", a, b)
                 level space addCollisionHandler(a, b, this)

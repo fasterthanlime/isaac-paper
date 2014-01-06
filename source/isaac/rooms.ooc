@@ -85,6 +85,7 @@ RoomSet: class {
             }
         }
 
+        // last room
         if (!rooms contains?(room) && room rows size == 7) {
             rooms add(room)
         }
@@ -115,7 +116,7 @@ Room: class {
             }
             y += 1
         }
-        
+
         turnItemRocks(level)
     }
 
@@ -167,7 +168,7 @@ Room: class {
         }
 
         // now spawn all stuff enemy-like
-        match c { 
+        match c {
             case 's' =>
                 level add(Spider new(level, level gridPos(x, y), SpiderType SMALL))
             case 'S' =>
@@ -266,7 +267,7 @@ Room: class {
         } else if (number < 6) {
             level add(CollectibleBomb new(level, pos))
         } else if (number < 8) {
-            spawnHeart(pos, level) 
+            spawnHeart(pos, level)
         } else if (number < 12) {
             level add(CollectibleKey new(level, pos))
         } else {

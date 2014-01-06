@@ -71,7 +71,11 @@ Hopper: class extends Mob {
     }
 
     touchBlock: func (tile: Tile) -> Bool {
-        grounded?()
+        !behavior jumping?()
+    }
+
+    touchHole: func (tile: Tile) -> Bool {
+        !behavior jumping?()
     }
 
 }
