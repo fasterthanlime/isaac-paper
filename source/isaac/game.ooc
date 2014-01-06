@@ -145,7 +145,7 @@ Game: class {
         // choose floor
         floorIndex = 0
         floor = plan floors first()
-        
+
         // load the actual floor
         loadFloor()
     }
@@ -229,7 +229,7 @@ Game: class {
     initLevel: func {
         level = Level new(this, map currentTile, floor)
         levelGroup add(level group)
-        
+
         heroPos := match (changeRoomDir) {
             case Direction UP     => vec2(400, 100)
             case Direction DOWN   => vec2(400, 400)
@@ -274,6 +274,7 @@ Game: class {
 
         scene input onKeyPress(KeyCode F11, |kp|
             dye setFullscreen(!dye fullscreen)
+            dye setShowCursor(true)
         )
 
         scene input onKeyPress(KeyCode _1, |kp|
