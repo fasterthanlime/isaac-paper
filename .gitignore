@@ -6,6 +6,7 @@ launcher-build
 
 stage
 builds
+/build/*
 
 config/settings.yml
 

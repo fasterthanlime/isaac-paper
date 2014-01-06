@@ -105,30 +105,27 @@ linux-package:
 	@echo "[PACKAGE] Linux..."
 	@rm -rf $(LINUX_STAGE)
 	@mkdir -p $(LINUX_STAGE)
-	@cp -rf skeletons/linux/isaac-launcher.sh $(LINUX_STAGE)/
-	@chmod +x $(LINUX_STAGE)/isaac-launcher.sh
 	@mkdir -p $(LINUX_STAGE)/data
 	@cp -rf $(ASSETS) $(LINUX_STAGE)/data/
-	@mkdir -p $(LINUX_STAGE)/launcher
-	@mkdir -p $(LINUX_STAGE)/game
-	@mkdir -p $(LINUX_STAGE)/game/binaries
+	@mkdir -p $(LINUX_STAGE)/binaries
 	@cp -f stage/linux32/isaac-linux32 stage/linux64/isaac-linux64 \
-	  $(LINUX_STAGE)/game/binaries
-	#@strip $(LINUX_STAGE)/game/binaries/*
-	@mkdir -p $(LINUX_STAGE)/game/libs/32
-	@mkdir -p $(LINUX_STAGE)/game/libs/64
-	@cp -rf stage/linux32/libs/* $(LINUX_STAGE)/game/libs/32
-	@cp -rf stage/linux64/libs/* $(LINUX_STAGE)/game/libs/64
-	LD_LIBRARY_PATH=$(LINUX_STAGE)/game/libs/32 \
+	  $(LINUX_STAGE)/binaries
+	#@strip $(LINUX_STAGE)/binaries/*
+	@mkdir -p $(LINUX_STAGE)/libs/32
+	@mkdir -p $(LINUX_STAGE)/libs/64
+	@cp -rf stage/linux32/libs/* $(LINUX_STAGE)/libs/32
+	@cp -rf stage/linux64/libs/* $(LINUX_STAGE)/libs/64
+	LD_LIBRARY_PATH=$(LINUX_STAGE)/libs/32 \
 	  utils/linux/check-glibc.sh stage/linux32/isaac-linux32 || exit 32
-	LD_LIBRARY_PATH=$(LINUX_STAGE)/game/libs/64 \
+	LD_LIBRARY_PATH=$(LINUX_STAGE)/libs/64 \
 	  utils/linux/check-glibc.sh stage/linux64/isaac-linux64 || exit 64
-	#@strip $(LINUX_STAGE)/game/libs/32/* $(LINUX_STAGE)/game/libs/64/*
+	#@strip $(LINUX_STAGE)/libs/32/* $(LINUX_STAGE)/libs/64/*
 	@cp -rf $(ASSETS) $(LINUX_STAGE)/
-	@cp -rf skeletons/linux/isaac.sh $(LINUX_STAGE)/game
-	@chmod +x $(LINUX_STAGE)/game/isaac.sh
+	@cp -rf skeletons/linux/isaac.sh $(LINUX_STAGE)
+	@chmod +x $(LINUX_STAGE)/isaac.sh
 	@mkdir -p builds/$(VERSION)
 	@test -f $(TESTER_LAIR) || (mkdir -p $(TESTER_LAIR)/isaac-linux; cp -rf $(LINUX_STAGE)/* $(TESTER_LAIR)/isaac-linux)
+	@mkdir -p $(LINUX_DEST)
 	@cp -rf $(LINUX_STAGE)/* $(LINUX_DEST)/
 	@rm -rf $(LINUX_STAGE)
 	@echo "Linux build done!"

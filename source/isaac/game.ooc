@@ -364,18 +364,18 @@ Game: class {
         uiGroup add(keyLabel)
 
         fpsLabel = GlText new(FONT, "60FPS", labelFontSize)
-        fpsLabel pos set!(650, 20)
+        fpsLabel pos set!(650, 10)
         fpsLabel color set!(Color new(30, 30, 30))
         uiGroup add(fpsLabel)
 
-        versionString := "Version %s" format(IsaacVersion VERSION)
+        versionString := "Version %s" format(IsaacVersion VERSION replaceAll(".", ""))
         versionLabel = GlText new(FONT, versionString, labelFontSize)
-        versionLabel pos set!(650, 40)
+        versionLabel pos set!(650, 30)
         versionLabel color set!(Color new(30, 30, 30))
         uiGroup add(versionLabel)
 
         floorLabel = GlText new(FONT, "", labelFontSize)
-        floorLabel pos set!(10, 20)
+        floorLabel pos set!(10, 10)
         floorLabel color set!(Color new(30, 30, 30))
         uiGroup add(floorLabel)
 

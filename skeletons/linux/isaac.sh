@@ -1,5 +1,5 @@
 #!/bin/bash
-# Isaac Shell Script
+# Paper Isaac Shell Script
 # Inspired by the work of Ethan "flibitijibibo" Lee
  
 # Move to script's directory
